@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- views/breed/result.ejs -->
+<%- include('../partials/header') %>
+
+<style>
+    .result-wrapper { max-width: 1300px; margin: 130px auto 60px; padding: 0 24px; }
+    .result-card { background: rgba(255,255,255,0.98); border-radius: 36px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); overflow: hidden; }
+    .result-body { display: flex; flex-direction: row; min-height: 500px; flex-wrap: wrap; }
+    .image-col { flex: 1; min-width: 300px; background: #0a0f14; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .image-col img { max-width: 100%; max-height: 450px; object-fit: contain; border-radius: 20px; }
+    .details-col { flex: 1; min-width: 300px; padding: 32px; background: #fff; }
+    .breed-name { font-size: 2.2rem; font-weight: 800; color: #0284C7; }
+    .conf-text { font-weight: 700; color: #0284C7; }
+    .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 24px 0; }
+    .info-card { background: #F8FAFE; border-radius: 18px; padding: 14px 18px; border: 1px solid rgba(2,132,199,0.08); }
+    .info-label { font-size: 0.7rem; text-transform: uppercase; color: #94a3b8; font-weight: 600; }
+    .info-value { font-size: 0.95rem; font-weight: 600; color: #111827; margin-top: 4px; }
+    .btn-try-again { background: linear-gradient(135deg, #2ecc71, #27ae60); color: #fff; padding: 12px 28px; border-radius: 60px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+</style>
+
+<div class="result-wrapper">
+    <div class="result-card">
+        <div class="result-body">
+            <div class="image-col">
+                <img src="<%= imagePath %>" alt="Cow Image">
+            </div>
+
+            <div class="details-col">
+                <div class="breed-name"><%= prediction %></div>
+                <p class="conf-text"><%= confidence %>% Match</p>
+
+                <% if (info) { %>
+                    <div class="info-grid">
+                        <div class="info-card"><div class="info-label">Origin</div><div class="info-value"><%= info.origin %></div></div>
+                        <div class="info-card"><div class="info-label">Milk Yield</div><div class="info-value"><%= info.milk_yield %></div></div>
+                        <div class="info-card"><div class="info-label">Features</div><div class="info-value"><%= info.features %></div></div>
+                        <div class="info-card"><div class="info-label">Primary Use</div><div class="info-value"><%= info.use %></div></div>
+                        <div class="info-card"><div class="info-label">Breed Type</div><div class="info-value"><%= info.type %></div></div>
+                        <div class="info-card"><div class="info-label">Disease Resistance</div><div class="info-value"><%= info.disease_resistance %></div></div>
+                        <div class="info-card"><div class="info-label">Heat Tolerance</div><div class="info-value"><%= info.heat_tolerance %></div></div>
+                    </div>
+                <% } %>
+
+                <a href="/breed/detect" class="btn-try-again"><i class="fas fa-sync-alt"></i> Try Another Image</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>
+</body>
+</html>

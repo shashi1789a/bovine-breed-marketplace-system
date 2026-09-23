@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <%- include('../partials/header') %>
+
+
+<style>
+    .detector-wrapper { max-width: 720px; margin: 130px auto 60px; padding: 0 20px; }
+    .detector-card { background: rgba(255,255,255,0.98); border-radius: 32px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); overflow: hidden; }
+    .detector-header { background: linear-gradient(135deg, #082F49 0%, #0C4A6E 100%); padding: 28px 32px; text-align: center; }
+    .detector-header h1 { font-size: 1.9rem; font-weight: 800; color: #fff; margin: 12px 0 6px; }
+    .detector-header p { color: rgba(255,255,255,0.75); font-size: 0.9rem; margin: 0; }
+    .detector-icon { font-size: 3rem; }
+    .detector-body { padding: 32px; }
+    .media-preview { background: #F8FAFE; border-radius: 24px; border: 2px dashed rgba(2,132,199,0.25); cursor: pointer; overflow: hidden; }
+    .preview-placeholder { min-height: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 40px 20px; text-align: center; }
+    .preview-placeholder i { font-size: 3.5rem; color: #94a3b8; }
+    #preview { width: 100%; max-height: 380px; object-fit: contain; display: none; border-radius: 20px; }
+    video, canvas { display: none; width: 100%; border-radius: 20px; }
+    .btn-group-pro { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 24px 0; }
+    .btn-pro { padding: 12px 24px; border-radius: 60px; font-weight: 600; font-size: 0.9rem; border: none; cursor: pointer; }
+    .btn-camera-pro { background: linear-gradient(135deg, #3498db, #2980b9); color: #fff; }
+    .btn-capture-pro { background: linear-gradient(135deg, #e67e22, #d35400); color: #fff; }
+    .btn-upload-pro { background: linear-gradient(135deg, #2ecc71, #27ae60); color: #fff; }
+    .btn-predict-pro { background: linear-gradient(135deg, #F59E0B, #D97706); color: #fff; padding: 14px 36px; font-size: 1rem; font-weight: 700; }
+    .error-message { background: #FEE2E2; color: #DC2626; border-radius: 14px; padding: 12px; text-align: center; font-weight: 500; margin-top: 16px; }
+</style>
+
+<div class="detector-wrapper">
+    <div class="detector-card">
+        <div class="detector-header">
+            <div class="detector-icon">🐄</div>
+            <h1>Cow Breed Detector</h1>
+            <p>Upload or capture a cow image — AI will identify the breed instantly</p>
+        </div>
+
+        <div class="detector-body">
+            <% if (error) { %>
+                <div class="error-message"><%= error %></div>
+            <% } %>
+
+            <div class="media-preview" id="mediaPreview" onclick="document.getElementById('fileInput').click()">
+                <div class="preview-placeholder" id="placeholderContent">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p style="color:#64748b; margin:0;"><strong>Click or tap to upload</strong><br>or use camera buttons below</p>
+                </div>
+                <video id="video" autoplay></video>
+                <canvas id="canvas"></canvas>
+                <img id="preview" alt="Preview">
+            </div>
+
+            <form id="uploadForm" action="/breed/predict" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
+                <input type="file" name="image" id="fileInput" accept="image/*" hidden>
+
+                <div class="btn-group-pro">
+                    <button type="button" class="btn-pro btn-camera-pro" onclick="openCamera()"><i class="fas fa-camera"></i> Open Camera</button>
+                    <button type="button" class="btn-pro btn-capture-pro" onclick="captureImage()"><i class="fas fa-camera-retro"></i> Capture</button>
+                    <button type="button" class="btn-pro btn-upload-pro" onclick="document.getElementById('fileInput').click()"><i class="fas fa-folder-open"></i> Upload</button>
+                </div>
+
+                <div style="text-align:center;">
+                    <button type="submit" class="btn-pro btn-predict-pro"><i class="fas fa-brain"></i> Predict Breed</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    let video = document.getElementById("video");
+    let canvas = document.getElementById("canvas");
+    let preview = document.getElementById("preview");
+    let fileInput = document.getElementById("fileInput");
+    let placeholder = document.getElementById("placeholderContent");
+    let streamRef = null;
+
+    function updatePreviewUI(fileUrl) {
+        preview.src = fileUrl;
+        preview.style.display = "block";
+        placeholder.style.display = "none";
+    }
+
+    function resetToPlaceholder() {
+        preview.style.display = "none";
+        placeholder.style.display = "flex";
+    }
+
+    function openCamera() {
+        if (streamRef) stopCamera();
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                streamRef = stream;
+                video.style.display = "block";
+                video.srcObject = stream;
+                resetToPlaceholder();
+            })
+            .catch(() => alert("Camera access denied. Please allow permissions."));
+    }
+
+    function captureImage() {
+        if (!video.videoWidth || !video.videoHeight) { alert("Please open camera first"); return; }
+        let ctx = canvas.getContext("2d");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0);
+        canvas.toBlob(blob => {
+            let file = new File([blob], "cow_capture.jpg", { type: "image/jpeg" });
+            let dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            fileInput.files = dataTransfer.files;
+            updatePreviewUI(URL.createObjectURL(file));
+            stopCamera();
+        }, "image/jpeg");
+    }
+
+    function stopCamera() {
+        if (streamRef) {
+            streamRef.getTracks().forEach(t => t.stop());
+            streamRef = null;
+        }
+        video.style.display = "none";
+        video.srcObject = null;
+    }
+
+    fileInput.addEventListener("change", function () {
+        if (this.files && this.files[0]) {
+            updatePreviewUI(URL.createObjectURL(this.files[0]));
+            stopCamera();
+        } else {
+            resetToPlaceholder();
+        }
+    });
+
+    function validateForm() {
+        if (!fileInput.files || fileInput.files.length === 0) {
+            alert("Please select or capture an image first!");
+            return false;
+        }
+        return true;
+    }
+</script>
+
+<%- include('../partials/footer') %>
+</body>
+</html>
