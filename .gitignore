@@ -71,7 +71,6 @@ env/
 *.ckpt
 
 checkpoints/
-models/
 weights/
 runs/
 
