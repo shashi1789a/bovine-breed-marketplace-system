@@ -1,0 +1,696 @@
+<%
+  function buildQuery(page) {
+    var params = new URLSearchParams();
+    if (filters.q) params.set('q', filters.q);
+    if (filters.category) params.set('category', filters.category);
+    if (filters.minPrice !== '' && filters.minPrice !== undefined && filters.minPrice !== null) params.set('minPrice', filters.minPrice);
+    if (filters.maxPrice !== '' && filters.maxPrice !== undefined && filters.maxPrice !== null) params.set('maxPrice', filters.maxPrice);
+    if (filters.sort && filters.sort !== 'newest') params.set('sort', filters.sort);
+    params.set('page', page);
+    return '/products?' + params.toString();
+  }
+
+  var sortLabels = {
+    newest: 'Newest first',
+    oldest: 'Oldest first',
+    price_asc: 'Price: low to high',
+    price_desc: 'Price: high to low',
+    popular: 'Most popular',
+    rating: 'Top rated'
+  };
+%>
+
+<%- include('../partials/header') %>
+
+<style>
+  /* ============================================================
+     BOVINETRA MARKETPLACE — DESIGN SYSTEM
+     Colors: Blue + Amber (matching main site)
+     ============================================================ */
+  :root {
+    --primary: #0284C7;
+    --primary-dark: #0C4A6E;
+    --primary-light: #0EA5E9;
+    --accent: #0EA5E9;
+    --cta: #F59E0B;
+    --cta-dark: #D97706;
+    --light: #E0F2FE;
+    --dark-bg: #082F49;
+    --text-main: #111827;
+    --text-muted: #6B7280;
+    --border-light: rgba(2, 132, 199, 0.12);
+    --gradient-hero: linear-gradient(135deg, #082F49 0%, #0C4A6E 45%, #0284C7 100%);
+    --gradient-cta: linear-gradient(105deg, #F59E0B, #D97706);
+    --gradient-primary: linear-gradient(135deg, #0284C7, #0EA5E9);
+    --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 8px 28px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.14);
+    --radius-card: 20px;
+    --radius-md: 16px;
+    --radius-sm: 10px;
+    --radius-pill: 50px;
+    --transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ---------- Page Wrapper ---------- */
+  .marketplace-page {
+    background: #F4F9FE;
+    min-height: 100vh;
+  }
+
+  /* ---------- Page Header ---------- */
+  .mp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    background: #fff;
+    padding: 1.3rem 1.6rem;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    animation: mpFadeIn 0.5s ease;
+  }
+
+  @keyframes mpFadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .mp-header h1 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+    color: var(--text-main);
+    font-size: 1.7rem;
+    margin: 0;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .mp-header h1 i {
+    color: var(--primary);
+    font-size: 1.5rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--light);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(2, 132, 199, 0.15);
+  }
+
+  .mp-count {
+    color: var(--primary);
+    font-weight: 700;
+    background: var(--light);
+    border: 1px solid rgba(2, 132, 199, 0.18);
+    padding: 6px 16px;
+    border-radius: var(--radius-pill);
+    font-size: 0.85rem;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ---------- Filter Form ---------- */
+  .filter-form {
+    background: #fff;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-card);
+    padding: 1.4rem 1.5rem;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 2rem;
+    animation: mpFadeIn 0.5s ease 0.05s both;
+  }
+
+  .filter-form .form-label {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .filter-form .form-control,
+  .filter-form .form-select {
+    background: #F8FDFF;
+    border: 1.5px solid #E2EDF7;
+    border-radius: 14px;
+    padding: 11px 15px;
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-main);
+    transition: var(--transition);
+  }
+
+  .filter-form .form-control::placeholder { color: #9ca3af; }
+
+  .filter-form .form-control:focus,
+  .filter-form .form-select:focus {
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.14);
+    background: #fff;
+  }
+
+  .filter-form .form-select {
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%230284C7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+  }
+
+  .filter-form .btn-cta-nav {
+    width: 100%;
+    height: 100%;
+    min-height: 44px;
+    background: var(--gradient-cta);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.32);
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .filter-form .btn-cta-nav:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(245, 158, 11, 0.48);
+    color: #fff;
+  }
+
+  /* ---------- Product Cards ---------- */
+  .product-grid-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+    transition: var(--transition);
+    border-radius: var(--radius-card);
+  }
+
+  .product-grid-card:hover {
+    transform: translateY(-6px);
+    color: inherit;
+  }
+
+  .product-card-inner {
+    background: #fff;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    position: relative;
+  }
+
+  .product-card-inner::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--gradient-primary);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s ease;
+    z-index: 2;
+  }
+
+  .product-grid-card:hover .product-card-inner::before {
+    transform: scaleX(1);
+  }
+
+  .product-grid-card:hover .product-card-inner {
+    box-shadow: var(--shadow-md);
+    border-color: rgba(2, 132, 199, 0.25);
+  }
+
+  /* ---------- Product Image ---------- */
+  .product-img-wrap {
+    position: relative;
+    overflow: hidden;
+    height: 190px;
+    background: linear-gradient(135deg, #F0F9FF, #E0F2FE);
+  }
+
+  .product-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .product-grid-card:hover .product-img-wrap img {
+    transform: scale(1.06);
+  }
+
+  .product-img-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #BAE6FD;
+    font-size: 2.2rem;
+  }
+
+  /* Discount badge floating on image */
+  .product-discount-float {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--gradient-cta);
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 0.68rem;
+    padding: 5px 12px;
+    border-radius: var(--radius-pill);
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.42);
+    letter-spacing: 0.02em;
+    z-index: 3;
+  }
+
+  /* Category badge floating on image */
+  .product-category-float {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(255, 255, 255, 0.94);
+    color: var(--primary);
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 0.66rem;
+    padding: 5px 12px;
+    border-radius: var(--radius-pill);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    z-index: 3;
+  }
+
+  /* ---------- Product Body ---------- */
+  .product-body {
+    padding: 1.1rem 1.2rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .product-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-main);
+    margin-bottom: 0.55rem;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 2.7em;
+  }
+
+  .product-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 0.5rem;
+  }
+
+  .product-price {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: var(--primary);
+    letter-spacing: -0.02em;
+  }
+
+  .product-mrp {
+    font-size: 0.82rem;
+    color: #9ca3af;
+    text-decoration: line-through;
+  }
+
+  .product-seller {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .product-seller i {
+    color: var(--primary);
+    font-size: 0.72rem;
+  }
+
+  .product-stock {
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+    width: fit-content;
+    margin-top: auto;
+  }
+
+  .stock-in {
+    color: #0284C7;
+    background: rgba(2, 132, 199, 0.1);
+  }
+
+  .stock-out {
+    color: #DC2626;
+    background: rgba(220, 38, 38, 0.1);
+  }
+
+  /* ---------- Empty State ---------- */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 1.5rem;
+    background: #fff;
+    border-radius: var(--radius-card);
+    border: 1.5px dashed rgba(2, 132, 199, 0.2);
+    animation: mpFadeIn 0.5s ease;
+  }
+
+  .empty-state-icon {
+    width: 88px;
+    height: 88px;
+    border-radius: 26px;
+    background: var(--light);
+    border: 1px solid rgba(2, 132, 199, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    color: var(--primary);
+    margin: 0 auto 1.3rem;
+  }
+
+  .empty-state h4 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    color: var(--text-main);
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-state p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.4rem;
+  }
+
+  /* ---------- Pagination ---------- */
+  .mp-pagination .page-link {
+    border-radius: 12px !important;
+    margin: 0 4px;
+    padding: 0.6rem 1.1rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.86rem;
+    color: var(--primary);
+    border: 1.5px solid var(--border-light);
+    background: #fff;
+    transition: var(--transition);
+  }
+
+  .mp-pagination .page-link:hover {
+    background: var(--light);
+    border-color: var(--primary);
+    color: var(--primary-dark);
+    transform: translateY(-2px);
+  }
+
+  .mp-pagination .page-item.disabled .page-link {
+    color: var(--text-muted);
+    background: #F8FDFF;
+    border-color: var(--border-light);
+    opacity: 0.65;
+  }
+
+  .mp-pagination .page-item.active .page-link {
+    background: var(--gradient-primary);
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28);
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 991px) {
+    .mp-header { padding: 1.1rem 1.3rem; }
+    .mp-header h1 { font-size: 1.45rem; }
+    .mp-header h1 i { width: 40px; height: 40px; font-size: 1.3rem; }
+    .filter-form { padding: 1.2rem 1.2rem; }
+    .product-img-wrap { height: 170px; }
+  }
+
+  @media (max-width: 767px) {
+    .mp-header {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1rem 1.1rem;
+    }
+    .mp-header h1 { font-size: 1.3rem; }
+    .filter-form { padding: 1rem 1rem; }
+    .filter-form .btn-cta-nav { min-height: 42px; }
+    .product-img-wrap { height: 200px; }
+    .product-title { font-size: 0.95rem; }
+    .product-price { font-size: 1.1rem; }
+  }
+
+  @media (max-width: 575px) {
+    .mp-header h1 { font-size: 1.15rem; }
+    .mp-header h1 i { width: 36px; height: 36px; font-size: 1.1rem; }
+    .mp-count { font-size: 0.78rem; padding: 5px 12px; }
+    .filter-form { padding: 0.9rem 0.85rem; border-radius: 16px; }
+    .filter-form .form-control,
+    .filter-form .form-select {
+      padding: 10px 13px;
+      font-size: 0.86rem;
+      border-radius: 12px;
+    }
+    .product-img-wrap { height: 190px; }
+    .product-body { padding: 1rem 1rem 1.1rem; }
+    .product-title { font-size: 0.92rem; }
+    .product-price { font-size: 1.05rem; }
+    .empty-state { padding: 2.5rem 1.2rem; }
+    .empty-state-icon { width: 72px; height: 72px; font-size: 1.8rem; }
+    .mp-pagination .page-link { padding: 0.5rem 0.9rem; font-size: 0.8rem; }
+  }
+
+  @media (max-width: 375px) {
+    .mp-header h1 { font-size: 1.05rem; }
+    .product-img-wrap { height: 170px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+<main class="marketplace-page container" style="padding-top: 120px; padding-bottom: 60px;">
+
+  <!-- Page Header -->
+  <div class="mp-header">
+    <h1><i class="fas fa-store"></i> Marketplace</h1>
+    <span class="mp-count">
+      <i class="fas fa-box me-1"></i>
+      <%= totalProducts %> product<%= totalProducts === 1 ? '' : 's' %> found
+    </span>
+  </div>
+
+  <!-- Filter Form -->
+  <form action="/products" method="GET" class="filter-form row g-3 align-items-end">
+
+    <div class="col-md-4 col-lg-4">
+      <label class="form-label">Search</label>
+      <input type="text" class="form-control" name="q" placeholder="Search products..." value="<%= filters.q || '' %>">
+    </div>
+
+    <div class="col-md-3 col-lg-3">
+      <label class="form-label">Category</label>
+      <select class="form-select" name="category">
+        <option value="">All categories</option>
+        <% categories.forEach(function (cat) { %>
+          <option value="<%= cat %>" <%= filters.category === cat ? 'selected' : '' %>><%= cat %></option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="col-6 col-md-2 col-lg-2">
+      <label class="form-label">Min price</label>
+      <input type="number" class="form-control" name="minPrice" min="0" placeholder="₹0" value="<%= filters.minPrice %>">
+    </div>
+
+    <div class="col-6 col-md-2 col-lg-2">
+      <label class="form-label">Max price</label>
+      <input type="number" class="form-control" name="maxPrice" min="0" placeholder="₹9999" value="<%= filters.maxPrice %>">
+    </div>
+
+    <div class="col-md-1 col-lg-1">
+      <button type="submit" class="btn-cta-nav" title="Apply filters">
+        <i class="fas fa-search"></i>
+      </button>
+    </div>
+
+    <div class="col-md-5 col-lg-4">
+      <label class="form-label">Sort by</label>
+      <select class="form-select" name="sort" onchange="this.form.submit()">
+        <% Object.keys(sortLabels).forEach(function (key) { %>
+          <option value="<%= key %>" <%= filters.sort === key ? 'selected' : '' %>><%= sortLabels[key] %></option>
+        <% }) %>
+      </select>
+    </div>
+
+  </form>
+
+  <!-- Products Grid -->
+  <% if (!products.length) { %>
+
+    <div class="empty-state">
+      <div class="empty-state-icon">
+        <i class="fas fa-search"></i>
+      </div>
+      <h4>No Products Found</h4>
+      <p>No products match your filters right now. Try adjusting your search or filters.</p>
+      <a href="/products" class="btn btn-primary" style="background: linear-gradient(135deg, #0284C7, #0EA5E9); border:none; border-radius:50px; padding:0.7rem 1.6rem; color:#fff; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:8px;">
+        <i class="fas fa-redo"></i> Clear Filters
+      </a>
+    </div>
+
+  <% } else { %>
+
+    <div class="row g-4">
+      <% products.forEach(function (product) { %>
+        <div class="col-6 col-sm-6 col-lg-4 col-xl-3">
+          <a href="/products/view/<%= product._id %>" class="product-grid-card">
+            <div class="product-card-inner">
+
+              <!-- Image -->
+              <div class="product-img-wrap">
+                <% if (product.image) { %>
+                  <img src="<%= product.image %>" alt="<%= product.name %>">
+                <% } else { %>
+                  <div class="product-img-placeholder">
+                    <i class="fas fa-image"></i>
+                  </div>
+                <% } %>
+
+                <% if (product.category) { %>
+                  <span class="product-category-float"><%= product.category %></span>
+                <% } %>
+
+                <% if (product.discount > 0) { %>
+                  <span class="product-discount-float">
+                    <i class="fas fa-fire me-1"></i><%= product.discount %>% OFF
+                  </span>
+                <% } %>
+              </div>
+
+              <!-- Body -->
+              <div class="product-body">
+
+                <h6 class="product-title"><%= product.name %></h6>
+
+                <div class="product-price-row">
+                  <span class="product-price">₹<%= product.price %></span>
+                  <% if (product.mrp > product.price) { %>
+                    <span class="product-mrp">₹<%= product.mrp %></span>
+                  <% } %>
+                </div>
+
+                <div class="product-seller">
+                  <i class="fas fa-user-circle"></i>
+                  Sold by <%= product.owner && product.owner.fullName ? product.owner.fullName : 'Seller' %>
+                </div>
+
+                <% if (product.stock > 0) { %>
+                  <span class="product-stock stock-in">
+                    <i class="fas fa-check-circle"></i> In stock
+                  </span>
+                <% } else { %>
+                  <span class="product-stock stock-out">
+                    <i class="fas fa-times-circle"></i> Out of stock
+                  </span>
+                <% } %>
+
+              </div>
+
+            </div>
+          </a>
+        </div>
+      <% }) %>
+    </div>
+
+    <!-- Pagination -->
+    <% if (pagination.totalPages > 1) { %>
+      <nav class="mt-5">
+        <ul class="pagination justify-content-center mp-pagination">
+
+          <li class="page-item <%= pagination.hasPrev ? '' : 'disabled' %>">
+            <a class="page-link" href="<%= buildQuery(pagination.page - 1) %>">
+              <i class="fas fa-chevron-left me-1"></i> Prev
+            </a>
+          </li>
+
+          <li class="page-item disabled">
+            <span class="page-link">
+              Page <%= pagination.page %> of <%= pagination.totalPages %>
+            </span>
+          </li>
+
+          <li class="page-item <%= pagination.hasNext ? '' : 'disabled' %>">
+            <a class="page-link" href="<%= buildQuery(pagination.page + 1) %>">
+              Next <i class="fas fa-chevron-right ms-1"></i>
+            </a>
+          </li>
+
+        </ul>
+      </nav>
+    <% } %>
+
+  <% } %>
+
+</main>
+
+<%- include('../partials/footer') %>
+
+<script>
+  // Subtle staggered entrance for product cards
+  document.addEventListener('DOMContentLoaded', function () {
+    const cards = document.querySelectorAll('.product-grid-card');
+    cards.forEach((card, i) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(14px)';
+      card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+      setTimeout(() => {
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, 60 + i * 40);
+    });
+  });
+</script>

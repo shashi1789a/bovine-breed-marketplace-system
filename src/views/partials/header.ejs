@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= locals.title || 'BoviNetra' %></title>
+  <meta name="description" content="<%= locals.description || 'BoviNetra is a bovin management platform for Indian farmers. Track milk collection, manage cattle and automate payments. Start your free trial.' %>">
+  <meta name="keywords" content="bovin management software india, milk collection app, bovin farm software, cattle management, gaushala management">
+  <meta name="author" content="BoviNetra">
+
+  <!-- Open Graph -->
+  <meta property="og:title"       content="<%= locals.title || 'BoviNetra — Digital Bovin Management' %>">
+  <meta property="og:description" content="Complete bovin management solution for Indian farmers. Track milk, manage cattle, automate payments.">
+  <meta property="og:image"       content="/assets/images/hero-composite.png">
+  <meta property="og:type"        content="website">
+  <meta property="og:url"         content="https://bovinetra.in">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="<%= locals.title || 'BoviNetra — Digital Bovin Management' %>">
+  <meta name="twitter:description" content="Complete bovin management solution for Indian farmers. Track milk, manage cattle, automate payments.">
+  <meta name="twitter:image"       content="/assets/images/hero-composite.png">
+
+  <meta name="robots" content="index, follow">
+  <link rel="icon" href="/assets/images/fav.png" type="image/png">
+
+  <!-- Vendor CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+  <!-- Site CSS (absolute paths: har route par sahi load hoga) -->
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="/assets/css/pages.css">
+
+  <!--
+    Compat fix: style.css ke "Display utilities" (.d-none, .d-flex ...) Bootstrap ke
+    .d-lg-none / .d-lg-flex ko override kar rahe the, isliye navbar ke mobile aur
+    desktop buttons dono galat dikhte the. Yeh rules unhe wapas theek karte hain.
+    (style.css se wo utility block hata do to yeh block bhi hata sakte ho.)
+  -->
+  <style>
+    @media (min-width: 992px) {
+      .d-lg-none        { display: none !important; }
+      .d-lg-block       { display: block !important; }
+      .d-lg-flex        { display: flex !important; }
+      .d-lg-inline-flex { display: inline-flex !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <img src="/assets/images/logo.png" alt="BoviNetra" class="navbar-logo">
+    </a>
+
+    <!-- Mobile CTA — toggler ke bagal me (collapse ke BAHAR) -->
+    <div class="nav-actions-mob d-flex d-lg-none ms-auto me-2 align-items-center gap-2">
+      <a href="https://api.whatsapp.com/send?phone=917303435042&amp;text=Hi+BoviNetra%2C+I+want+to+know+more+about+your+platform."
+         target="_blank" rel="noopener" class="nav-icon-btn nav-wa-btn" aria-label="Chat on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+      </a>
+      <a href="tel:+917303435042" class="nav-icon-btn nav-call-btn" aria-label="Call Us">
+        <i class="fas fa-phone"></i>
+      </a>
+      <% if (locals.user) { %>
+        <a href="/dashboard" class="btn btn-cta-nav btn-cta-sm">
+          <i class="fas fa-gauge"></i><span class="btn-demo-text ms-1">Dashboard</span>
+        </a>
+      <% } else { %>
+        <a href="/login" class="btn btn-cta-nav btn-cta-sm">
+          <i class="fas fa-right-to-bracket"></i><span class="btn-demo-text ms-1">Login</span>
+        </a>
+      <% } %>
+    </div>
+
+    <!-- Toggler (hamburger ↔ close) -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarMain" aria-controls="navbarMain"
+            aria-expanded="false" aria-label="Toggle navigation">
+      <i class="fas fa-bars nav-tog-open"></i>
+      <i class="fas fa-xmark nav-tog-close"></i>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <ul class="navbar-nav mx-auto gap-1">
+        <li class="nav-item">
+          <a class="nav-link <%= locals.activePage === 'home' ? 'active' : '' %>" href="/">Home</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#"
+             role="button" data-bs-toggle="dropdown" aria-expanded="false">Platform</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="/platform">
+              <i class="fas fa-layer-group"></i> Features</a></li>
+            <li><a class="dropdown-item" href="/portfolio">
+              <i class="fas fa-briefcase"></i> Portfolio</a></li>
+            <li><a class="dropdown-item" href="/milk-collection-farmer-app">
+              <i class="fas fa-tractor"></i> Farmer App
+              <span class="badge-main ms-1">MAIN</span></a></li>
+            <li><a class="dropdown-item" href="/milk-collection-software-app">
+              <i class="fas fa-bucket"></i> Milk Collection</a></li>
+            <li><a class="dropdown-item" href="/milk-delivery-customer-app">
+              <i class="fas fa-truck"></i> Delivery Customer</a></li>
+            <li><a class="dropdown-item" href="/milk-delivery-partner-app">
+              <i class="fas fa-motorcycle"></i> Delivery Partner</a></li>
+            <li><a class="dropdown-item" href="/cattle-sale-purchase-app">
+              <i class="fas fa-cow"></i> Cattle Trading</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="/cattele-management-softeware">
+              <i class="fas fa-warehouse"></i> Gaushala Management</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="<%= locals.aiDetectionUrl || 'http://127.0.0.1:5000' %>">AI Detection</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/products">MarketPlace</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/pricing">Pricing</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/about-us">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/contact-us">Contact</a>
+        </li>
+      </ul>
+
+      <!-- Desktop CTA -->
+      <div class="nav-actions d-none d-lg-flex">
+        <a href="https://api.whatsapp.com/send?phone=917303435042&amp;text=Hi+BoviNetra%2C+I+want+to+know+more+about+your+platform."
+           target="_blank" rel="noopener" class="nav-icon-btn nav-wa-btn"
+           data-tip="WhatsApp" aria-label="Chat on WhatsApp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+        <a href="tel:+917303435042" class="nav-icon-btn nav-call-btn"
+           data-tip="Call Us" aria-label="Call Us">
+          <i class="fas fa-phone"></i>
+        </a>
+        <% if (locals.user) { %>
+          <a href="/dashboard" class="btn btn-cta-nav">
+            <i class="fas fa-gauge"></i> Dashboard
+          </a>
+        <% } else { %>
+          <a href="/login" class="btn btn-cta-nav">
+            <i class="fas fa-right-to-bracket"></i> Login
+          </a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</nav>

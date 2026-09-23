@@ -1,0 +1,689 @@
+<%- include("../partials/header", {
+    title: "Create Account | BoviNetra — Join India's Bovin Ecosystem",
+    description: "Register as farmer, buyer, doctor or admin. Start your digital bovin journey with BoviNetra."
+}) %>
+
+<style>
+    /* ------------------------------------------------------------
+       REGISTER PAGE — sab kuch .register-page ke andar scoped hai,
+       isliye header / footer / navbar ki sizing ko chhuta nahi.
+       Colors (--primary, --accent, --cta ...) style.css se aate hain.
+    --------------------------------------------------------------*/
+    .register-page {
+        --reg-radius-card: 32px;
+        --reg-radius-md: 20px;
+        --reg-radius-sm: 14px;
+        --reg-shadow-md: 0 20px 38px -12px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
+        --reg-shadow-lg: 0 32px 64px -16px rgba(0,0,0,0.2);
+        --reg-shadow-cta: 0 12px 28px -8px rgba(245,158,11,0.4);
+        --reg-gradient-cta: linear-gradient(105deg, #F59E0B, #D97706);
+        --reg-gradient-primary: linear-gradient(135deg, #0284C7, #0EA5E9);
+        --reg-border: rgba(2,132,199,0.12);
+        --reg-ease: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+        position: relative;
+        min-height: 100vh;
+        /* fixed navbar ke neeche se shuru */
+        padding: 120px 1.5rem 3rem;
+        background: linear-gradient(135deg, #F4F9FE 0%, #EAF3FA 100%);
+        overflow-x: clip;
+    }
+
+    /* Subtle grain */
+    .register-page::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .register-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* ---------- Left hero card ---------- */
+    .register-hero {
+        background: var(--hero-gradient);
+        border-radius: var(--reg-radius-card);
+        padding: 3rem;
+        color: #fff;
+        height: 100%;
+        box-shadow: var(--reg-shadow-lg);
+        position: relative;
+        overflow: hidden;
+        animation: regHeroIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes regHeroIn {
+        from { opacity: 0; transform: translateX(-30px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .register-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+        background-size: 32px 32px;
+        pointer-events: none;
+    }
+
+    .register-hero::after {
+        content: '';
+        position: absolute;
+        top: -30%;
+        right: -20%;
+        width: 320px;
+        height: 320px;
+        background: radial-gradient(circle, rgba(245,158,11,0.22), transparent 70%);
+        border-radius: 50%;
+        animation: regOrbFloat 6s ease-in-out infinite;
+        pointer-events: none;
+    }
+
+    @keyframes regOrbFloat {
+        0%, 100% { transform: translate(0, 0); }
+        50%      { transform: translate(-20px, 20px); }
+    }
+
+    .register-hero > * { position: relative; z-index: 1; }
+
+    .register-hero .hero-icon {
+        width: 76px;
+        height: 76px;
+        background: rgba(255,255,255,0.12);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        color: var(--cta);
+        animation: regIconPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes regIconPulse {
+        0%, 100% { transform: scale(1);    box-shadow: 0 0 0 0 rgba(245,158,11,0.3); }
+        50%      { transform: scale(1.05); box-shadow: 0 0 0 12px rgba(245,158,11,0); }
+    }
+
+    .register-hero h2 {
+        font-family: var(--font-heading);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: #fff;
+    }
+
+    .register-hero .stat-badge {
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 60px;
+        padding: 0.5rem 1.2rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: var(--reg-ease);
+    }
+
+    .register-hero .stat-badge:hover {
+        background: rgba(255,255,255,0.18);
+        transform: translateY(-2px);
+    }
+
+    /* ---------- Right form card ---------- */
+    .register-card {
+        background: rgba(255,255,255,0.98);
+        backdrop-filter: blur(10px);
+        border-radius: var(--reg-radius-card);
+        box-shadow: var(--reg-shadow-md);
+        border: 1px solid var(--reg-border);
+        padding: 2.2rem 2.2rem 2.5rem;
+        transition: var(--reg-ease);
+        animation: regCardIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.1s both;
+    }
+
+    @keyframes regCardIn {
+        from { opacity: 0; transform: translateX(30px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .register-card:hover {
+        box-shadow: var(--reg-shadow-lg);
+        transform: translateY(-3px);
+    }
+
+    .register-card .badge-modern {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(2,132,199,0.08);
+        border: 1px solid rgba(2,132,199,0.18);
+        border-radius: 60px;
+        padding: 6px 16px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--primary);
+        margin-bottom: 1rem;
+    }
+
+    .register-card h3 {
+        font-family: var(--font-heading);
+        font-weight: 800;
+        color: var(--text-dark);
+        font-size: 1.75rem;
+    }
+
+    /* ---------- Inputs ---------- */
+    .register-card .input-modern {
+        background: #FFFFFF;
+        border: 1.5px solid #E2EDF7;
+        border-radius: 16px;
+        padding: 13px 16px 13px 46px;
+        width: 100%;
+        font-size: 0.92rem;
+        font-family: var(--font-body);
+        transition: var(--reg-ease);
+        color: var(--text-dark);
+    }
+
+    .register-card .input-modern::placeholder { color: #9ca3af; }
+
+    .register-card .input-modern:focus {
+        border-color: var(--accent);
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(14,165,233,0.14);
+        background: #F8FDFF;
+    }
+
+    .register-card .input-icon-wrap {
+        position: relative;
+        margin-bottom: 1.2rem;
+    }
+
+    .register-card .input-icon-wrap > i {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--primary);
+        font-size: 1rem;
+        pointer-events: none;
+        transition: var(--reg-ease);
+        z-index: 2;
+    }
+
+    .register-card .input-icon-wrap:focus-within > i {
+        color: var(--accent);
+        transform: translateY(-50%) scale(1.1);
+    }
+
+    /* Bootstrap .row ke andar wale fields ka extra gap na bane */
+    .register-card .row > [class*="col-"] > .input-icon-wrap { margin-bottom: 0; }
+
+    .register-card select.input-modern {
+        padding: 13px 44px 13px 46px;
+        appearance: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%230284C7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+    }
+
+    /* ---------- File uploads ---------- */
+    .register-card label.upload-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .register-card .file-input-wrapper { position: relative; }
+
+    .register-card .file-input-wrapper input[type="file"] {
+        background: #F9FCFE;
+        border: 1.5px dashed #C2D9F0;
+        border-radius: 16px;
+        padding: 12px 14px;
+        width: 100%;
+        font-size: 0.82rem;
+        cursor: pointer;
+        transition: var(--reg-ease);
+        color: var(--text-muted);
+        font-family: var(--font-body);
+    }
+
+    .register-card .file-input-wrapper input[type="file"]:hover {
+        border-color: var(--accent);
+        background: #F0F9FF;
+        border-style: solid;
+    }
+
+    .register-card .file-input-wrapper input[type="file"]::file-selector-button,
+    .register-card .file-input-wrapper input[type="file"]::-webkit-file-upload-button {
+        background: var(--reg-gradient-primary);
+        color: #fff;
+        border: none;
+        padding: 7px 14px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.78rem;
+        cursor: pointer;
+        margin-right: 10px;
+        font-family: var(--font-body);
+    }
+
+    /* ---------- Role specific fields ---------- */
+    .register-card .dynamic-fields {
+        display: none;
+        margin-top: 1.2rem;
+        padding: 1.2rem 0 0.2rem;
+        border-top: 2px dashed rgba(2,132,199,0.15);
+    }
+
+    .register-card .dynamic-fields.is-visible {
+        display: block;
+        animation: regFadeSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .register-card .dynamic-fields h6 {
+        font-family: var(--font-body);
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .register-card .dynamic-fields h6::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: rgba(2,132,199,0.12);
+    }
+
+    .register-card .extra-fields { display: none; }
+
+    .register-card .extra-fields.show-fields {
+        display: block;
+        animation: regFadeSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes regFadeSlide {
+        from { opacity: 0; transform: translateY(-10px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- Submit ---------- */
+    .register-card .btn-register {
+        background: var(--reg-gradient-cta);
+        border: none;
+        border-radius: 44px;
+        padding: 15px 24px;
+        font-weight: 700;
+        font-size: 0.97rem;
+        color: #fff;
+        width: 100%;
+        transition: var(--reg-ease);
+        box-shadow: var(--reg-shadow-cta);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 1.2rem;
+        font-family: var(--font-heading);
+        letter-spacing: 0.01em;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .register-card .btn-register::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+        transition: left 0.6s ease;
+    }
+
+    .register-card .btn-register:hover::before { left: 100%; }
+
+    .register-card .btn-register:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 18px 38px -12px rgba(245,158,11,0.55);
+    }
+
+    .register-card .btn-register:active { transform: translateY(-1px) scale(0.99); }
+
+    .register-card .login-link {
+        text-align: center;
+        margin-top: 1.6rem;
+        font-size: 0.86rem;
+        color: var(--text-muted);
+    }
+
+    .register-card .login-link a {
+        color: var(--primary);
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .register-card .login-link a:hover {
+        color: var(--cta);
+        text-decoration: underline;
+    }
+
+    /* style.css me .trust-strip pehle se hai, isliye naam alag rakha */
+    .reg-trust-strip {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(135deg, #F0F9FF, #E0F2FE);
+        border: 1px solid rgba(2,132,199,0.1);
+        border-radius: 60px;
+        padding: 12px 22px;
+        margin-top: 1.6rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        flex-wrap: wrap;
+        gap: 12px;
+        color: var(--text-muted);
+    }
+
+    .reg-trust-strip span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+    }
+
+    .reg-trust-strip i { color: var(--primary); }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 992px) {
+        .register-page { padding: 100px 1rem 2rem; }
+        .register-hero {
+            padding: 2.2rem;
+            text-align: center;
+            height: auto;
+        }
+        .register-hero .hero-icon { margin-left: auto; margin-right: auto; }
+        .register-hero .d-flex { justify-content: center; }
+        .register-card { padding: 1.8rem 1.6rem 2rem; }
+    }
+
+    @media (max-width: 768px) {
+        .register-hero { padding: 1.8rem 1.5rem; border-radius: 24px; }
+        .register-hero h2 { font-size: 1.7rem; }
+        .register-card { padding: 1.6rem 1.4rem 1.8rem; border-radius: 24px; }
+        .register-card h3 { font-size: 1.4rem; }
+        .register-hero .hero-icon { width: 64px; height: 64px; font-size: 1.7rem; }
+    }
+
+    @media (max-width: 576px) {
+        .register-page { padding: 92px 0.75rem 1.5rem; }
+        .register-hero { padding: 1.5rem 1.2rem; border-radius: 20px; }
+        .register-hero h2 { font-size: 1.5rem; line-height: 1.25; }
+        .register-hero p { font-size: 0.85rem; }
+        .register-hero .stat-badge { padding: 0.4rem 0.9rem; font-size: 0.72rem; }
+        .register-card { padding: 1.4rem 1.1rem 1.6rem; border-radius: 20px; }
+        .register-card h3 { font-size: 1.3rem; }
+        .register-card > p { font-size: 0.8rem; }
+        .register-card .badge-modern { font-size: 0.65rem; padding: 5px 12px; }
+        .register-card .input-modern { padding: 12px 14px 12px 42px; font-size: 0.88rem; border-radius: 14px; }
+        .register-card select.input-modern { padding: 12px 40px 12px 42px; }
+        .register-card .input-icon-wrap > i { font-size: 0.9rem; left: 14px; }
+        .register-card .dynamic-fields h6 { font-size: 0.75rem; }
+        .register-card .btn-register { padding: 14px 20px; font-size: 0.9rem; border-radius: 40px; }
+        .reg-trust-strip {
+            justify-content: center;
+            flex-direction: column;
+            border-radius: 20px;
+            padding: 14px 16px;
+            gap: 8px;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 375px) {
+        .register-hero h2 { font-size: 1.35rem; }
+        .register-card h3 { font-size: 1.2rem; }
+        .register-hero .hero-icon { width: 56px; height: 56px; font-size: 1.5rem; }
+        .register-card .input-modern { font-size: 0.85rem; padding: 11px 12px 11px 40px; }
+        .register-card .btn-register { font-size: 0.85rem; padding: 13px 18px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .register-page *, .register-page *::before, .register-page *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+</style>
+
+<main class="register-page">
+    <div class="register-wrapper">
+        <div class="row g-4 align-items-stretch">
+
+            <!-- Left side: Brand story -->
+            <div class="col-lg-5">
+                <div class="register-hero">
+                    <div class="hero-icon">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <h2 class="display-5 fw-bold mb-3">Start your <br><span style="color: #F59E0B;">Bovin Journey</span></h2>
+                    <p class="opacity-75 mb-4" style="font-size: 0.95rem;">Join 1,000+ bovin entrepreneurs, farmers, and veterinarians on India's most advanced bovin ecosystem.</p>
+                    <div class="d-flex gap-3 flex-wrap mb-4">
+                        <div class="stat-badge"><i class="fas fa-chart-line"></i> 4.9★ Rating</div>
+                        <div class="stat-badge"><i class="fas fa-users"></i> 10K+ Active Users</div>
+                    </div>
+                    <div class="mt-3">
+                        <p class="small opacity-50 mb-0"><i class="fas fa-shield-alt me-1"></i> Free 14-day trial · No credit card required</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right side: Registration Form -->
+            <div class="col-lg-7">
+                <div class="register-card">
+                    <div class="badge-modern">
+                        <i class="fas fa-user-plus"></i> CREATE NEW ACCOUNT
+                    </div>
+                    <h3 class="fw-bold mb-1">Join BoviNetra</h3>
+                    <p class="text-muted mb-4" style="font-size: 0.85rem;">Enter your details to get started</p>
+
+                    <!-- novalidate hata diya: ab required / minlength browser me kaam karenge -->
+                    <form action="/api/v1/users/register" method="POST" enctype="multipart/form-data" id="registerForm">
+                        <!-- Basic Info -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="input-icon-wrap">
+                                    <i class="fas fa-user"></i>
+                                    <input type="text" name="fullName" class="input-modern" placeholder="Full name" autocomplete="name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-icon-wrap">
+                                    <i class="fas fa-at"></i>
+                                    <input type="text" name="username" class="input-modern" placeholder="Username" autocomplete="username" required>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="input-icon-wrap">
+                                    <i class="fas fa-envelope"></i>
+                                    <input type="email" name="email" class="input-modern" placeholder="Email address" autocomplete="email" required>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="input-icon-wrap">
+                                    <i class="fas fa-lock"></i>
+                                    <input type="password" name="password" class="input-modern" placeholder="Create a strong password" autocomplete="new-password" required minlength="8">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Role select -->
+                        <div class="input-icon-wrap">
+                            <i class="fas fa-briefcase"></i>
+                            <select name="role" id="roleSelect" class="input-modern" required>
+                                <option value="">Select your role</option>
+                                <option value="admin">Admin — Bovin business owner</option>
+                                <option value="farmer">Farmer — Milk producer / cattle owner</option>
+                                <option value="buyer">Buyer — Milk purchaser / trader</option>
+                                <option value="doctor">Doctor — Veterinary expert</option>
+                                <option value="user">User — General bovin user</option>
+                            </select>
+                        </div>
+
+                        <!-- Avatar & Cover Image -->
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="upload-label"><i class="fas fa-camera me-1" style="color:#0284C7;"></i> Profile Avatar</label>
+                                <div class="file-input-wrapper">
+                                    <input type="file" name="avatar" accept="image/*" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="upload-label"><i class="fas fa-image me-1" style="color:#0284C7;"></i> Cover Image (Optional)</label>
+                                <div class="file-input-wrapper">
+                                    <input type="file" name="coverImage" accept="image/*">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Role-specific fields (sirf tab dikhte hain jab role ke liye fields ho) -->
+                        <div class="dynamic-fields" id="dynamicFields">
+                            <h6><i class="fas fa-bolt"></i> Role-specific information</h6>
+
+                            <div id="farmerFields" class="extra-fields">
+                                <div class="input-icon-wrap">
+                                    <i class="fas fa-tractor"></i>
+                                    <input type="text" name="farmName" class="input-modern" placeholder="Farm / Bovin business name">
+                                </div>
+                                <div class="input-icon-wrap">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <input type="text" name="location" class="input-modern" placeholder="Farm location (city/district)">
+                                </div>
+                            </div>
+
+                            <div id="doctorFields" class="extra-fields">
+                                <div class="input-icon-wrap">
+                                    <i class="fas fa-stethoscope"></i>
+                                    <input type="text" name="specialization" class="input-modern" placeholder="Specialization (e.g., Cattle Health)">
+                                </div>
+                                <div class="input-icon-wrap">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <input type="number" name="experience" class="input-modern" placeholder="Years of experience" min="0" max="60">
+                                </div>
+                            </div>
+
+                            <div id="buyerFields" class="extra-fields">
+                                <div class="input-icon-wrap">
+                                    <i class="fas fa-warehouse"></i>
+                                    <input type="text" name="address" class="input-modern" placeholder="Business address">
+                                </div>
+                            </div>
+
+                            <div id="userFields" class="extra-fields">
+                                <div class="input-icon-wrap">
+                                    <i class="fas fa-info-circle"></i>
+                                    <input type="text" name="preferences" class="input-modern" placeholder="Any specific bovin interest (optional)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-register">
+                            <i class="fas fa-user-check"></i> Register &amp; Get Started
+                        </button>
+
+                        <div class="login-link">
+                            Already have an account? <a href="/login">Sign in</a>
+                        </div>
+
+                        <div class="reg-trust-strip">
+                            <span><i class="fas fa-shield-alt"></i> Data encrypted</span>
+                            <span><i class="fas fa-headset"></i> 24/7 farmer support</span>
+                            <span><i class="fas fa-mobile-alt"></i> Android &amp; iOS</span>
+                            <span><i class="fas fa-globe"></i> Made for India</span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    (function () {
+        var roleSelect = document.getElementById('roleSelect');
+        var dynamicBox = document.getElementById('dynamicFields');
+        var groups = {
+            farmer: document.getElementById('farmerFields'),
+            doctor: document.getElementById('doctorFields'),
+            buyer:  document.getElementById('buyerFields'),
+            user:   document.getElementById('userFields')
+        };
+
+        function handleRoleChange() {
+            Object.keys(groups).forEach(function (key) {
+                groups[key].classList.remove('show-fields');
+            });
+            var group = groups[roleSelect.value];
+            if (group) {
+                group.classList.add('show-fields');
+                dynamicBox.classList.add('is-visible');
+            } else {
+                dynamicBox.classList.remove('is-visible');
+            }
+        }
+        roleSelect.addEventListener('change', handleRoleChange);
+        handleRoleChange();
+
+        // File input visual feedback
+        document.querySelectorAll('#registerForm input[type="file"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                if (this.files.length) {
+                    this.style.borderColor = '#0EA5E9';
+                    this.style.backgroundColor = '#F0F9FF';
+                    this.style.borderStyle = 'solid';
+                } else {
+                    this.style.borderColor = '';
+                    this.style.backgroundColor = '';
+                    this.style.borderStyle = '';
+                }
+            });
+        });
+
+        // Password length hint
+        var passwordInput = document.querySelector('#registerForm input[name="password"]');
+        if (passwordInput) {
+            passwordInput.addEventListener('input', function () {
+                var len = this.value.length;
+                this.style.borderColor = len >= 8 ? '#0EA5E9' : (len > 0 ? '#F59E0B' : '');
+            });
+        }
+    })();
+</script>
+
+<%- include("../partials/footer") %>

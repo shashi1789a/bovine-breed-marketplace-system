@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>DairyKhata | Sign in to your Dairy Command Center</title>
+  <meta name="description" content="Secure login for India's #1 dairy management platform. Access milk collection, cattle analytics, and automated payments.">
+  
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  
+  <style>
+    /* ------------------------------------------------------------
+       PRODUCTION-LEVEL DESIGN SYSTEM (DairyKhata v3)
+       Glassmorphism + refined spacing + micro-interactions
+    --------------------------------------------------------------*/
+    :root {
+      --primary: #0F62AC;
+      --primary-dark: #0B4A82;
+      --primary-glow: rgba(15, 98, 172, 0.25);
+      --secondary: #F39C12;
+      --secondary-dark: #E67E22;
+      --dark-bg: #0A2647;
+      --surface: rgba(255, 255, 255, 0.96);
+      --text-main: #1A2C3E;
+      --text-muted: #5A6E7F;
+      --border-light: rgba(15, 98, 172, 0.12);
+      --gradient-hero: linear-gradient(145deg, #0A2647 0%, #0F62AC 100%);
+      --gradient-cta: linear-gradient(105deg, #F39C12, #E67E22);
+      --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.02);
+      --shadow-md: 0 20px 38px -12px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 32px 64px -16px rgba(0, 0, 0, 0.2);
+      --shadow-cta: 0 12px 28px -8px rgba(243, 156, 18, 0.4);
+      --radius-card: 32px;
+      --radius-md: 20px;
+      --radius-sm: 14px;
+      --radius-pill: 60px;
+      --transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F4F9FE;
+      color: var(--text-main);
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* animated grain overlay */
+    .grain-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.3;
+    }
+
+    /* Modern Navbar */
+   
+
+    /* Login Section - Split Layout for Pro look */
+    .login-split {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 0 80px;
+      position: relative;
+    }
+    .hero-visual {
+      background: var(--gradient-hero);
+      border-radius: 48px;
+      padding: 2.5rem;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      height: 100%;
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: var(--shadow-lg);
+    }
+    .hero-visual::before {
+      content: '';
+      position: absolute;
+      top: -30%;
+      right: -20%;
+      width: 280px;
+      height: 280px;
+      background: radial-gradient(circle, rgba(243,156,18,0.2), transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .stat-bubble {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(12px);
+      border-radius: 28px;
+      padding: 1.2rem 1.5rem;
+      border: 1px solid rgba(255,255,255,0.2);
+      width: fit-content;
+    }
+    .floating-icon {
+      width: 54px;
+      height: 54px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+    }
+    .login-card-modern {
+      background: var(--surface);
+      backdrop-filter: blur(0px);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-light);
+      transition: var(--transition);
+      overflow: hidden;
+      padding: 2rem 2rem 2.2rem;
+    }
+    .badge-modern {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(15, 98, 172, 0.08);
+      border-radius: 60px;
+      padding: 5px 14px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--primary);
+      margin-bottom: 1.2rem;
+    }
+    .input-glass {
+      background: #FFFFFF;
+      border: 1.5px solid #E2EDF7;
+      border-radius: 18px;
+      padding: 12px 16px 12px 44px;
+      width: 100%;
+      font-size: 0.95rem;
+      transition: var(--transition);
+    }
+    .input-glass:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(15,98,172,0.12); }
+    .input-icon-wrap { position: relative; margin-bottom: 1.2rem; }
+    .input-icon-wrap i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--primary); font-size: 1rem; }
+    .btn-primary-modern {
+      background: var(--gradient-cta);
+      border: none;
+      border-radius: 44px;
+      padding: 14px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: white;
+      width: 100%;
+      transition: var(--transition);
+      box-shadow: var(--shadow-cta);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-primary-modern:hover { transform: translateY(-2px); box-shadow: 0 18px 32px -12px rgba(243,156,18,0.5); background: linear-gradient(105deg, #E67E22, #F39C12); }
+    .divider-custom {
+      display: flex;
+      align-items: center;
+      margin: 1.8rem 0;
+      gap: 12px;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+    .divider-custom hr { flex: 1; border: none; height: 1px; background: #E2EDF7; }
+    .social-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 1.8rem;
+    }
+    .btn-social-premium {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 44px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      border: 1.5px solid #E2EDF7;
+      background: white;
+      transition: var(--transition);
+      color: var(--text-main);
+      text-decoration: none;
+    }
+    .btn-social-premium i { font-size: 1.1rem; }
+    .btn-social-premium:hover { border-color: var(--primary); background: #F8FCFE; transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+    .google-color { color: #DB4437; }
+    .facebook-color { color: #1877F2; }
+    .apple-color { color: #000; }
+    .link-forgot {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .link-forgot:hover { color: var(--primary); }
+    .trust-strip {
+      display: flex;
+      justify-content: space-between;
+      background: #F8FCFE;
+      border-radius: 60px;
+      padding: 8px 18px;
+      margin-top: 1.8rem;
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+    @media (max-width: 992px) {
+      .hero-visual { margin-bottom: 2rem; min-height: auto; }
+      .login-split { padding: 100px 0 60px; }
+    }
+    @media (max-width: 576px) {
+      .social-grid { grid-template-columns: 1fr; }
+      .login-card-modern { padding: 1.5rem; }
+      .trust-strip { flex-wrap: wrap; justify-content: center; gap: 12px; border-radius: 28px; }
+    }
+    .animated-cow { animation: subtleFloat 4s ease-in-out infinite; }
+    @keyframes subtleFloat { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-6px); } }
+    .glow-text { background: linear-gradient(145deg, #F39C12, #F1C40F); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  </style>
+</head>
+<body>
+<%- include('../partials/header') %>
+
+<!-- Split Login Section (Production Grade) -->
+<section class="login-split">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <!-- Left side: Brand story + stats (professional) -->
+      <div class="col-lg-6" data-aos="fade-right" data-aos-duration="700">
+        <div class="hero-visual">
+          <div>
+            <div class="floating-icon">
+              <i class="fas fa-tractor animated-cow"></i>
+            </div>
+            <h2 class="display-5 fw-bold mb-3" style="letter-spacing: -0.02em;">Dairy <span class="glow-text">Command Center</span></h2>
+            <p class="opacity-75 mb-4" style="font-size: 1rem;">India's most trusted dairy OS — milk collection, cattle genomics, automated payouts, all in one AI-driven platform.</p>
+            <div class="stat-bubble mb-3">
+              <div class="d-flex gap-4 align-items-center">
+                <div><span class="fw-bold fs-3">1,000+</span><br><small>Active Dairies</small></div>
+                <div><span class="fw-bold fs-3">4.9★</span><br><small>App Rating</small></div>
+                <div><span class="fw-bold fs-3">10K+</span><br><small>Downloads</small></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <p class="small opacity-50 mb-0"><i class="fas fa-shield-alt me-1"></i> ISO 27001 Certified · DPDPA Compliant</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right side: Modern Login Card -->
+      <div class="col-lg-5 offset-lg-1" data-aos="fade-left" data-aos-duration="700">
+        <div class="login-card-modern">
+          <div class="badge-modern">
+            <i class="fas fa-lock"></i> SECURE ACCESS
+          </div>
+          <h3 class="fw-bold mb-1" style="font-size: 1.7rem;">Welcome back</h3>
+          <p class="text-muted mb-4" style="font-size: 0.85rem;">Sign in to manage your dairy ecosystem</p>
+          
+          <!-- Standard Login Form -->
+          <form action="/api/v1/users/login" method="POST">
+            <div class="input-icon-wrap">
+              <i class="fas fa-envelope"></i>
+              <input type="text" name="email" class="input-glass" placeholder="Email or username" required autocomplete="email">
+            </div>
+            <div class="input-icon-wrap">
+              <i class="fas fa-lock"></i>
+              <input type="password" name="password" class="input-glass" placeholder="Password" required autocomplete="current-password">
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <label class="d-flex align-items-center gap-2" style="font-size: 0.8rem;">
+                <input type="checkbox" name="remember" style="accent-color: var(--primary);"> <span class="text-muted">Keep me logged in</span>
+              </label>
+              <a href="#" class="link-forgot">Forgot password?</a>
+            </div>
+            <button type="submit" class="btn-primary-modern">
+              <i class="fas fa-arrow-right-to-bracket"></i> Login to Dashboard
+            </button>
+          </form>
+          
+          <div class="divider-custom">
+            <hr> <span>OR CONTINUE WITH</span> <hr>
+          </div>
+          
+          <!-- Social Login Grid (Google, Facebook, Apple) + extra professional -->
+          <div class="social-grid">
+            <a href="#" class="btn-social-premium" onclick="alert('Google OAuth demo — integration ready'); return false;">
+              <i class="fab fa-google google-color"></i> Google
+            </a>
+            <a href="#" class="btn-social-premium" onclick="alert('Facebook OAuth demo — integration ready'); return false;">
+              <i class="fab fa-facebook-f facebook-color"></i> Facebook
+            </a>
+            <a href="#" class="btn-social-premium" onclick="alert('Apple Sign-In demo — integration ready'); return false;">
+              <i class="fab fa-apple apple-color"></i> Apple
+            </a>
+            <a href="#" class="btn-social-premium" onclick="alert('SMS / Magic link login'); return false;">
+              <i class="fas fa-mobile-alt text-success"></i> Magic Link
+            </a>
+          </div>
+          
+          <div class="text-center mt-2">
+            <p class="mb-0" style="font-size: 0.85rem;">Don't have an account? <a href="/api/v1/users/register" class="fw-bold" style="color: var(--primary); text-decoration: none;">Start free trial →</a></p>
+          </div>
+          
+          <!-- Trust indicators (production vibe) -->
+          <div class="trust-strip mt-4">
+            <span><i class="fas fa-check-circle text-success me-1"></i> 256-bit SSL</span>
+            <span><i class="fas fa-headset me-1"></i> 24/7 Priority</span>
+            <span><i class="fas fa-cloud-arrow-up me-1"></i> Auto Backup</span>
+            <span><i class="fas fa-chart-line me-1"></i> Real-time sync</span>
+          </div>
+          
+          <div class="text-center mt-3">
+            <a href="#" class="text-decoration-none small" style="color: var(--text-muted);"><i class="fas fa-question-circle me-1"></i> Need help logging in?</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Minimal Footer -->
+<footer>
+  <%- include('../partials/footer') %>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  AOS.init({ once: true, duration: 700, easing: 'ease-out-quad' });
+  window.addEventListener('scroll', function() {
+    const nav = document.querySelector('.navbar-glass');
+    if (window.scrollY > 20) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  });
+  // Micro interaction: placeholder animation
+  const inputs = document.querySelectorAll('.input-glass');
+  inputs.forEach(inp => {
+    inp.addEventListener('focus', (e) => e.target.style.borderColor = '#0F62AC');
+    inp.addEventListener('blur', (e) => e.target.style.borderColor = '#E2EDF7');
+  });
+</script>
+</body>
+</html>

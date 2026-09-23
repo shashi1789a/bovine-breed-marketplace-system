@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Milk Delivery App for Customers — BoviNetra</title>
+  <meta name="description" content="BoviNetra Delivery Customer module — manage customer subscriptions, delivery schedules, and billing for your bovin business.">
+  <meta name="keywords" content="bovin management software india, milk collection app, bovin farm software, cattle management, gaushala management">
+  <meta name="author" content="BoviNetra">
+
+  <!-- Open Graph -->
+  <meta property="og:title"       content="Milk Delivery Customer App — BoviNetra">
+  <meta property="og:description" content="Manage customer subscriptions, delivery schedules, and billing for your bovin business with BoviNetra.">
+  <meta property="og:image"       content="/assets/images/hero-composite.png">
+  <meta property="og:type"        content="website">
+  <meta property="og:url"         content="https://bovinetra.in/milk-delivery-customer-app">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="Milk Delivery Customer App — BoviNetra">
+  <meta name="twitter:description" content="Manage customer subscriptions, delivery schedules, and billing for your bovin business with BoviNetra.">
+  <meta name="twitter:image"       content="/assets/images/hero-composite.png">
+
+  <meta name="robots" content="index, follow">
+  <link rel="icon" href="/assets/images/fav.png" type="image/png">
+  <link rel="canonical" href="https://bovinetra.in/milk-delivery-customer-app">
+
+  <!-- Vendor CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+  <!-- Site CSS -->
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="/assets/css/pages.css">
+</head>
+<body>
+
+<%- include("../partials/header") %>
+
+<section class="module-hero">
+  <div class="container position-relative section-z2">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6 hero-content">
+        <div class="module-breadcrumb" data-aos="fade-down"><a href="/">Home</a><span class="separator">/</span><a href="#">Platform</a><span class="separator">/</span>Delivery Customer</div>
+        <div class="module-hero-icon" data-aos="fade-up"><i class="fas fa-truck"></i></div>
+        <h1 class="hero-title" data-aos="fade-up" data-aos-delay="100">Fresh Milk at Your<br><span class="highlight">Doorstep</span></h1>
+        <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="200">Subscribe to fresh, farm-direct milk delivery. Manage your subscription, pause delivery, and track your order — all from the app.</p>
+        <div class="d-flex flex-wrap gap-3" data-aos="fade-up" data-aos-delay="300">
+          <a href="/contact-us" class="btn-hero-primary">Subscribe Now <i class="fas fa-arrow-right"></i></a>
+          <a href="/contact-us" class="btn-hero-outline"><i class="fas fa-calendar-days"></i> Book Demo</a>
+        </div>
+        <div class="hero-stats-row" data-aos="fade-up" data-aos-delay="400">
+          <div class="hero-stat"><span class="stat-value">5,000+</span><span class="stat-label">Happy Customers</span></div>
+          <div class="hero-stat"><span class="stat-value">6 AM</span><span class="stat-label">Daily Delivery</span></div>
+          <div class="hero-stat"><span class="stat-value">99%</span><span class="stat-label">On-Time Rate</span></div>
+        </div>
+      </div>
+      <div class="col-lg-6" data-aos="fade-left" data-aos-delay="200">
+        <div class="hero-image-wrapper">
+          <img src="/assets/images/modules/delivery-partner.svg" alt="Fresh milk doorstep delivery with BoviNetra app" class="section-img">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUSTED BY STRIP -->
+<section class="partners-strip">
+  <!-- Label row -->
+  <div class="container">
+    <div class="ps-label-row">
+      <span class="ps-divider-line"></span>
+      <span class="ps-label">Trusted by India's top bovin brands</span>
+      <span class="ps-divider-line right"></span>
+    </div>
+  </div>
+
+  <!-- Auto-scroll marquee (6 cards × 2 for seamless loop) -->
+  <div class="ps-marquee-outer">
+    <div class="ps-marquee-track">
+      <div class="ps-logo-card"><div class="ps-card-accent" style="background:#0D47A1;"></div><div class="ps-card-content"><span class="ps-brand-name" style="color:#0D47A1;">NDDB</span><span class="ps-brand-tag">National Bovin Dev. Board</span></div></div>
+      <div class="ps-logo-card"><div class="ps-card-accent" style="background:#D32F2F;"></div><div class="ps-card-content"><span class="ps-brand-name" style="color:#D32F2F;">Amul</span><span class="ps-brand-tag">The Taste of India</span></div></div>
+      <div class="ps-logo-card"><div class="ps-card-accent" style="background:#0277BD;"></div><div class="ps-card-content"><span class="ps-brand-name" style="color:#0277BD;">Mother Dairy</span><span class="ps-brand-tag">Fresh From Farm</span></div></div>
+      <div class="ps-logo-card"><div class="ps-card-accent" style="background:#1B5E20;"></div><div class="ps-card-content"><span class="ps-brand-name" style="color:#1B5E20;">Parag</span><span class="ps-brand-tag">Pure Bovin Products</span></div></div>
+      <div class="ps-logo-card"><div class="ps-card-accent" style="background:#BF360C;"></div><div class="ps-card-content"><span class="ps-brand-name" style="color:#BF360C;">Heritage</span><span class="ps-brand-tag">Premium Bovin</span></div></div>
+      <div class="ps-logo-card"><div class="ps-card-accent" style="background:#4527A0;"></div><div class="ps-card-content"><span class="ps-brand-name" style="color:#4527A0;">Nandini</span><span class="ps-brand-tag">KMF Karnataka</span></div></div>
+      <!-- Duplicate set for seamless infinite loop -->
+      <div class="ps-logo-card"><div class="ps-card-accent" style="background:#0D47A1;"></div><div class="ps-card-content"><span class="ps-brand-name" style="color:#0D47A1;">NDDB</span><span class="ps-brand-tag">National Bovin Dev. Board</span></div></div>
+      <div class="ps-logo-card"><div class="ps-card-accent" style="background:#D32F2F;"></div><div class="ps-card-content"><span class="ps-brand-name" style="color:#D32F2F;">Amul</span><span class="ps-brand-tag">The Taste of India</span></div></div>
+      <div class="ps-logo-card"><div class="ps-card-accent" style="background:#0277BD;"></div><div class="ps-card-content"><span class="ps-brand-name" style="color:#0277BD;">Mother Dairy</span><span class="ps-brand-tag">Fresh From Farm</span></div></div>
+      <div class="ps-logo-card"><div class="ps-card-accent" style="background:#1B5E20;"></div><div class="ps-card-content"><span class="ps-brand-name" style="color:#1B5E20;">Parag</span><span class="ps-brand-tag">Pure Bovin Products</span></div></div>
+      <div class="ps-logo-card"><div class="ps-card-accent" style="background:#BF360C;"></div><div class="ps-card-content"><span class="ps-brand-name" style="color:#BF360C;">Heritage</span><span class="ps-brand-tag">Premium Bovin</span></div></div>
+      <div class="ps-logo-card"><div class="ps-card-accent" style="background:#4527A0;"></div><div class="ps-card-content"><span class="ps-brand-name" style="color:#4527A0;">Nandini</span><span class="ps-brand-tag">KMF Karnataka</span></div></div>
+    </div>
+  </div>
+
+  <!-- Stats credibility row -->
+  <div class="container">
+    <div class="ps-stats">
+      <span class="ps-stat"><strong>1,000+</strong> Bovin Businesses</span>
+      <span class="ps-stat-dot"></span>
+      <span class="ps-stat"><strong>12</strong> States</span>
+      <span class="ps-stat-dot"></span>
+      <span class="ps-stat"><strong>&#x20B9;10 Cr+</strong> Processed</span>
+      <span class="ps-stat-dot"></span>
+      <span class="ps-stat"><strong>4.9 <i class="fas fa-star star-yellow"></i></strong> App Rating</span>
+    </div>
+  </div>
+</section>
+
+
+<section class="section-padding">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up"><div class="section-divider"></div><span class="section-tag"><i class="fas fa-star"></i> Key Features</span><h2 class="section-title">Delivery Customer Features</h2><p class="section-subtitle">A complete subscription milk delivery experience for every customer.</p></div>
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="0"><div class="feature-card"><div class="fc-icon"><i class="fas fa-calendar-check"></i></div><h3>Flexible Subscriptions</h3><p>Daily, alternate day, or custom delivery schedules. Change frequency anytime without calling.</p></div></div>
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100"><div class="feature-card"><div class="fc-icon"><i class="fas fa-map-location-dot"></i></div><h3>Real-Time Tracking</h3><p>Track your delivery partner live on the map. Know exactly when your milk arrives.</p></div></div>
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200"><div class="feature-card"><div class="fc-icon"><i class="fas fa-circle-pause"></i></div><h3>Pause &amp; Resume</h3><p>Going on holiday? Pause your subscription for any number of days and resume when back.</p></div></div>
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="0"><div class="feature-card"><div class="fc-icon"><i class="fas fa-rupee-sign"></i></div><h3>Digital Payments</h3><p>Pay via UPI, wallet, or set up auto-pay monthly. No more cash for daily milk payments.</p></div></div>
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100"><div class="feature-card"><div class="fc-icon"><i class="fas fa-clock-rotate-left"></i></div><h3>Delivery History</h3><p>View complete delivery history, missed deliveries, and payment receipts in one place.</p></div></div>
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200"><div class="feature-card"><div class="fc-icon"><i class="fas fa-bell"></i></div><h3>Delivery Notifications</h3><p>Get notified when your delivery is 10 minutes away. Never miss a delivery or get confused about timing.</p></div></div>
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="0"><div class="feature-card"><div class="fc-icon"><i class="fas fa-cart-shopping"></i></div><h3>Multiple Products</h3><p>Order milk, curd, paneer, and more bovin products from your trusted local bovin supplier.</p></div></div>
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100"><div class="feature-card"><div class="fc-icon"><i class="fas fa-star"></i></div><h3>Rate &amp; Review</h3><p>Rate your delivery and provide feedback directly in the app. Improve service quality together.</p></div></div>
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200"><div class="feature-card"><div class="fc-icon"><i class="fas fa-gift"></i></div><h3>Loyalty Rewards</h3><p>Earn points on every delivery. Redeem for discounts, free products, or subscription upgrades.</p></div></div>
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="0"><div class="feature-card"><div class="fc-icon"><i class="fas fa-user-group"></i></div><h3>Refer &amp; Earn</h3><p>Refer friends and earn credits on your account. The more you share, the more you save.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-padding bg-light-green">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up"><div class="section-divider"></div><span class="section-tag"><i class="fas fa-circle-play"></i> How It Works</span><h2 class="section-title">How Delivery Customer Works</h2></div>
+    <div class="row g-4 text-center">
+      <div class="col-md-3 how-it-works-card" data-aos="fade-up" data-aos-delay="0"><div class="step-number">1</div><h3 class="heading-font">Sign Up</h3><p class="text-muted how-step-text">Download the app and enter your address. Browse local bovin suppliers near you.</p></div>
+      <div class="col-md-3 how-it-works-card" data-aos="fade-up" data-aos-delay="100"><div class="step-number">2</div><h3 class="heading-font">Choose Plan</h3><p class="text-muted how-step-text">Select daily quantity, product type, and delivery schedule that suits your family.</p></div>
+      <div class="col-md-3 how-it-works-card" data-aos="fade-up" data-aos-delay="200"><div class="step-number">3</div><h3 class="heading-font">Receive Daily</h3><p class="text-muted how-step-text">Fresh milk arrives at your door every morning. Track delivery live on the map.</p></div>
+      <div class="col-md-3 how-it-works-card" data-aos="fade-up" data-aos-delay="300"><div class="step-number">4</div><h3 class="heading-font">Pay Monthly</h3><p class="text-muted how-step-text">Pay once a month via UPI or set up auto-debit. View all receipts in the app.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-padding">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up"><div class="section-divider"></div><span class="section-tag"><i class="fas fa-leaf"></i> Why Choose Us</span><h2 class="section-title">Benefits for Customers</h2></div>
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="0"><div class="benefit-card"><div class="benefit-icon"><i class="fas fa-droplet"></i></div><h4>Farm-Fresh Quality</h4><p>Milk directly from local farmers — fresher than what you find in stores, with no preservatives.</p></div></div>
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100"><div class="benefit-card"><div class="benefit-icon"><i class="fas fa-coins"></i></div><h4>Better Price</h4><p>Cut out the middlemen. Local bovin direct to you means better quality at more affordable prices.</p></div></div>
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200"><div class="benefit-card"><div class="benefit-icon"><i class="fas fa-bell"></i></div><h4>Never Run Out</h4><p>Daily delivery subscription means you always have fresh milk — no more last-minute shop runs.</p></div></div>
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="0"><div class="benefit-card"><div class="benefit-icon"><i class="fas fa-mobile-screen-button"></i></div><h4>Full App Control</h4><p>Pause, resume, change quantity, or switch products — all from your phone, any time.</p></div></div>
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100"><div class="benefit-card"><div class="benefit-icon"><i class="fas fa-shield-halved"></i></div><h4>Trusted Suppliers</h4><p>All bovin suppliers on BoviNetra are verified. Quality and hygiene are monitored.</p></div></div>
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200"><div class="benefit-card"><div class="benefit-icon"><i class="fas fa-leaf"></i></div><h4>Support Local</h4><p>Your subscription directly supports local bovin farmers and their families in your community.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- APP PREVIEW -->
+<section class="app-preview-section" id="app-screens">
+  <div class="container text-center" data-aos="fade-up">
+    <div class="section-divider divider-green"></div>
+    <span class="section-tag"><i class="fas fa-mobile-screen-button"></i> App Preview</span>
+    <h2 class="section-title">See It in <span class="text-green-light">Action</span></h2>
+    <p class="section-subtitle">Intuitive, fast &amp; built for Indian bovin professionals. Works in Hindi &amp; English, online and offline.</p>
+  </div>
+  <div class="app-preview-outer" data-aos="fade-up" data-aos-delay="100">
+    <div class="swiper app-preview-swiper">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide">
+          <span class="screen-chip">Login</span>
+          <div class="phone-mockup"><img src="assets/images/app-screens/screen-login.svg" alt="Dashboard screen" loading="lazy"></div>
+        </div>
+        <div class="swiper-slide">
+          <span class="screen-chip">Dashboard</span>
+          <div class="phone-mockup"><img src="assets/images/app-screens/screen-dashboard.svg" alt="Dashboard screen" loading="lazy"></div>
+        </div>
+        <div class="swiper-slide">
+          <span class="screen-chip">Milk Entry</span>
+          <div class="phone-mockup"><img src="assets/images/app-screens/screen-milk-entry.svg" alt="Milk Entry screen" loading="lazy"></div>
+        </div>
+        <div class="swiper-slide">
+          <span class="screen-chip">Order</span>
+          <div class="phone-mockup"><img src="assets/images/app-screens/screen-order.svg" alt="Farmers screen" loading="lazy"></div>
+        </div>
+        <div class="swiper-slide">
+          <span class="screen-chip">Shop</span>
+          <div class="phone-mockup"><img src="assets/images/app-screens/screen-shop.svg" alt="Shop screen" loading="lazy"></div>
+        </div>
+        <div class="swiper-slide">
+          <span class="screen-chip">Cart</span>
+          <div class="phone-mockup"><img src="assets/images/app-screens/screen-cart.svg" alt="Cart screen" loading="lazy"></div>
+        </div>
+        <div class="swiper-slide">
+          <span class="screen-chip">Profile</span>
+          <div class="phone-mockup"><img src="assets/images/app-screens/screen-profile.svg" alt="Profile screen" loading="lazy"></div>
+        </div>
+        <div class="swiper-slide">
+          <span class="screen-chip">Payments</span>
+          <div class="phone-mockup"><img src="assets/images/app-screens/screen-payments.svg" alt="Payments screen" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="app-nav-wrap">
+      <button class="app-nav-btn app-prev" aria-label="Previous"><i class="fas fa-chevron-left"></i></button>
+      <div class="app-preview-pagination swiper-pagination"></div>
+      <button class="app-nav-btn app-next" aria-label="Next"><i class="fas fa-chevron-right"></i></button>
+    </div>
+  </div>
+  <div class="container app-trust-section" data-aos="fade-up" data-aos-delay="150">
+    <div class="app-trust-grid">
+      <div class="app-stat-card"><div class="app-stat-icon green"><i class="fas fa-users"></i></div><div class="app-stat-content"><span class="app-stat-num">1,000+</span><span class="app-stat-lbl">Active Farmers</span></div><span class="app-stat-badge"><i class="fas fa-arrow-trend-up"></i> Growing</span></div>
+      <div class="app-stat-card"><div class="app-stat-icon amber"><i class="fas fa-star"></i></div><div class="app-stat-content"><span class="app-stat-num">4.9</span><span class="app-stat-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-stroke"></i></span><span class="app-stat-lbl">App Rating</span></div><span class="app-stat-badge amber"><i class="fas fa-trophy"></i> Top Rated</span></div>
+      <div class="app-stat-card"><div class="app-stat-icon blue"><i class="fas fa-cloud-arrow-down"></i></div><div class="app-stat-content"><span class="app-stat-num">10K+</span><span class="app-stat-lbl">App Downloads</span></div><span class="app-stat-badge blue"><i class="fas fa-arrow-trend-up"></i> 40% this month</span></div>
+      <div class="app-stat-card"><div class="app-stat-icon purple"><i class="fas fa-map-location-dot"></i></div><div class="app-stat-content"><span class="app-stat-num">12</span><span class="app-stat-lbl">States Covered</span></div><span class="app-stat-badge purple"><i class="fas fa-location-dot"></i> Pan India</span></div>
+    </div>
+    <div class="app-dl-strip">
+      <a href="https://play.google.com/store/apps/details?id=io.farm.dairykhata" class="app-dl-btn"><i class="fab fa-google-play"></i><div class="dl-meta"><span class="dl-sub">Get it on</span><span class="dl-title">Google Play</span></div></a>
+      <a href="https://apps.apple.com/in/app/dairy-khata/id6453753170" class="app-dl-btn apple"><i class="fab fa-apple"></i><div class="dl-meta"><span class="dl-sub">Download on the</span><span class="dl-title">App Store</span></div></a>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section-padding testimonials-section">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <div class="section-divider"></div>
+      <span class="section-tag"><i class="fas fa-quote-left"></i> Customer Stories</span>
+      <h2 class="section-title">What Customers <span class="accent">Say About Us</span></h2>
+      <p class="section-subtitle">Real stories from milk delivery customers across India who love BoviNetra.</p>
+    </div>
+    <div class="swiper swiper-testimonials" data-aos="fade-up" data-aos-delay="100">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide"><div class="testi-card"><div class="testi-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p class="testi-quote">"Delivery module helped us grow from 50 to 300 daily milk delivery customers in just 3 months. Amazing growth!"</p><div class="testi-author"><div class="testi-avatar">MR</div><div><span class="testi-name">Meera Reddy</span><span class="testi-role">Bovin Entrepreneur · Hyderabad, Telangana</span></div></div></div></div>
+        <div class="swiper-slide"><div class="testi-card"><div class="testi-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p class="testi-quote">"I love being able to pause my subscription when I travel. The app is so simple and the milk quality is amazing."</p><div class="testi-author"><div class="testi-avatar">SA</div><div><span class="testi-name">Sunita Agarwal</span><span class="testi-role">Home Customer · Delhi, NCR</span></div></div></div></div>
+        <div class="swiper-slide"><div class="testi-card"><div class="testi-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p class="testi-quote">"Real-time delivery tracking is excellent. I know exactly when my milk will arrive. Never missed a delivery since subscribing."</p><div class="testi-author"><div class="testi-avatar">RV</div><div><span class="testi-name">Rahul Verma</span><span class="testi-role">Subscriber · Pune, Maharashtra</span></div></div></div></div>
+        <div class="swiper-slide"><div class="testi-card"><div class="testi-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p class="testi-quote">"Monthly UPI payment is so convenient. No cash, no hassle. And the milk is fresher than anything from the supermarket."</p><div class="testi-author"><div class="testi-avatar">PM</div><div><span class="testi-name">Pooja Mehta</span><span class="testi-role">Customer · Bangalore, Karnataka</span></div></div></div></div>
+        <div class="swiper-slide"><div class="testi-card"><div class="testi-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p class="testi-quote">"Customer support is exceptional. They helped me set up my subscription and resolved a delivery issue within an hour."</p><div class="testi-author"><div class="testi-avatar">BJ</div><div><span class="testi-name">Bhupinder Jha</span><span class="testi-role">Customer · Patna, Bihar</span></div></div></div></div>
+        <div class="swiper-slide"><div class="testi-card"><div class="testi-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p class="testi-quote">"My family gets farm-fresh A2 milk every morning. The quality difference is noticeable — my kids love it!"</p><div class="testi-author"><div class="testi-avatar">NK</div><div><span class="testi-name">Neha Kapoor</span><span class="testi-role">Customer · Jaipur, Rajasthan</span></div></div></div></div>
+      </div>
+      <div class="swiper-pagination mt-4"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section-padding bg-light-green">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <div class="section-divider"></div>
+      <span class="section-tag"><i class="fas fa-circle-question"></i> FAQ</span>
+      <h2 class="section-title">Frequently Asked <span class="accent">Questions</span></h2>
+      <p class="section-subtitle">Everything you need to know about BoviNetra milk delivery subscription.</p>
+    </div>
+    <div class="row justify-content-center" data-aos="fade-up" data-aos-delay="100">
+      <div class="col-lg-8">
+        <div class="accordion accordion-flush faq-accordion" id="faqDelivery">
+          <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fd1">How do I pause my subscription?</button></h2><div id="fd1" class="accordion-collapse collapse" data-bs-parent="#faqDelivery"><div class="accordion-body">You can pause your subscription directly from the app. Go to My Subscription → Pause Delivery, select the dates, and confirm. Your billing is automatically adjusted for the paused days.</div></div></div>
+          <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fd2">Can I change my delivery address?</button></h2><div id="fd2" class="accordion-collapse collapse" data-bs-parent="#faqDelivery"><div class="accordion-body">Yes, you can update your delivery address from the app's Account Settings. Changes take effect from the next delivery. Contact support if you need immediate address updates.</div></div></div>
+          <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fd3">What payment methods are accepted?</button></h2><div id="fd3" class="accordion-collapse collapse" data-bs-parent="#faqDelivery"><div class="accordion-body">We accept UPI (PhonePe, Google Pay, Paytm), debit/credit cards, net banking, and wallet payments. You can also set up monthly auto-debit for hassle-free payments.</div></div></div>
+          <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fd4">What happens if my delivery is missed?</button></h2><div id="fd4" class="accordion-collapse collapse" data-bs-parent="#faqDelivery"><div class="accordion-body">If a delivery is missed, you'll receive an instant notification. You can report it in the app and your account will be credited. We also notify your delivery partner automatically to resolve the issue.</div></div></div>
+          <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fd5">Can I order other bovin products besides milk?</button></h2><div id="fd5" class="accordion-collapse collapse" data-bs-parent="#faqDelivery"><div class="accordion-body">Yes! You can order curd, paneer, ghee, buttermilk, and other bovin products from your local supplier through the Shop section of the app. Availability depends on your local bovin provider.</div></div></div>
+          <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fd6">Is there a minimum subscription duration?</button></h2><div id="fd6" class="accordion-collapse collapse" data-bs-parent="#faqDelivery"><div class="accordion-body">No minimum commitment. You can subscribe month-to-month and cancel anytime. There are no cancellation fees or lock-in periods.</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- APP DOWNLOAD -->
+<section class="app-download-section">
+  <div class="adc-orb adc-orb-1"></div>
+  <div class="adc-orb adc-orb-2"></div>
+  <div class="container">
+    <div class="row align-items-center g-5">
+
+      <!-- LEFT: Content -->
+      <div class="col-lg-6" data-aos="fade-right">
+        <div class="adc-content-wrap">
+          <div class="adc-eyebrow">
+            <span class="adc-live-dot"></span> Available on Android &amp; iOS
+          </div>
+          <h2 class="adc-headline">Your Bovin Business,<br><span class="adc-grad">Always in Your Pocket</span></h2>
+          <p class="adc-sub">Manage milk records, payments, cattle health, and delivery routes — all from your smartphone. Works offline in areas with no internet.</p>
+
+          <div class="adc-feats">
+            <span class="adc-feat-chip"><i class="bi bi-wifi-off"></i> Works Offline</span>
+            <span class="adc-feat-chip"><i class="fas fa-language"></i> Hindi &amp; English</span>
+            <span class="adc-feat-chip"><i class="fas fa-shield-halved"></i> 100% Secure</span>
+            <span class="adc-feat-chip"><i class="fas fa-bolt"></i> Fast &amp; Lightweight</span>
+            <span class="adc-feat-chip"><i class="fas fa-cloud-arrow-down"></i> Free to Download</span>
+          </div>
+
+          <div class="adc-btn-row">
+            <a href="https://play.google.com/store/apps/details?id=io.farm.dairykhata" class="adc-dl-btn adc-dl-android" aria-label="Download on Google Play">
+              <div class="adc-dl-icon"><i class="fab fa-google-play"></i></div>
+              <div class="adc-dl-text">
+                <span class="adc-dl-eyebrow">Get it on</span>
+                <span class="adc-dl-name">Google Play</span>
+                <span class="adc-dl-meta"><i class="fas fa-star star-yellow-sm"></i> 4.9 &nbsp;·&nbsp; 10K+ downloads</span>
+              </div>
+              <i class="fas fa-chevron-right adc-dl-arrow"></i>
+            </a>
+            <a href="https://apps.apple.com/in/app/dairy-khata/id6453753170" class="adc-dl-btn adc-dl-ios" aria-label="Download on App Store">
+              <div class="adc-dl-icon"><i class="fab fa-apple"></i></div>
+              <div class="adc-dl-text">
+                <span class="adc-dl-eyebrow">Download on the</span>
+                <span class="adc-dl-name">App Store</span>
+                <span class="adc-dl-meta"><i class="fas fa-star star-yellow-sm"></i> 4.9 &nbsp;·&nbsp; 5K+ ratings</span>
+              </div>
+              <i class="fas fa-chevron-right adc-dl-arrow"></i>
+            </a>
+          </div>
+
+          <div class="adc-stats-row" data-aos="fade-up" data-aos-delay="150">
+            <div class="adc-stat-item">
+              <span class="adc-stat-num">10K+</span>
+              <span class="adc-stat-lbl">Downloads</span>
+            </div>
+            <div class="adc-stat-item">
+              <span class="adc-stat-num">4.9 ★</span>
+              <span class="adc-stat-lbl">App Rating</span>
+            </div>
+            <div class="adc-stat-item">
+              <span class="adc-stat-num">Free</span>
+              <span class="adc-stat-lbl">To Download</span>
+            </div>
+            <div class="adc-stat-item">
+              <span class="adc-stat-num">1,000+</span>
+              <span class="adc-stat-lbl">Active Users</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Phone scene -->
+      <div class="col-lg-6" data-aos="fade-left" data-aos-delay="100">
+        <div class="adc-phone-scene">
+          <div class="adc-phone-glow"></div>
+
+          <!-- Main phone (iOS) -->
+          <div class="adc-phone-main">
+            <div class="adc-pshell">
+              <div class="adc-pisland"></div>
+              <div class="adc-pscreen">
+                <img src="assets/images/app-screens/screen-dashboard.svg" alt="iOS App Screenshot" class="adc-pscreen-img">
+              </div>
+            </div>
+            <div class="adc-platform-tag adc-pt-ios"><i class="fab fa-apple"></i> iOS App</div>
+          </div>
+
+          <!-- Back phone (Android) -->
+          <div class="adc-phone-back-wrap">
+            <div class="adc-pshell">
+              <div class="adc-pnotch"></div>
+              <div class="adc-pscreen">
+                <img src="assets/images/app-screens/screen-milk-entry.svg" alt="Android App Screenshot" class="adc-pscreen-img">
+              </div>
+            </div>
+            <div class="adc-platform-tag adc-pt-android"><i class="fab fa-android"></i> Android</div>
+          </div>
+
+          <!-- Floating stat cards -->
+          <div class="adc-float-card adc-fc-tl" data-aos="zoom-in" data-aos-delay="350">
+            <div class="adc-fc-icon green"><i class="fas fa-star"></i></div>
+            <div>
+              <div class="adc-fc-num">4.9 ★</div>
+              <div class="adc-fc-lbl">App Rating</div>
+            </div>
+          </div>
+          <div class="adc-float-card adc-fc-bl" data-aos="zoom-in" data-aos-delay="500">
+            <div class="adc-fc-icon amber"><i class="fas fa-users"></i></div>
+            <div>
+              <div class="adc-fc-num">1,000+</div>
+              <div class="adc-fc-lbl">Active Farmers</div>
+            </div>
+          </div>
+          <div class="adc-float-card adc-fc-tr" data-aos="zoom-in" data-aos-delay="600">
+            <div class="adc-fc-icon blue"><i class="fas fa-cloud-arrow-down"></i></div>
+            <div>
+              <div class="adc-fc-num">10K+</div>
+              <div class="adc-fc-lbl">Downloads</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- COMMON CTA SECTION -->
+<section class="cta-v2" id="cta-main">
+  <div class="cta-v2-orb cta-v2-orb-1"></div>
+  <div class="cta-v2-orb cta-v2-orb-2"></div>
+  <div class="container position-relative section-z2">
+    <div class="row align-items-center g-5">
+
+      <!-- Left: headline + buttons + trust -->
+      <div class="col-lg-7" data-aos="fade-right">
+        <div class="badge-hero d-inline-flex mb-4">
+          <span class="pulse-dot"></span> Free 14-Day Trial &mdash; No Credit Card Needed
+        </div>
+        <h2 class="cta-v2-headline">
+          Ready to Digitize<br>Your <span class="cta-hl-accent">Bovin Business?</span>
+        </h2>
+        <p class="cta-v2-sub">
+          Join 1,000+ bovin farmers already growing smarter with BoviNetra. Setup takes less than an hour &mdash; start for free today.
+        </p>
+        <div class="d-flex flex-wrap gap-3 mb-4">
+          <a href="/contact-us" class="btn-hero-primary">Start Free Trial <i class="fas fa-arrow-right ms-1"></i></a>
+          <a href="/request-demo" class="btn-hero-outline"><i class="fas fa-calendar-check me-1"></i> Book a Free Demo</a>
+        </div>
+        <div class="trust-strip">
+          <div class="trust-item"><i class="fas fa-lock"></i> No credit card</div>
+          <div class="trust-item"><i class="fas fa-circle-check"></i> Cancel anytime</div>
+          <div class="trust-item"><i class="fas fa-headset"></i> 24/7 support</div>
+          <div class="trust-item"><i class="fas fa-shield-halved"></i> Bank-grade security</div>
+        </div>
+      </div>
+
+      <!-- Right: stats card + contact options -->
+      <div class="col-lg-5" data-aos="fade-left" data-aos-delay="100">
+        <div class="cta-v2-card">
+          <div class="cta-v2-stats">
+            <div class="cta-v2-stat">
+              <span class="cta-v2-stat-num">1,000+</span>
+              <span class="cta-v2-stat-lbl">Active Bovins</span>
+            </div>
+            <div class="cta-v2-stat">
+              <span class="cta-v2-stat-num">4.9 <i class="fas fa-star star-yellow-xs"></i></span>
+              <span class="cta-v2-stat-lbl">App Rating</span>
+            </div>
+            <div class="cta-v2-stat">
+              <span class="cta-v2-stat-num">12</span>
+              <span class="cta-v2-stat-lbl">States</span>
+            </div>
+            <div class="cta-v2-stat">
+              <span class="cta-v2-stat-num">Free</span>
+              <span class="cta-v2-stat-lbl">To Start</span>
+            </div>
+          </div>
+          <div class="cta-v2-card-divider"></div>
+          <p class="cta-v2-card-label"><i class="fas fa-headset me-1"></i> Speak to our team directly</p>
+          <a href="https://api.whatsapp.com/send?phone=917303435042&amp;text=Hi+BoviNetra%2C+I+want+to+know+more+about+your+platform." target="_blank" rel="noopener" class="cta-contact-btn cta-wa-btn">
+            <i class="fab fa-whatsapp"></i>
+            <div>
+              <span class="cta-btn-title">Chat on WhatsApp</span>
+              <span class="cta-btn-sub">Typically replies in minutes</span>
+            </div>
+          </a>
+          <a href="tel:+917303435042" class="cta-contact-btn cta-call-btn">
+            <i class="fas fa-phone"></i>
+            <div>
+              <span class="cta-btn-title">Call +91 7303435042</span>
+              <span class="cta-btn-sub">Mon&ndash;Sat, 9 AM &ndash; 6 PM IST</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<%- include("../partials/footer") %>
+
+<!-- BACK TO TOP -->
+<button id="backToTop" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+
+<!-- WHATSAPP FLOAT -->
+<a href="https://api.whatsapp.com/send?phone=917303435042&amp;text=Hi+BoviNetra%2C+I+want+to+know+more+about+your+platform."
+   class="whatsapp-float" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+  <i class="fab fa-whatsapp"></i>
+</a>
+
+<!-- ANNOUNCEMENT BAR -->
+<div class="announcement-bar" id="announcementBar">
+  <div class="ann-inner">
+    <span class="ann-badge">
+      <i class="fas fa-bolt ann-bolt"></i> LIMITED TIME
+    </span>
+    <span class="ann-text">
+      Launch Offer — Get <strong class="ann-highlight">50% OFF</strong> on all plans for the first <strong class="ann-highlight">3 months!</strong>
+    </span>
+    <a href="/pricing" class="ann-cta">
+      Claim Offer <i class="fas fa-arrow-right ms-1"></i>
+    </a>
+  </div>
+  <button class="bar-close" onclick="document.getElementById('announcementBar').style.display='none';" aria-label="Close announcement">
+    <i class="fas fa-xmark"></i>
+  </button>
+</div>
+
+<!-- Vendor JS -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/countup.js@2.8.0/dist/countUp.umd.js"></script>
+
+<!-- Site JS -->
+<script src="/assets/js/main.js"></script>
+<script src="/assets/js/navbar.js"></script>
+<script src="/assets/js/animations.js"></script>
+
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"ec07b6c2a1924234b641516f182dfb14","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>

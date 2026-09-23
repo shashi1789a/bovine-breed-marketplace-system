@@ -1,0 +1,742 @@
+<%- include('../partials/header') %>
+
+<style>
+  /* ============================================================
+     BOVINETRA ADD PRODUCT PAGE — DESIGN SYSTEM
+     Colors: Blue + Amber (matching main site)
+     ============================================================ */
+  :root {
+    --primary: #0284C7;
+    --primary-dark: #0C4A6E;
+    --primary-light: #0EA5E9;
+    --accent: #0EA5E9;
+    --cta: #F59E0B;
+    --cta-dark: #D97706;
+    --light: #E0F2FE;
+    --dark-bg: #082F49;
+    --text-main: #111827;
+    --text-muted: #6B7280;
+    --border-light: rgba(2, 132, 199, 0.12);
+    --gradient-hero: linear-gradient(135deg, #082F49 0%, #0C4A6E 45%, #0284C7 100%);
+    --gradient-cta: linear-gradient(105deg, #F59E0B, #D97706);
+    --gradient-primary: linear-gradient(135deg, #0284C7, #0EA5E9);
+    --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 8px 28px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.14);
+    --radius-card: 20px;
+    --radius-md: 16px;
+    --radius-sm: 10px;
+    --radius-pill: 50px;
+    --transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .add-product-page {
+    background: #F4F9FE;
+    min-height: 100vh;
+  }
+
+  /* ---------- Page Header ---------- */
+  .ap-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.75rem;
+    background: #fff;
+    padding: 1.3rem 1.6rem;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    animation: apFadeIn 0.5s ease;
+  }
+
+  @keyframes apFadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .ap-header h1 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+    color: var(--text-main);
+    font-size: 1.7rem;
+    margin: 0;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .ap-header h1 i {
+    color: var(--primary);
+    font-size: 1.5rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--light);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(2, 132, 199, 0.15);
+  }
+
+  .ap-back-btn {
+    background: #fff;
+    color: var(--primary);
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-pill);
+    padding: 0.55rem 1.2rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: var(--transition);
+  }
+
+  .ap-back-btn:hover {
+    background: var(--light);
+    border-color: var(--primary);
+    color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.15);
+  }
+
+  /* ---------- Alert ---------- */
+  .ap-alert {
+    background: linear-gradient(135deg, #FEE2E2, #FECACA);
+    color: #991B1B;
+    border: none;
+    border-left: 4px solid #EF4444;
+    border-radius: var(--radius-md);
+    padding: 0.95rem 1.2rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: apFadeIn 0.4s ease;
+  }
+
+  /* ---------- Card Sections ---------- */
+  .ap-card {
+    background: #fff;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    transition: var(--transition);
+    animation: apFadeIn 0.5s ease both;
+  }
+
+  .ap-card:nth-of-type(1) { animation-delay: 0.05s; }
+  .ap-card:nth-of-type(2) { animation-delay: 0.10s; }
+  .ap-card:nth-of-type(3) { animation-delay: 0.15s; }
+  .ap-card:nth-of-type(4) { animation-delay: 0.20s; }
+  .ap-card:nth-of-type(5) { animation-delay: 0.25s; }
+  .ap-card:nth-of-type(6) { animation-delay: 0.30s; }
+  .ap-card:nth-of-type(7) { animation-delay: 0.35s; }
+
+  .ap-card:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  .ap-card .card-header {
+    background: linear-gradient(135deg, #F0F9FF, #E0F2FE);
+    color: var(--primary-dark);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 0.92rem;
+    letter-spacing: 0.02em;
+    padding: 1rem 1.4rem;
+    border-bottom: 1px solid rgba(2, 132, 199, 0.12);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ap-card .card-header i {
+    color: var(--primary);
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    border: 1px solid rgba(2, 132, 199, 0.15);
+  }
+
+  .ap-card .card-body {
+    padding: 1.4rem 1.4rem 1.2rem;
+  }
+
+  /* ---------- Form Fields ---------- */
+  .ap-card .form-label {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: var(--text-main);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .ap-card .form-control,
+  .ap-card .form-select {
+    background: #F8FDFF;
+    border: 1.5px solid #E2EDF7;
+    border-radius: 14px;
+    padding: 11px 15px;
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-main);
+    transition: var(--transition);
+  }
+
+  .ap-card .form-control::placeholder { color: #9ca3af; }
+
+  .ap-card .form-control:focus,
+  .ap-card .form-select:focus {
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.14);
+    background: #fff;
+  }
+
+  .ap-card .form-select {
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%230284C7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+  }
+
+  .ap-card textarea.form-control {
+    min-height: 110px;
+    resize: vertical;
+  }
+
+  .ap-card .form-text {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    margin-top: 5px;
+  }
+
+  /* File inputs */
+  .ap-card input[type="file"] {
+    background: #F8FDFF;
+    border: 1.5px dashed #C2D9F0;
+    border-radius: 14px;
+    padding: 12px 15px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .ap-card input[type="file"]:hover {
+    border-color: var(--accent);
+    border-style: solid;
+    background: #F0F9FF;
+  }
+
+  .ap-card input[type="file"]::file-selector-button {
+    background: var(--gradient-primary);
+    color: #fff;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.78rem;
+    cursor: pointer;
+    margin-right: 12px;
+    font-family: 'Inter', sans-serif;
+    transition: var(--transition);
+  }
+
+  .ap-card input[type="file"]::file-selector-button:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+
+  /* Checkboxes */
+  .ap-card .form-check-input {
+    width: 1.1rem;
+    height: 1.1rem;
+    border: 1.5px solid rgba(2, 132, 199, 0.3);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .ap-card .form-check-input:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+  }
+
+  .ap-card .form-check-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.14);
+  }
+
+  .ap-card .form-check-label {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 0.87rem;
+    color: var(--text-main);
+    cursor: pointer;
+    margin-left: 6px;
+  }
+
+  /* ---------- Submit Button ---------- */
+  .ap-submit-btn {
+    background: var(--gradient-cta);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-pill);
+    padding: 0.85rem 2.2rem;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.01em;
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.38);
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+  }
+
+  .ap-submit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px rgba(245, 158, 11, 0.5);
+    color: #fff;
+  }
+
+  .ap-submit-btn:active {
+    transform: translateY(-1px);
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 991px) {
+    .ap-header { padding: 1.1rem 1.3rem; }
+    .ap-header h1 { font-size: 1.45rem; }
+    .ap-header h1 i { width: 40px; height: 40px; font-size: 1.3rem; }
+    .ap-card .card-body { padding: 1.2rem 1.2rem 1rem; }
+  }
+
+  @media (max-width: 767px) {
+    .ap-header {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1rem 1.1rem;
+    }
+    .ap-header h1 { font-size: 1.3rem; }
+    .ap-back-btn { width: 100%; justify-content: center; }
+    .ap-card .card-header {
+      padding: 0.85rem 1.1rem;
+      font-size: 0.86rem;
+    }
+    .ap-card .card-body { padding: 1.1rem 1.1rem 0.9rem; }
+    .ap-card .form-control,
+    .ap-card .form-select {
+      padding: 10px 13px;
+      font-size: 0.86rem;
+      border-radius: 12px;
+    }
+  }
+
+  @media (max-width: 575px) {
+    .ap-header h1 { font-size: 1.15rem; }
+    .ap-header h1 i { width: 36px; height: 36px; font-size: 1.1rem; }
+    .ap-card {
+      border-radius: 16px;
+      margin-bottom: 1.2rem;
+    }
+    .ap-card .card-header {
+      padding: 0.8rem 1rem;
+      font-size: 0.82rem;
+    }
+    .ap-card .card-header i {
+      width: 26px;
+      height: 26px;
+      font-size: 0.75rem;
+    }
+    .ap-card .card-body { padding: 1rem 1rem 0.85rem; }
+    .ap-card .form-label { font-size: 0.78rem; }
+    .ap-card .form-control,
+    .ap-card .form-select {
+      padding: 10px 12px;
+      font-size: 0.84rem;
+      border-radius: 12px;
+    }
+    .ap-submit-btn {
+      width: 100%;
+      justify-content: center;
+      padding: 0.85rem 1.5rem;
+      font-size: 0.9rem;
+    }
+  }
+
+  @media (max-width: 375px) {
+    .ap-header h1 { font-size: 1.05rem; }
+    .ap-card .card-body { padding: 0.9rem 0.85rem 0.8rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+<main class="add-product-page container" style="max-width: 900px; padding-top: 120px; padding-bottom: 60px;">
+
+  <!-- Page Header -->
+  <div class="ap-header">
+    <h1><i class="fas fa-plus-circle"></i> Add Product</h1>
+    <a href="/<%= user.role %>/products" class="ap-back-btn">
+      <i class="fas fa-arrow-left"></i> Back to my products
+    </a>
+  </div>
+
+  <!-- Error Alert -->
+  <% if (locals.error) { %>
+    <div class="ap-alert">
+      <i class="fas fa-exclamation-circle"></i>
+      <span><%= error %></span>
+    </div>
+  <% } %>
+
+  <form action="/products/add" method="POST" enctype="multipart/form-data" novalidate>
+
+    <!-- ============ BASIC DETAILS ============ -->
+    <div class="ap-card">
+      <div class="card-header">
+        <i class="fas fa-info-circle"></i> Basic Details
+      </div>
+      <div class="card-body">
+
+        <div class="mb-3">
+          <label class="form-label" for="name">Product name <span style="color:#EF4444;">*</span></label>
+          <input type="text" class="form-control" id="name" name="name" maxlength="200" required
+                 placeholder="e.g. Fresh A2 Cow Milk"
+                 value="<%= formData.name || '' %>">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="description">Description <span style="color:#EF4444;">*</span></label>
+          <textarea class="form-control" id="description" name="description" rows="4" maxlength="5000" required
+                    placeholder="Describe your product in detail..."><%= formData.description || '' %></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="shortDescription">Short description</label>
+          <input type="text" class="form-control" id="shortDescription" name="shortDescription" maxlength="300"
+                 placeholder="Brief summary (max 300 chars)"
+                 value="<%= formData.shortDescription || '' %>">
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label" for="category">Category <span style="color:#EF4444;">*</span></label>
+            <select class="form-select" id="category" name="category" required onchange="toggleCustomCategory()">
+              <option value="">Select category</option>
+              <% categories.forEach(function (cat) { %>
+                <option value="<%= cat %>" <%= formData.category === cat ? 'selected' : '' %>><%= cat %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="col-md-6 mb-3" id="customCategoryWrap">
+            <label class="form-label" for="customCategory">Custom category</label>
+            <input type="text" class="form-control" id="customCategory" name="customCategory" maxlength="100"
+                   placeholder="Enter custom category"
+                   value="<%= formData.customCategory || '' %>">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="subCategory">Sub category</label>
+          <input type="text" class="form-control" id="subCategory" name="subCategory" maxlength="100"
+                 placeholder="e.g. A2 Milk, Buffalo Milk"
+                 value="<%= formData.subCategory || '' %>">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="brand">Brand</label>
+          <input type="text" class="form-control" id="brand" name="brand" maxlength="120"
+                 placeholder="e.g. BoviNetra Organic"
+                 value="<%= formData.brand || '' %>">
+        </div>
+
+        <div class="mb-0">
+          <label class="form-label" for="tags">Tags (comma separated)</label>
+          <input type="text" class="form-control" id="tags" name="tags" placeholder="organic, fresh, a2 milk"
+                 value="<%= formData.tags || '' %>">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============ PRICING ============ -->
+    <div class="ap-card">
+      <div class="card-header">
+        <i class="fas fa-tag"></i> Pricing
+      </div>
+      <div class="card-body row">
+
+        <div class="col-md-3 col-6 mb-3">
+          <label class="form-label" for="price">Price (₹) <span style="color:#EF4444;">*</span></label>
+          <input type="number" class="form-control" id="price" name="price" min="0.01" step="0.01" required
+                 placeholder="0.00"
+                 value="<%= formData.price || '' %>">
+        </div>
+
+        <div class="col-md-3 col-6 mb-3">
+          <label class="form-label" for="mrp">MRP (₹)</label>
+          <input type="number" class="form-control" id="mrp" name="mrp" min="0" step="0.01"
+                 placeholder="0.00"
+                 value="<%= formData.mrp || '' %>">
+        </div>
+
+        <div class="col-md-3 col-6 mb-3">
+          <label class="form-label" for="tax">Tax (%)</label>
+          <input type="number" class="form-control" id="tax" name="tax" min="0" max="100" step="0.01"
+                 placeholder="0"
+                 value="<%= formData.tax || '' %>">
+        </div>
+
+        <div class="col-md-3 col-6 mb-3">
+          <label class="form-label" for="currency">Currency</label>
+          <input type="text" class="form-control" id="currency" name="currency" maxlength="3"
+                 value="<%= formData.currency || 'INR' %>">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============ INVENTORY ============ -->
+    <div class="ap-card">
+      <div class="card-header">
+        <i class="fas fa-warehouse"></i> Inventory
+      </div>
+      <div class="card-body row">
+
+        <div class="col-md-4 col-6 mb-3">
+          <label class="form-label" for="stock">Stock <span style="color:#EF4444;">*</span></label>
+          <input type="number" class="form-control" id="stock" name="stock" min="0" step="1"
+                 placeholder="0"
+                 value="<%= formData.stock || '0' %>">
+        </div>
+
+        <div class="col-md-4 col-6 mb-3">
+          <label class="form-label" for="minStock">Low stock alert at</label>
+          <input type="number" class="form-control" id="minStock" name="minStock" min="0" step="1"
+                 placeholder="0"
+                 value="<%= formData.minStock || '0' %>">
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label class="form-label" for="unit">Unit</label>
+          <input type="text" class="form-control" id="unit" name="unit" maxlength="30"
+                 placeholder="piece, litre, kg"
+                 value="<%= formData.unit || 'piece' %>">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============ IMAGES ============ -->
+    <div class="ap-card">
+      <div class="card-header">
+        <i class="fas fa-images"></i> Images
+      </div>
+      <div class="card-body">
+
+        <div class="mb-3">
+          <label class="form-label" for="image">Main image</label>
+          <input type="file" class="form-control" id="image" name="image" accept="image/*">
+          <div class="form-text">Recommended: 800×800 px, JPG or PNG, max 5MB</div>
+        </div>
+
+        <div class="mb-0">
+          <label class="form-label" for="images">Gallery images (up to 8)</label>
+          <input type="file" class="form-control" id="images" name="images" accept="image/*" multiple>
+          <div class="form-text">Select multiple images for the product gallery</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============ EXTRA DETAILS ============ -->
+    <div class="ap-card">
+      <div class="card-header">
+        <i class="fas fa-list-alt"></i> Extra Details
+      </div>
+      <div class="card-body row">
+
+        <div class="col-md-3 col-6 mb-3">
+          <label class="form-label" for="weight">Weight</label>
+          <input type="number" class="form-control" id="weight" name="weight" min="0" step="0.01"
+                 placeholder="0.00"
+                 value="<%= formData.weight || '' %>">
+        </div>
+
+        <div class="col-md-3 col-6 mb-3">
+          <label class="form-label" for="weightUnit">Weight unit</label>
+          <input type="text" class="form-control" id="weightUnit" name="weightUnit" maxlength="10"
+                 placeholder="kg"
+                 value="<%= formData.weightUnit || 'kg' %>">
+        </div>
+
+        <div class="col-md-3 col-6 mb-3">
+          <label class="form-label" for="color">Color</label>
+          <input type="text" class="form-control" id="color" name="color" maxlength="50"
+                 value="<%= formData.color || '' %>">
+        </div>
+
+        <div class="col-md-3 col-6 mb-3">
+          <label class="form-label" for="size">Size</label>
+          <input type="text" class="form-control" id="size" name="size" maxlength="50"
+                 value="<%= formData.size || '' %>">
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="form-label" for="manufactureDate">Manufacture date</label>
+          <input type="date" class="form-control" id="manufactureDate" name="manufactureDate"
+                 value="<%= formData.manufactureDate || '' %>">
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="form-label" for="expiryDate">Expiry date</label>
+          <input type="date" class="form-control" id="expiryDate" name="expiryDate"
+                 value="<%= formData.expiryDate || '' %>">
+          <div class="form-text">Required for Vaccine and Medicine categories.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============ SHIPPING ============ -->
+    <div class="ap-card">
+      <div class="card-header">
+        <i class="fas fa-truck"></i> Shipping
+      </div>
+      <div class="card-body row align-items-center">
+
+        <div class="col-md-4 col-6 mb-3">
+          <label class="form-label" for="shippingCharge">Shipping charge (₹)</label>
+          <input type="number" class="form-control" id="shippingCharge" name="shippingCharge" min="0" step="0.01"
+                 placeholder="0.00"
+                 value="<%= formData.shippingCharge || '0' %>">
+        </div>
+
+        <div class="col-md-4 col-6 mb-3">
+          <label class="form-label" for="deliveryTime">Delivery time</label>
+          <input type="text" class="form-control" id="deliveryTime" name="deliveryTime" maxlength="100"
+                 placeholder="2-3 days"
+                 value="<%= formData.deliveryTime || '' %>">
+        </div>
+
+        <div class="col-md-4 mb-3 form-check pt-md-4 ps-md-4">
+          <input type="checkbox" class="form-check-input" id="freeShipping" name="freeShipping"
+                 <%= formData.freeShipping === 'on' ? 'checked' : '' %>>
+          <label class="form-check-label" for="freeShipping">Free shipping</label>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============ SELLER CONTACT ============ -->
+    <div class="ap-card">
+      <div class="card-header">
+        <i class="fas fa-user-tie"></i> Seller Contact
+      </div>
+      <div class="card-body row">
+
+        <div class="col-md-4 mb-3">
+          <label class="form-label" for="sellerName">Contact name</label>
+          <input type="text" class="form-control" id="sellerName" name="sellerName" maxlength="120"
+                 placeholder="<%= user.fullName %>"
+                 value="<%= formData.sellerName || '' %>">
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label class="form-label" for="sellerPhone">Contact phone</label>
+          <input type="text" class="form-control" id="sellerPhone" name="sellerPhone" maxlength="20"
+                 placeholder="99XXXXXXXX"
+                 value="<%= formData.sellerPhone || '' %>">
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label class="form-label" for="sellerAddress">Contact address</label>
+          <input type="text" class="form-control" id="sellerAddress" name="sellerAddress" maxlength="300"
+                 placeholder="City, State"
+                 value="<%= formData.sellerAddress || '' %>">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============ PUBLISH ============ -->
+    <div class="ap-card">
+      <div class="card-body d-flex flex-wrap gap-4">
+
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="isActive" name="isActive"
+                 <%= formData.isActive === undefined || formData.isActive === 'on' ? 'checked' : '' %>>
+          <label class="form-check-label" for="isActive">List this product as active</label>
+        </div>
+
+        <% if (user.role === 'admin') { %>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="featured" name="featured"
+                   <%= formData.featured === 'on' ? 'checked' : '' %>>
+            <label class="form-check-label" for="featured">Feature this product</label>
+          </div>
+        <% } %>
+
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" class="ap-submit-btn">
+      <i class="fas fa-plus-circle"></i> Add Product
+    </button>
+
+  </form>
+
+</main>
+
+<script>
+  function toggleCustomCategory() {
+    var category = document.getElementById('category').value;
+    var wrap = document.getElementById('customCategoryWrap');
+    wrap.style.display = category === 'Other' ? 'block' : 'none';
+  }
+  toggleCustomCategory();
+
+  // Live image preview feedback
+  document.querySelectorAll('input[type="file"]').forEach(function (input) {
+    input.addEventListener('change', function () {
+      if (this.files.length) {
+        this.style.borderColor = '#0EA5E9';
+        this.style.borderStyle = 'solid';
+        this.style.background = '#F0F9FF';
+      } else {
+        this.style.borderColor = '#C2D9F0';
+        this.style.borderStyle = 'dashed';
+        this.style.background = '#F8FDFF';
+      }
+    });
+  });
+</script>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       BOVINETRA DASHBOARD — DESIGN SYSTEM
+       Colors match main site: Blue + Amber
+       ============================================================ */
+    :root {
+      --primary: #0284C7;
+      --primary-dark: #0C4A6E;
+      --primary-light: #0EA5E9;
+      --accent: #0EA5E9;
+      --cta: #F59E0B;
+      --cta-dark: #D97706;
+      --light: #E0F2FE;
+      --dark-bg: #082F49;
+      --text-main: #111827;
+      --text-muted: #6B7280;
+      --border-light: rgba(2, 132, 199, 0.12);
+      --gradient-hero: linear-gradient(135deg, #082F49 0%, #0C4A6E 45%, #0284C7 100%);
+      --gradient-cta: linear-gradient(105deg, #F59E0B, #D97706);
+      --gradient-primary: linear-gradient(135deg, #0284C7, #0EA5E9);
+      --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 8px 28px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.14);
+      --radius-card: 24px;
+      --radius-md: 16px;
+      --radius-sm: 10px;
+      --radius-pill: 50px;
+      --transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      --font-heading: 'Poppins', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    /* ----- global reset & base ----- */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #F4F9FE;
+      font-family: var(--font-body);
+      display: flex;
+      min-height: 100vh;
+      color: var(--text-main);
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: var(--font-heading);
+      font-weight: 700;
+    }
+
+    /* ============================================================
+       SIDEBAR
+       ============================================================ */
+    .sidebar {
+      width: 260px;
+      min-height: 100vh;
+      background: var(--gradient-hero);
+      color: #fff;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      overflow-y: auto;
+      box-shadow: 4px 0 24px rgba(2, 132, 199, 0.15);
+      padding-bottom: 2rem;
+      z-index: 1050;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sidebar .profile-wrapper {
+      padding: 2rem 1rem 1.2rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      margin-bottom: 0.5rem;
+      position: relative;
+    }
+
+    .sidebar .profile-wrapper::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 22px 22px;
+      pointer-events: none;
+    }
+
+    .sidebar .profile-img {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(255, 255, 255, 0.55);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+      background: #fff;
+      padding: 2px;
+      position: relative;
+      z-index: 1;
+      transition: var(--transition);
+    }
+
+    .sidebar .profile-img:hover {
+      transform: scale(1.05);
+      border-color: var(--cta);
+    }
+
+    .sidebar .user-name {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-top: 0.7rem;
+      letter-spacing: 0.2px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .sidebar .user-role {
+      font-size: 0.72rem;
+      background: rgba(245, 158, 11, 0.22);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #FCD34D;
+      padding: 0.25rem 0.9rem;
+      border-radius: 30px;
+      display: inline-block;
+      margin-top: 0.35rem;
+      text-transform: capitalize;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+      position: relative;
+      z-index: 1;
+    }
+
+    .sidebar .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0.72rem 1.6rem;
+      color: rgba(255, 255, 255, 0.82);
+      text-decoration: none;
+      transition: var(--transition);
+      border-left: 4px solid transparent;
+      font-weight: 500;
+      font-size: 0.92rem;
+      position: relative;
+    }
+
+    .sidebar .nav-link i {
+      width: 22px;
+      font-size: 1.05rem;
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .sidebar .nav-link:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border-left-color: var(--cta);
+      padding-left: 1.85rem;
+    }
+
+    .sidebar .nav-link:hover i {
+      color: var(--cta);
+      transform: scale(1.1);
+    }
+
+    .sidebar .nav-link.active {
+      background: rgba(14, 165, 233, 0.22);
+      border-left-color: var(--cta);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .sidebar .nav-link.active i { color: var(--cta); }
+
+    .sidebar hr {
+      margin: 0.8rem 1.2rem;
+      border-color: rgba(255, 255, 255, 0.12);
+      opacity: 1;
+    }
+
+    /* Sidebar toggle (mobile) */
+    .sidebar-toggle {
+      display: none;
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 1060;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--gradient-primary);
+      color: #fff;
+      border: none;
+      font-size: 1.2rem;
+      box-shadow: var(--shadow-md);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .sidebar-toggle:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 28px rgba(2, 132, 199, 0.35);
+    }
+
+    /* Overlay for mobile sidebar */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 47, 73, 0.55);
+      backdrop-filter: blur(3px);
+      z-index: 1045;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .sidebar-overlay.active {
+      display: block;
+      opacity: 1;
+    }
+
+    /* ============================================================
+       MAIN CONTENT
+       ============================================================ */
+    .content {
+      margin-left: 260px;
+      padding: 2rem 2.2rem 3rem;
+      flex: 1;
+      min-height: 100vh;
+      background: #F4F9FE;
+      animation: contentFadeIn 0.5s ease;
+    }
+
+    @keyframes contentFadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ----- top bar ----- */
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      background: white;
+      padding: 1.2rem 1.8rem;
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+      gap: 1rem;
+    }
+
+    .top-bar h2 {
+      font-weight: 800;
+      color: var(--text-main);
+      font-size: 1.7rem;
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+
+    .top-bar .subhead {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+
+    .top-bar .btn-group-custom {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .top-bar .btn {
+      border-radius: var(--radius-pill);
+      padding: 0.6rem 1.5rem;
+      font-weight: 600;
+      font-size: 0.88rem;
+      border: none;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .top-bar .btn-success {
+      background: var(--gradient-primary);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28);
+    }
+    .top-bar .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(2, 132, 199, 0.4);
+      color: #fff;
+    }
+
+    .top-bar .btn-primary {
+      background: var(--gradient-cta);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.32);
+    }
+    .top-bar .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(245, 158, 11, 0.48);
+      color: #fff;
+    }
+
+    /* ============================================================
+       STATS CARDS
+       ============================================================ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.3rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+      background: #ffffff;
+      border-radius: var(--radius-card);
+      padding: 1.4rem 1.6rem 1.5rem;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      border: 1px solid var(--border-light);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--gradient-primary);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.35s ease;
+    }
+
+    .stat-card:hover::before { transform: scaleX(1); }
+
+    .stat-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-md);
+      border-color: rgba(2, 132, 199, 0.25);
+    }
+
+    .stat-card h6 {
+      font-family: var(--font-body);
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .stat-card h2 {
+      font-weight: 800;
+      font-size: 2.1rem;
+      color: var(--primary-dark);
+      margin: 0;
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+
+    .stat-card .stat-icon {
+      position: absolute;
+      top: 1.2rem;
+      right: 1.4rem;
+      font-size: 2rem;
+      opacity: 0.14;
+      color: var(--primary);
+      transition: var(--transition);
+    }
+
+    .stat-card:hover .stat-icon {
+      opacity: 0.28;
+      transform: scale(1.15) rotate(-8deg);
+    }
+
+    /* ============================================================
+       SECTION TITLES
+       ============================================================ */
+    .section-title {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: var(--text-main);
+      margin: 2.2rem 0 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    .section-title i {
+      color: var(--primary);
+      font-size: 1.4rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--light);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(2, 132, 199, 0.15);
+    }
+
+    /* ============================================================
+       TABLE CARDS
+       ============================================================ */
+    .table-card {
+      background: #ffffff;
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+      overflow: hidden;
+      margin-bottom: 1.8rem;
+      transition: var(--transition);
+    }
+
+    .table-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .table-card .table {
+      margin-bottom: 0;
+    }
+
+    .table-card .table thead th {
+      background: #F0F9FF;
+      color: var(--primary-dark);
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid rgba(2, 132, 199, 0.12);
+      padding: 1rem 1.1rem;
+      white-space: nowrap;
+    }
+
+    .table-card .table td {
+      padding: 0.9rem 1.1rem;
+      vertical-align: middle;
+      border-bottom: 1px solid #F0F9FF;
+      color: var(--text-main);
+      font-size: 0.9rem;
+    }
+
+    .table-card .table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .table-card .table tbody tr {
+      transition: background 0.2s ease;
+    }
+
+    .table-card .table tbody tr:hover {
+      background: #F8FDFF;
+    }
+
+    .badge-status {
+      font-family: var(--font-body);
+      font-weight: 600;
+      padding: 0.38rem 0.95rem;
+      border-radius: 40px;
+      font-size: 0.72rem;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-sm-action {
+      border-radius: 30px;
+      padding: 0.3rem 0.9rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-right: 4px;
+      border: none;
+      transition: var(--transition);
+    }
+
+    .btn-sm-action i { margin-right: 4px; }
+
+    .btn-sm-action:hover {
+      transform: translateY(-2px);
+    }
+
+    .action-form { display: inline-block; }
+
+    /* ============================================================
+       FARMER INFO CARD
+       ============================================================ */
+    .info-card {
+      background: #ffffff;
+      border-radius: var(--radius-card);
+      padding: 1.8rem 2rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+      margin-top: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .info-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--gradient-cta);
+    }
+
+    .info-card h4 {
+      font-weight: 800;
+      color: var(--primary-dark);
+      font-size: 1.15rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .info-card hr {
+      opacity: 0.4;
+      margin: 0.9rem 0 1.2rem;
+      border-color: var(--border-light);
+    }
+
+    .info-card p {
+      margin-bottom: 0.6rem;
+      font-size: 0.93rem;
+      color: #2f4052;
+      display: flex;
+      gap: 8px;
+    }
+
+    .info-card p strong {
+      color: var(--primary-dark);
+      min-width: 90px;
+      font-weight: 700;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 991px) {
+      .sidebar {
+        transform: translateX(-100%);
+        width: 270px;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .sidebar-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .content {
+        margin-left: 0;
+        padding: 5rem 1.5rem 2.5rem;
+      }
+      .top-bar {
+        padding: 1rem 1.2rem;
+      }
+      .top-bar h2 { font-size: 1.4rem; }
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+      .stat-card h2 { font-size: 1.75rem; }
+      .stat-card .stat-icon { font-size: 1.6rem; }
+    }
+
+    @media (max-width: 575px) {
+      .content { padding: 4.5rem 1rem 2rem; }
+      .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.9rem;
+        padding: 1rem 1.1rem;
+      }
+      .top-bar h2 { font-size: 1.25rem; }
+      .top-bar .btn-group-custom { width: 100%; }
+      .top-bar .btn {
+        flex: 1;
+        justify-content: center;
+        padding: 0.6rem 1rem;
+        font-size: 0.82rem;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+      }
+      .stat-card {
+        padding: 1.1rem 1.1rem 1.2rem;
+        border-radius: 18px;
+      }
+      .stat-card h6 { font-size: 0.65rem; }
+      .stat-card h2 { font-size: 1.5rem; }
+      .stat-card .stat-icon { font-size: 1.3rem; top: 0.9rem; right: 1rem; }
+      .section-title { font-size: 1.1rem; }
+      .section-title i { width: 34px; height: 34px; font-size: 1.1rem; }
+      .table-card .table thead th { font-size: 0.68rem; padding: 0.75rem 0.7rem; }
+      .table-card .table td { padding: 0.75rem 0.7rem; font-size: 0.83rem; }
+      .btn-sm-action { padding: 0.28rem 0.6rem; font-size: 0.7rem; }
+      .btn-sm-action i { display: none; }
+      .info-card { padding: 1.4rem 1.3rem; }
+      .info-card p { font-size: 0.87rem; flex-direction: column; gap: 2px; }
+      .info-card p strong { min-width: auto; }
+    }
+
+    @media (max-width: 400px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .top-bar .btn-group-custom { flex-direction: column; }
+      .top-bar .btn { width: 100%; }
+    }
+
+    /* Sidebar scrollbar */
+    .sidebar::-webkit-scrollbar { width: 5px; }
+    .sidebar::-webkit-scrollbar-track { background: transparent; }
+    .sidebar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.22);
+      border-radius: 8px;
+    }
+    .sidebar::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.38);
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Sidebar Toggle -->
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Mobile Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ========== SIDEBAR ========== -->
+  <div class="sidebar" id="sidebar">
+    <div class="profile-wrapper">
+      <img
+        src="<%= user.avatar || '/images/default-avatar.png' %>"
+        class="profile-img"
+        alt="Avatar"
+      >
+      <div class="user-name"><%= user.fullName %></div>
+      <span class="user-role"><%= user.role %></span>
+    </div>
+
+    <hr>
+
+    <a href="/api/v1/farmer/dashboard" class="nav-link active">
+      <i class="fas fa-home"></i> Dashboard
+    </a>
+    <a href="/api/v1/farmer/profile" class="nav-link">
+      <i class="fas fa-user"></i> My Profile
+    </a>
+    <a href="/api/v1/farmer/products" class="nav-link">
+      <i class="fas fa-box"></i> My Products
+    </a>
+    <a href="/api/v1/farmer/products/add" class="nav-link">
+      <i class="fas fa-plus-circle"></i> Add Product
+    </a>
+    <a href="/api/v1/farmer/cattles" class="nav-link">
+      <i class="fas fa-paw"></i> My Cattles
+    </a>
+    <a href="/api/v1/farmer/cattles/add" class="nav-link">
+      <i class="fas fa-plus-circle"></i> Add Cattle
+    </a>
+    <a href="/api/v1/farmer/purchases" class="nav-link">
+      <i class="fas fa-shopping-cart"></i> Purchases
+    </a>
+    <a href="/api/v1/users/profile" class="nav-link">
+      <i class="fas fa-cog"></i> Account Settings
+    </a>
+    <hr>
+    <a href="/api/v1/users/logout" class="nav-link" style="color: rgba(255,200,200,0.85);">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </a>
+  </div>
+
+  <!-- ========== MAIN CONTENT ========== -->
+  <div class="content">
+
+    <!-- Top bar -->
+    <div class="top-bar">
+      <div>
+        <h2>Welcome, <%= user.fullName %></h2>
+        <span class="subhead"><i class="far fa-calendar-alt me-1"></i> Farmer Dashboard</span>
+      </div>
+      <div class="btn-group-custom">
+        <a href="/api/v1/farmer/products/add" class="btn btn-success">
+          <i class="fas fa-plus-circle"></i> Add Product
+        </a>
+        <a href="/api/v1/farmer/cattles/add" class="btn btn-primary">
+          <i class="fas fa-plus-circle"></i> Add Cattle
+        </a>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h6>Total Products</h6>
+        <h2><%= stats.totalProducts %></h2>
+        <span class="stat-icon"><i class="fas fa-boxes"></i></span>
+      </div>
+      <div class="stat-card">
+        <h6>Total Stock</h6>
+        <h2><%= stats.totalStock %></h2>
+        <span class="stat-icon"><i class="fas fa-warehouse"></i></span>
+      </div>
+      <div class="stat-card">
+        <h6>Total Cattle</h6>
+        <h2><%= stats.totalCattles %></h2>
+        <span class="stat-icon"><i class="fas fa-cow"></i></span>
+      </div>
+      <div class="stat-card">
+        <h6>Available Cattle</h6>
+        <h2><%= stats.availableCattles %></h2>
+        <span class="stat-icon"><i class="fas fa-check-circle"></i></span>
+      </div>
+    </div>
+
+    <!-- Recent Products -->
+    <div class="section-title">
+      <i class="fas fa-tag"></i> Recent Products
+    </div>
+    <div class="table-card">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Status</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if(products.length){ %>
+              <% products.forEach(product=>{ %>
+                <tr>
+                  <td><strong><%= product.name %></strong></td>
+                  <td><span class="badge bg-light text-dark"><%= product.category %></span></td>
+                  <td>₹ <%= product.price %></td>
+                  <td><%= product.stock %></td>
+                  <td>
+                    <% if(product.stock>0){ %>
+                      <span class="badge bg-success badge-status">In Stock</span>
+                    <% }else{ %>
+                      <span class="badge bg-danger badge-status">Out of Stock</span>
+                    <% } %>
+                  </td>
+                  <td class="text-center">
+                    <a href="/api/v1/products/view/<%= product._id %>"
+                       class="btn btn-sm btn-primary btn-sm-action">
+                      <i class="fas fa-eye"></i> View
+                    </a>
+                    <a href="/api/v1/products/edit/<%= product._id %>"
+                       class="btn btn-sm btn-warning btn-sm-action">
+                      <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <form action="/api/v1/products/delete/<%= product._id %>"
+                          method="POST"
+                          class="action-form">
+                      <button type="submit"
+                              class="btn btn-sm btn-danger btn-sm-action"
+                              onclick="return confirm('Delete this product?')">
+                        <i class="fas fa-trash"></i> Delete
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            <% }else{ %>
+              <tr><td colspan="6" class="text-center py-4 text-muted">No Products Found</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Cattles -->
+    <div class="section-title">
+      <i class="fas fa-paw"></i> My Cattles
+    </div>
+    <div class="table-card">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Breed</th>
+              <th>Age</th>
+              <th>Price</th>
+              <th>Status</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if(cattles.length){ %>
+              <% cattles.forEach(cattle=>{ %>
+                <tr>
+                  <td><strong><%= cattle.name %></strong></td>
+                  <td><%= cattle.breed %></td>
+                  <td><%= cattle.age %></td>
+                  <td>₹ <%= cattle.price %></td>
+                  <td>
+                    <% if(cattle.sold){ %>
+                      <span class="badge bg-secondary badge-status">Sold</span>
+                    <% }else{ %>
+                      <span class="badge bg-success badge-status">Available</span>
+                    <% } %>
+                  </td>
+                  <td class="text-center">
+                    <a href="/api/v1/farmer/cattles/<%= cattle._id %>" class="btn btn-sm btn-primary btn-sm-action">
+                      <i class="fas fa-eye"></i> View
+                    </a>
+                  </td>
+                </tr>
+              <% }) %>
+            <% }else{ %>
+              <tr><td colspan="6" class="text-center py-4 text-muted">No Cattle Added</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Farmer Info Card -->
+    <div class="info-card">
+      <h4><i class="fas fa-id-card me-2" style="color:#0284C7;"></i>Farmer Information</h4>
+      <hr>
+      <p><strong>Name :</strong> <%= user.fullName %></p>
+      <p><strong>Email :</strong> <%= user.email %></p>
+      <p><strong>Role :</strong> <%= user.role %></p>
+      <p><strong>Joined :</strong> <%= new Date(user.createdAt).toDateString() %></p>
+    </div>
+
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Sidebar toggle script -->
+  <script>
+    (function () {
+      const sidebar = document.getElementById('sidebar');
+      const toggle = document.getElementById('sidebarToggle');
+      const overlay = document.getElementById('sidebarOverlay');
+
+      function openSidebar() {
+        sidebar.classList.add('open');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeSidebar() {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      if (toggle && sidebar && overlay) {
+        toggle.addEventListener('click', function () {
+          sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+        });
+
+        overlay.addEventListener('click', closeSidebar);
+
+        // Close on nav link click (mobile)
+        sidebar.querySelectorAll('.nav-link').forEach(link => {
+          link.addEventListener('click', () => {
+            if (window.innerWidth <= 991) closeSidebar();
+          });
+        });
+
+        // Close on resize to desktop
+        window.addEventListener('resize', () => {
+          if (window.innerWidth > 991) closeSidebar();
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') closeSidebar();
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
