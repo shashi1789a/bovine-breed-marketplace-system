@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <%- include('./partials/header') %>
+
+<main class="container d-flex flex-column align-items-center justify-content-center text-center"
+      style="min-height: 70vh; padding-top: 120px;">
+
+  <div class="mb-3" style="font-size: 4rem; font-weight: 800; opacity: 0.15;">
+    <i class="fas fa-lock"></i>
+  </div>
+
+  <h1 class="h3 mb-2">Access Denied</h1>
+  <p class="text-muted mb-4" style="max-width: 480px;">
+    <%= locals.message || "You are not allowed to access this page." %>
+  </p>
+
+  <div class="d-flex gap-2">
+    <% if (locals.user) { %>
+      <a href="/dashboard" class="btn btn-cta-nav">Go to my dashboard</a>
+    <% } else { %>
+      <a href="/login" class="btn btn-cta-nav">Login</a>
+    <% } %>
+    <a href="/" class="btn btn-outline-secondary">Go to homepage</a>
+  </div>
+
+</main>
+
+<%- include('./partials/footer') %>
+
+</body>
+</html>

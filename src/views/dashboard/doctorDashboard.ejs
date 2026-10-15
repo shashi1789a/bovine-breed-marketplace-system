@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0284C7;
+      --primary-dark: #0C4A6E;
+      --cta: #F59E0B;
+      --light: #E0F2FE;
+      --text-main: #111827;
+      --text-muted: #6B7280;
+      --border-light: rgba(2, 132, 199, 0.12);
+      --gradient-hero: linear-gradient(135deg, #082F49 0%, #0C4A6E 45%, #0284C7 100%);
+      --gradient-cta: linear-gradient(105deg, #F59E0B, #D97706);
+      --gradient-primary: linear-gradient(135deg, #0284C7, #0EA5E9);
+      --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 8px 28px rgba(0, 0, 0, 0.1);
+      --radius-card: 24px;
+      --radius-pill: 50px;
+      --transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      --font-heading: 'Poppins', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #F4F9FE;
+      font-family: var(--font-body);
+      display: flex;
+      min-height: 100vh;
+      color: var(--text-main);
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); font-weight: 700; }
+
+    .sidebar {
+      width: 260px;
+      min-height: 100vh;
+      background: var(--gradient-hero);
+      color: #fff;
+      position: fixed;
+      inset: 0 auto 0 0;
+      overflow-y: auto;
+      box-shadow: 4px 0 24px rgba(2, 132, 199, 0.15);
+      padding-bottom: 2rem;
+      z-index: 1050;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sidebar .profile-wrapper {
+      padding: 2rem 1rem 1.2rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      margin-bottom: 0.5rem;
+    }
+
+    .sidebar .profile-img {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(255, 255, 255, 0.55);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+      background: #fff;
+      padding: 2px;
+    }
+
+    .sidebar .user-name { font-family: var(--font-heading); font-weight: 700; font-size: 1.1rem; margin-top: 0.7rem; }
+
+    .sidebar .user-role {
+      font-size: 0.72rem;
+      background: rgba(245, 158, 11, 0.22);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #FCD34D;
+      padding: 0.25rem 0.9rem;
+      border-radius: 30px;
+      display: inline-block;
+      margin-top: 0.35rem;
+      text-transform: capitalize;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
+
+    .sidebar .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0.72rem 1.6rem;
+      color: rgba(255, 255, 255, 0.82);
+      text-decoration: none;
+      transition: var(--transition);
+      border-left: 4px solid transparent;
+      font-weight: 500;
+      font-size: 0.92rem;
+    }
+
+    .sidebar .nav-link i { width: 22px; font-size: 1.05rem; text-align: center; }
+
+    .sidebar .nav-link:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border-left-color: var(--cta);
+    }
+
+    .sidebar .nav-link.active {
+      background: rgba(14, 165, 233, 0.22);
+      border-left-color: var(--cta);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .sidebar .nav-link .count {
+      margin-left: auto;
+      background: var(--cta);
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 700;
+      border-radius: 20px;
+      padding: 1px 8px;
+    }
+
+    .sidebar hr { margin: 0.8rem 1.2rem; border-color: rgba(255, 255, 255, 0.12); opacity: 1; }
+
+    .sidebar-toggle {
+      display: none;
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 1060;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--gradient-primary);
+      color: #fff;
+      border: none;
+      font-size: 1.2rem;
+      box-shadow: var(--shadow-md);
+      cursor: pointer;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 47, 73, 0.55);
+      z-index: 1045;
+    }
+
+    .sidebar-overlay.active { display: block; }
+
+    .content { margin-left: 260px; padding: 2rem 2.2rem 3rem; flex: 1; min-height: 100vh; min-width: 0; }
+
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.8rem;
+      background: #fff;
+      padding: 1.2rem 1.8rem;
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+      gap: 1rem;
+    }
+
+    .top-bar h2 { font-weight: 800; font-size: 1.7rem; margin: 0; letter-spacing: -0.02em; }
+    .top-bar .subhead { color: var(--text-muted); font-size: 0.88rem; font-weight: 500; }
+    .top-bar .btn-group-custom { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .top-bar .btn {
+      border-radius: var(--radius-pill);
+      padding: 0.6rem 1.5rem;
+      font-weight: 600;
+      font-size: 0.88rem;
+      border: none;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .top-bar .btn:hover { transform: translateY(-2px); color: #fff; }
+    .top-bar .btn-blue { background: var(--gradient-primary); box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28); }
+    .top-bar .btn-amber { background: var(--gradient-cta); box-shadow: 0 4px 14px rgba(245, 158, 11, 0.32); }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .stat-card {
+      background: #fff;
+      border-radius: var(--radius-card);
+      padding: 1.4rem 1.6rem 1.5rem;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      border: 1px solid var(--border-light);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
+
+    .stat-card h6 {
+      font-family: var(--font-body);
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .stat-card h2 { font-weight: 800; font-size: 2rem; color: var(--primary-dark); margin: 0; line-height: 1; }
+
+    .stat-card .stat-icon { position: absolute; top: 1.2rem; right: 1.4rem; font-size: 2rem; opacity: 0.14; color: var(--primary); }
+
+    .health-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.9rem;
+    }
+
+    .health-card {
+      display: block;
+      background: #fff;
+      border: 1px solid var(--border-light);
+      border-radius: 18px;
+      padding: 0.9rem 1.1rem;
+      text-decoration: none;
+      color: var(--text-main);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .health-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); color: var(--text-main); }
+    .health-card strong { display: block; font-family: var(--font-heading); font-size: 1.5rem; line-height: 1.1; }
+    .health-card span { font-size: 0.74rem; color: var(--text-muted); font-weight: 600; }
+    .health-card.bad { border-left: 4px solid #DC2626; }
+    .health-card.warn { border-left: 4px solid var(--cta); }
+    .health-card.info { border-left: 4px solid var(--primary); }
+    .health-card.ok { border-left: 4px solid #16A34A; }
+
+    .section-title {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.3rem;
+      margin: 2.2rem 0 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-title i {
+      color: var(--primary);
+      font-size: 1.2rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--light);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(2, 132, 199, 0.15);
+    }
+
+    .section-title a { margin-left: auto; font-size: 0.85rem; font-weight: 600; color: var(--primary); text-decoration: none; font-family: var(--font-body); }
+
+    .table-card, .panel {
+      background: #fff;
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+      overflow: hidden;
+    }
+
+    .panel { padding: 1.4rem 1.6rem; height: 100%; }
+    .panel h5 { font-size: 1rem; margin-bottom: 1rem; }
+
+    .table-card .table { margin-bottom: 0; }
+
+    .table-card .table thead th {
+      background: #F0F9FF;
+      color: var(--primary-dark);
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid rgba(2, 132, 199, 0.12);
+      padding: 1rem 1.1rem;
+      white-space: nowrap;
+    }
+
+    .table-card .table td {
+      padding: 0.9rem 1.1rem;
+      vertical-align: middle;
+      border-bottom: 1px solid #F0F9FF;
+      font-size: 0.9rem;
+    }
+
+    .table-card .table tr:last-child td { border-bottom: none; }
+
+    .badge-status { font-weight: 600; padding: 0.38rem 0.95rem; border-radius: 40px; font-size: 0.72rem; }
+
+    .btn-sm-action {
+      border-radius: 30px;
+      padding: 0.3rem 0.9rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-right: 4px;
+      border: none;
+    }
+
+    .action-form { display: inline-block; }
+
+    .chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 0.8rem;
+      height: 190px;
+      padding-top: 0.5rem;
+    }
+
+    .chart-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; min-width: 0; }
+
+    .chart-bar {
+      width: 100%;
+      max-width: 52px;
+      border-radius: 10px 10px 4px 4px;
+      background: var(--gradient-primary);
+      min-height: 4px;
+      transition: var(--transition);
+    }
+
+    .chart-col:hover .chart-bar { background: var(--gradient-cta); }
+    .chart-value { font-size: 0.68rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; white-space: nowrap; }
+    .chart-label { font-size: 0.72rem; color: var(--text-muted); margin-top: 6px; font-weight: 600; }
+
+    .top-item { display: flex; align-items: center; gap: 12px; padding: 0.65rem 0; border-bottom: 1px solid #F0F9FF; }
+    .top-item:last-child { border-bottom: none; }
+
+    .top-thumb {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: #EAF3FB;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #94A3B8;
+      flex-shrink: 0;
+    }
+
+    .top-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .top-info { flex: 1; min-width: 0; }
+    .top-info strong { display: block; font-size: 0.86rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .top-info span { font-size: 0.74rem; color: var(--text-muted); }
+    .top-revenue { font-weight: 700; font-size: 0.86rem; white-space: nowrap; }
+
+    .info-card {
+      background: #fff;
+      border-radius: var(--radius-card);
+      padding: 1.8rem 2rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+      margin-top: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .info-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--gradient-cta); }
+    .info-card h4 { font-weight: 800; color: var(--primary-dark); font-size: 1.15rem; margin-bottom: 0.5rem; }
+    .info-card hr { opacity: 0.4; margin: 0.9rem 0 1.2rem; border-color: var(--border-light); }
+    .info-card p { margin-bottom: 0.6rem; font-size: 0.93rem; color: #2f4052; display: flex; gap: 8px; }
+    .info-card p strong { color: var(--primary-dark); min-width: 110px; font-weight: 700; }
+
+    .empty-state { text-align: center; padding: 2.2rem 1rem; color: var(--text-muted); font-size: 0.9rem; }
+
+    @media (max-width: 991px) {
+      .sidebar { transform: translateX(-100%); width: 270px; }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-toggle { display: flex; align-items: center; justify-content: center; }
+      .content { margin-left: 0; padding: 5rem 1.5rem 2.5rem; }
+      .top-bar h2 { font-size: 1.4rem; }
+    }
+
+    @media (max-width: 575px) {
+      .content { padding: 4.5rem 1rem 2rem; }
+      .top-bar { flex-direction: column; align-items: flex-start; padding: 1rem 1.1rem; }
+      .top-bar .btn-group-custom { width: 100%; }
+      .top-bar .btn { flex: 1; justify-content: center; }
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+      .stat-card { padding: 1.1rem; border-radius: 18px; }
+      .stat-card h2 { font-size: 1.4rem; }
+      .section-title { font-size: 1.1rem; }
+      .btn-sm-action i { display: none; }
+      .info-card { padding: 1.4rem 1.3rem; }
+      .info-card p { flex-direction: column; gap: 2px; }
+    }
+
+    @media (max-width: 400px) {
+      .stats-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<%
+  const inr = (value) =>
+    Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
+  const approvalClass = { Approved: 'bg-success', Pending: 'bg-warning text-dark', Rejected: 'bg-danger' };
+  const orderClass = { Placed: 'bg-info text-dark', Shipped: 'bg-primary', Delivered: 'bg-success', Cancelled: 'bg-secondary' };
+  const paymentClass = { Paid: 'bg-success', Pending: 'bg-warning text-dark', Initiated: 'bg-warning text-dark', Failed: 'bg-danger', Refunded: 'bg-info text-dark' };
+
+  const sales = stats.sales;
+  const products = stats.products;
+  const monthly = sales.monthlySales || [];
+  const maxRevenue = Math.max(...monthly.map((m) => m.revenue), 1);
+  const hasSales = monthly.some((m) => m.revenue > 0 || m.orders > 0);
+  const now = Date.now();
+%>
+
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="sidebar" id="sidebar">
+    <div class="profile-wrapper">
+      <img src="<%= user.avatar || '/images/default-avatar.png' %>" class="profile-img" alt="Avatar">
+      <div class="user-name"><%= user.fullName %></div>
+      <span class="user-role"><%= user.role %></span>
+    </div>
+
+    <hr>
+
+    <a href="/doctor/dashboard" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="/profile" class="nav-link"><i class="fas fa-user"></i> My Profile</a>
+    <a href="/doctor/products" class="nav-link"><i class="fas fa-box"></i> My Products</a>
+    <a href="/products/add" class="nav-link"><i class="fas fa-plus-circle"></i> Add Product</a>
+    <a href="/doctor/orders" class="nav-link">
+      <i class="fas fa-receipt"></i> Orders Received
+      <% if (sales.openOrders > 0) { %><span class="count"><%= sales.openOrders %></span><% } %>
+    </a>
+    <a href="/orders" class="nav-link"><i class="fas fa-bag-shopping"></i> My Purchases</a>
+    <a href="/products" class="nav-link"><i class="fas fa-store"></i> Marketplace</a>
+    <a href="/breed/detect" class="nav-link"><i class="fas fa-brain"></i> Breed Detector</a>
+    <a href="/update-account" class="nav-link"><i class="fas fa-cog"></i> Account Settings</a>
+    <hr>
+    <a href="/logout" class="nav-link" style="color: rgba(255,200,200,0.85);"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </div>
+
+  <div class="content">
+
+    <div class="top-bar">
+      <div>
+        <h2>Welcome, Dr. <%= user.fullName %></h2>
+        <span class="subhead"><i class="far fa-calendar-alt me-1"></i> Doctor Dashboard</span>
+      </div>
+      <div class="btn-group-custom">
+        <a href="/products/add" class="btn btn-blue"><i class="fas fa-plus-circle"></i> Add Product</a>
+        <a href="/doctor/orders" class="btn btn-amber"><i class="fas fa-receipt"></i> View Orders</a>
+      </div>
+    </div>
+
+    <% if (success) { %>
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <%= success %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% } %>
+
+    <% if (error) { %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <%= error %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% } %>
+
+    <% if (warnings.length) { %>
+      <div class="alert alert-warning" role="alert">
+        Some sections could not be loaded: <%= warnings.join(', ') %>.
+      </div>
+    <% } %>
+
+    <% if (alerts.length) { %>
+      <div class="mb-4">
+        <% alerts.forEach(alert => { %>
+          <a href="<%= alert.link %>" class="alert alert-<%= alert.level %> d-flex justify-content-between align-items-center text-decoration-none mb-2">
+            <span><%= alert.message %></span>
+            <i class="fas fa-chevron-right"></i>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h6>Total Products</h6>
+        <h2><%= products.total %></h2>
+        <span class="stat-icon"><i class="fas fa-boxes"></i></span>
+      </div>
+      <div class="stat-card">
+        <h6>Total Stock</h6>
+        <h2><%= products.totalStock %></h2>
+        <span class="stat-icon"><i class="fas fa-warehouse"></i></span>
+      </div>
+      <div class="stat-card">
+        <h6>Open Orders</h6>
+        <h2><%= sales.openOrders %></h2>
+        <span class="stat-icon"><i class="fas fa-receipt"></i></span>
+      </div>
+      <div class="stat-card">
+        <h6>Units Sold</h6>
+        <h2><%= sales.unitsSold %></h2>
+        <span class="stat-icon"><i class="fas fa-box-open"></i></span>
+      </div>
+      <div class="stat-card">
+        <h6>Revenue</h6>
+        <h2>₹ <%= inr(sales.revenue) %></h2>
+        <span class="stat-icon"><i class="fas fa-indian-rupee-sign"></i></span>
+      </div>
+      <div class="stat-card">
+        <h6>This Month</h6>
+        <h2>₹ <%= inr(sales.revenueThisMonth) %></h2>
+        <span class="stat-icon"><i class="fas fa-chart-line"></i></span>
+      </div>
+    </div>
+
+    <div class="section-title"><i class="fas fa-heart-pulse"></i> Inventory Health</div>
+    <div class="health-grid">
+      <a href="/doctor/products" class="health-card <%= products.expired > 0 ? 'bad' : 'ok' %>">
+        <strong><%= products.expired %></strong><span>Expired</span>
+      </a>
+      <a href="/doctor/products" class="health-card <%= products.expiringSoon > 0 ? 'warn' : 'ok' %>">
+        <strong><%= products.expiringSoon %></strong><span>Expiring in 30 days</span>
+      </a>
+      <a href="/doctor/products" class="health-card <%= products.outOfStock > 0 ? 'bad' : 'ok' %>">
+        <strong><%= products.outOfStock %></strong><span>Out of stock</span>
+      </a>
+      <a href="/doctor/products" class="health-card <%= products.lowStock > 0 ? 'warn' : 'ok' %>">
+        <strong><%= products.lowStock %></strong><span>Low stock</span>
+      </a>
+      <a href="/doctor/products" class="health-card <%= products.pendingApproval > 0 ? 'info' : 'ok' %>">
+        <strong><%= products.pendingApproval %></strong><span>Awaiting approval</span>
+      </a>
+      <a href="/doctor/products" class="health-card <%= products.rejected > 0 ? 'bad' : 'ok' %>">
+        <strong><%= products.rejected %></strong><span>Rejected</span>
+      </a>
+    </div>
+
+    <div class="section-title"><i class="fas fa-chart-column"></i> Sales Overview</div>
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="panel">
+          <h5>Revenue, last <%= monthly.length %> months</h5>
+          <% if (hasSales) { %>
+            <div class="chart">
+              <% monthly.forEach(month => { %>
+                <div class="chart-col" title="<%= month.label %>: ₹ <%= inr(month.revenue) %> from <%= month.orders %> order<%= month.orders === 1 ? '' : 's' %>">
+                  <span class="chart-value"><%= month.revenue > 0 ? '₹ ' + inr(month.revenue) : '' %></span>
+                  <div class="chart-bar" style="height: <%= Math.round((month.revenue / maxRevenue) * 100) %>%;"></div>
+                  <span class="chart-label"><%= month.label %></span>
+                </div>
+              <% }) %>
+            </div>
+            <% if (sales.awaitingRevenue > 0) { %>
+              <p class="text-muted mt-3 mb-0" style="font-size: 0.8rem;">
+                ₹ <%= inr(sales.awaitingRevenue) %> is awaiting payment (cash on delivery or not yet delivered).
+              </p>
+            <% } %>
+          <% } else { %>
+            <div class="empty-state">No sales yet. Revenue appears here once your first order is paid or delivered.</div>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="panel">
+          <h5>Top Products</h5>
+          <% if (sales.topProducts.length) { %>
+            <% sales.topProducts.forEach(item => { %>
+              <div class="top-item">
+                <div class="top-thumb">
+                  <% if (item.image) { %>
+                    <img src="<%= item.image %>" alt="<%= item.name %>" loading="lazy">
+                  <% } else { %>
+                    <i class="fas fa-box-open"></i>
+                  <% } %>
+                </div>
+                <div class="top-info">
+                  <strong><%= item.name %></strong>
+                  <span><%= item.unitsSold %> unit<%= item.unitsSold === 1 ? '' : 's' %> sold</span>
+                </div>
+                <div class="top-revenue">₹ <%= inr(item.revenue) %></div>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <div class="empty-state">Your best sellers will show up here.</div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <i class="fas fa-receipt"></i> Recent Orders
+      <% if (recentOrders.length) { %><a href="/doctor/orders">View all <i class="fas fa-arrow-right"></i></a><% } %>
+    </div>
+    <div class="table-card">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Order</th>
+              <th>Buyer</th>
+              <th>Items</th>
+              <th>Date</th>
+              <th>Total</th>
+              <th>Payment</th>
+              <th>Status</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (recentOrders.length) { %>
+              <% recentOrders.forEach(order => { %>
+                <%
+                  const first = order.items[0];
+                  const more = order.items.length - 1;
+                %>
+                <tr>
+                  <td><strong><%= order.orderNumber %></strong></td>
+                  <td><%= order.buyerName %></td>
+                  <td>
+                    <%= first ? first.name : '-' %>
+                    <% if (more > 0) { %><span class="text-muted small">+<%= more %> more</span><% } %>
+                  </td>
+                  <td><%= new Date(order.createdAt).toLocaleDateString('en-IN') %></td>
+                  <td>₹ <%= inr(order.sellerTotal) %></td>
+                  <td><span class="badge <%= paymentClass[order.paymentStatus] || 'bg-secondary' %> badge-status"><%= order.paymentStatus %></span></td>
+                  <td><span class="badge <%= orderClass[order.orderStatus] || 'bg-secondary' %> badge-status"><%= order.orderStatus %></span></td>
+                  <td class="text-center">
+                    <a href="/doctor/orders/<%= order._id %>" class="btn btn-sm btn-primary btn-sm-action"><i class="fas fa-eye me-1"></i> View</a>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr><td colspan="8" class="empty-state">No orders yet.</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <i class="fas fa-tag"></i> Recent Products
+      <a href="/doctor/products">View all <i class="fas fa-arrow-right"></i></a>
+    </div>
+    <div class="table-card">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Status</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (recentProducts.length) { %>
+              <% recentProducts.forEach(product => { %>
+                <tr>
+                  <td>
+                    <strong><%= product.name %></strong>
+                    <% if (product.expiryDate) { %>
+                      <div class="<%= new Date(product.expiryDate).getTime() < now ? 'text-danger' : 'text-muted' %>" style="font-size: 0.72rem;">
+                        Exp: <%= new Date(product.expiryDate).toLocaleDateString('en-IN') %>
+                      </div>
+                    <% } %>
+                  </td>
+                  <td><span class="badge bg-light text-dark"><%= product.category %></span></td>
+                  <td>₹ <%= inr(product.price) %></td>
+                  <td><%= product.stock %></td>
+                  <td>
+                    <span class="badge <%= approvalClass[product.approvalStatus] || 'bg-secondary' %> badge-status"><%= product.approvalStatus %></span>
+                    <% if (product.stock <= 0) { %>
+                      <span class="badge bg-danger badge-status">Out of Stock</span>
+                    <% } %>
+                  </td>
+                  <td class="text-center">
+                    <a href="/products/view/<%= product._id %>" class="btn btn-sm btn-primary btn-sm-action"><i class="fas fa-eye me-1"></i> View</a>
+                    <a href="/products/edit/<%= product._id %>" class="btn btn-sm btn-warning btn-sm-action"><i class="fas fa-edit me-1"></i> Edit</a>
+                    <form action="/products/delete/<%= product._id %>" method="POST" class="action-form">
+                      <input type="hidden" name="redirect" value="/doctor/dashboard">
+                      <button type="submit" class="btn btn-sm btn-danger btn-sm-action" onclick="return confirm('Delete this product?')">
+                        <i class="fas fa-trash me-1"></i> Delete
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr><td colspan="6" class="empty-state">No products yet. Add vaccines, medicines or feed to start selling.</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <h4><i class="fas fa-user-doctor me-2" style="color:#0284C7;"></i>Doctor Information</h4>
+      <hr>
+      <p><strong>Name :</strong> Dr. <%= user.fullName %></p>
+      <p><strong>Email :</strong> <%= user.email %></p>
+      <p><strong>Role :</strong> <%= user.role %></p>
+      <% if (user.doctorDetails?.specialization) { %>
+        <p><strong>Specialization :</strong> <%= user.doctorDetails.specialization %></p>
+      <% } %>
+      <% if (user.doctorDetails?.experience != null) { %>
+        <p><strong>Experience :</strong> <%= user.doctorDetails.experience %> years</p>
+      <% } %>
+      <p><strong>Purchases :</strong> <%= stats.purchases.totalOrders %> order<%= stats.purchases.totalOrders === 1 ? '' : 's' %> placed as a buyer</p>
+      <p><strong>Joined :</strong> <%= new Date(user.createdAt).toDateString() %></p>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    (function () {
+      const sidebar = document.getElementById('sidebar');
+      const toggle = document.getElementById('sidebarToggle');
+      const overlay = document.getElementById('sidebarOverlay');
+
+      const openSidebar = () => {
+        sidebar.classList.add('open');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      };
+
+      const closeSidebar = () => {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      };
+
+      toggle.addEventListener('click', () => {
+        sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+      });
+
+      overlay.addEventListener('click', closeSidebar);
+
+      sidebar.querySelectorAll('.nav-link').forEach((link) => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth <= 991) closeSidebar();
+        });
+      });
+
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 991) closeSidebar();
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') closeSidebar();
+      });
+    })();
+  </script>
+</body>
+</html>

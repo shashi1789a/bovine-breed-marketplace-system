@@ -5,7 +5,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { wantsJson } from "../utils/session.js";
-import { isObjectId, respond } from "../utils/http.js";
+import { isObjectId, respond, readFlash } from "../utils/http.js";
 
 const CART_HOME = "/cart";
 
@@ -157,11 +157,13 @@ const getMyCart = asyncHandler(async (req, res) => {
             .json(new ApiResponse(200, payload, "Cart fetched successfully"));
     }
 
-    return res.status(200).render("cart/index", {
-        title: "My Cart",
-        user: req.user,
-        ...payload
-    });
+return res.status(200).render("cart/index", {
+    title: "My Cart",
+    user: req.user,
+    ...payload,
+    success: readFlash(req.query.success),
+    error: readFlash(req.query.error)
+});
 });
 
 const updateCartItem = asyncHandler(async (req, res) => {

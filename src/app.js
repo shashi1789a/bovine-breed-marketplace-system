@@ -8,6 +8,9 @@ import indexRoutes from "./routes/index.routes.js";
 import appRoutes from "./routes/app.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
 import breedRoutes from "./routes/breed.routes.js";
+import googleAuthRoutes from "./routes/googleAuth.routes.js";
+import { ApiError } from "./utils/ApiError.js";
+import { wantsJson } from "./utils/session.js";
 
 const app = express();
 
@@ -23,6 +26,8 @@ app.use(
     })
 );
 
+
+
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(cookieParser());
@@ -31,27 +36,38 @@ app.use(express.static(path.join(__dirname, "../public")));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-app.use("/payments", paymentRoutes);
 app.use("/", indexRoutes);
 app.use("/", appRoutes);
 app.use("/breed", breedRoutes);
+app.use("/payments", paymentRoutes);
+app.use("/auth", googleAuthRoutes);
+app.use((req, res) => {
+    if (wantsJson(req)) {
+        return res.status(404).json({ success: false, message: "Not found" });
+    }
+
+    return res.status(404).render("404", { title: "Page Not Found", user: req.user });
+});
 
 app.use((err, req, res, next) => {
-    console.error(err);   // 👈 ye line add karo
-    
-    const status = err.statusCode || 500;
+    if (res.headersSent) return next(err);
 
-    if (req.accepts(["html", "json"]) === "json" || req.header("Authorization")) {
-        return res.status(status).json({
-            success: false,
-            message: status === 500 ? "Something went wrong" : err.message
-        });
+    const isMulterError = err?.name === "MulterError";
+    const status = isMulterError ? 400 : err.statusCode || 500;
+    const message =
+        err instanceof ApiError || isMulterError ? err.message : "Something went wrong";
+
+    if (status >= 500) console.error(err);
+
+    if (wantsJson(req)) {
+        return res.status(status).json({ success: false, message });
     }
 
     return res.status(status).render("error", {
         title: "Something went wrong",
+        user: req.user,
         status,
-        message: status === 500 ? "Something went wrong" : err.message
+        message
     });
 });
 

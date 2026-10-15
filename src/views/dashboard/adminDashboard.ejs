@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= locals.title || 'Admin Dashboard' %> | BoviNetra</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0284C7;
+      --primary-dark: #0C4A6E;
+      --cta: #F59E0B;
+      --light: #E0F2FE;
+      --text-main: #111827;
+      --text-muted: #6B7280;
+      --border-light: rgba(2, 132, 199, 0.12);
+      --gradient-hero: linear-gradient(135deg, #082F49 0%, #0C4A6E 45%, #0284C7 100%);
+      --gradient-cta: linear-gradient(105deg, #F59E0B, #D97706);
+      --gradient-primary: linear-gradient(135deg, #0284C7, #0EA5E9);
+      --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 8px 28px rgba(0, 0, 0, 0.1);
+      --radius-card: 24px;
+      --radius-pill: 50px;
+      --transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      --font-heading: 'Poppins', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body { background: #F4F9FE; font-family: var(--font-body); display: flex; min-height: 100vh; color: var(--text-main); overflow-x: hidden; }
+    h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); font-weight: 700; }
+
+    .sidebar { width: 260px; min-height: 100vh; background: var(--gradient-hero); color: #fff; position: fixed; inset: 0 auto 0 0; overflow-y: auto; box-shadow: 4px 0 24px rgba(2, 132, 199, 0.15); padding-bottom: 2rem; z-index: 1050; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .sidebar .profile-wrapper { padding: 2rem 1rem 1.2rem; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.12); margin-bottom: 0.5rem; }
+    .sidebar .profile-img { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255, 255, 255, 0.55); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); background: #fff; padding: 2px; }
+    .sidebar .user-name { font-family: var(--font-heading); font-weight: 700; font-size: 1.1rem; margin-top: 0.7rem; }
+    .sidebar .user-role { font-size: 0.72rem; background: rgba(245, 158, 11, 0.22); border: 1px solid rgba(245, 158, 11, 0.4); color: #FCD34D; padding: 0.25rem 0.9rem; border-radius: 30px; display: inline-block; margin-top: 0.35rem; text-transform: capitalize; letter-spacing: 0.06em; font-weight: 600; }
+    .sidebar .nav-link { display: flex; align-items: center; gap: 12px; padding: 0.72rem 1.6rem; color: rgba(255, 255, 255, 0.82); text-decoration: none; transition: var(--transition); border-left: 4px solid transparent; font-weight: 500; font-size: 0.92rem; }
+    .sidebar .nav-link i { width: 22px; font-size: 1.05rem; text-align: center; }
+    .sidebar .nav-link:hover { background: rgba(255, 255, 255, 0.1); color: #fff; border-left-color: var(--cta); }
+    .sidebar .nav-link.active { background: rgba(14, 165, 233, 0.22); border-left-color: var(--cta); color: #fff; font-weight: 600; }
+    .sidebar .nav-link .count { margin-left: auto; background: var(--cta); color: #fff; font-size: 0.68rem; font-weight: 700; border-radius: 20px; padding: 1px 8px; }
+    .sidebar hr { margin: 0.8rem 1.2rem; border-color: rgba(255, 255, 255, 0.12); opacity: 1; }
+
+    .sidebar-toggle { display: none; position: fixed; top: 16px; left: 16px; z-index: 1060; width: 44px; height: 44px; border-radius: 12px; background: var(--gradient-primary); color: #fff; border: none; font-size: 1.2rem; box-shadow: var(--shadow-md); cursor: pointer; }
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(8, 47, 73, 0.55); z-index: 1045; }
+    .sidebar-overlay.active { display: block; }
+
+    .content { margin-left: 260px; padding: 2rem 2.2rem 3rem; flex: 1; min-height: 100vh; min-width: 0; }
+
+    .top-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 1.8rem; background: #fff; padding: 1.2rem 1.8rem; border-radius: var(--radius-card); box-shadow: var(--shadow-sm); border: 1px solid var(--border-light); gap: 1rem; }
+    .top-bar h2 { font-weight: 800; font-size: 1.7rem; margin: 0; letter-spacing: -0.02em; }
+    .top-bar .subhead { color: var(--text-muted); font-size: 0.88rem; font-weight: 500; }
+    .top-bar .btn-group-custom { display: flex; gap: 10px; flex-wrap: wrap; }
+    .top-bar .btn { border-radius: var(--radius-pill); padding: 0.6rem 1.5rem; font-weight: 600; font-size: 0.88rem; border: none; color: #fff; display: inline-flex; align-items: center; gap: 6px; transition: var(--transition); }
+    .top-bar .btn:hover { transform: translateY(-2px); color: #fff; }
+    .top-bar .btn-blue { background: var(--gradient-primary); box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28); }
+    .top-bar .btn-amber { background: var(--gradient-cta); box-shadow: 0 4px 14px rgba(245, 158, 11, 0.32); }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1.2rem; margin-bottom: 1.8rem; }
+    .stat-card { display: block; background: #fff; border-radius: var(--radius-card); padding: 1.4rem 1.6rem 1.5rem; box-shadow: var(--shadow-sm); transition: var(--transition); border: 1px solid var(--border-light); position: relative; overflow: hidden; text-decoration: none; color: inherit; }
+    .stat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); color: inherit; }
+    .stat-card.attention { border-color: rgba(245, 158, 11, 0.5); }
+    .stat-card h6 { font-family: var(--font-body); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 700; margin-bottom: 0.4rem; }
+    .stat-card h2 { font-weight: 800; font-size: 2rem; color: var(--primary-dark); margin: 0; line-height: 1; }
+    .stat-card small { display: block; margin-top: 6px; color: var(--text-muted); font-size: 0.76rem; }
+    .stat-card .stat-icon { position: absolute; top: 1.2rem; right: 1.4rem; font-size: 2rem; opacity: 0.14; color: var(--primary); }
+
+    .section-title { font-family: var(--font-heading); font-weight: 700; font-size: 1.3rem; margin: 2.2rem 0 1.2rem; display: flex; align-items: center; gap: 12px; }
+    .section-title i { color: var(--primary); font-size: 1.2rem; width: 40px; height: 40px; border-radius: 12px; background: var(--light); display: inline-flex; align-items: center; justify-content: center; border: 1px solid rgba(2, 132, 199, 0.15); }
+    .section-title a { margin-left: auto; font-size: 0.85rem; font-weight: 600; color: var(--primary); text-decoration: none; font-family: var(--font-body); }
+
+    .table-card, .panel { background: #fff; border-radius: var(--radius-card); box-shadow: var(--shadow-sm); border: 1px solid var(--border-light); overflow: hidden; }
+    .panel { padding: 1.4rem 1.6rem; height: 100%; }
+    .panel h5 { font-size: 1rem; margin-bottom: 1rem; }
+    .table-card .table { margin-bottom: 0; }
+    .table-card .table thead th { background: #F0F9FF; color: var(--primary-dark); font-family: var(--font-heading); font-weight: 700; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid rgba(2, 132, 199, 0.12); padding: 1rem 1.1rem; white-space: nowrap; }
+    .table-card .table td { padding: 0.9rem 1.1rem; vertical-align: middle; border-bottom: 1px solid #F0F9FF; font-size: 0.9rem; }
+    .table-card .table tr:last-child td { border-bottom: none; }
+
+    .badge-status { font-weight: 600; padding: 0.38rem 0.95rem; border-radius: 40px; font-size: 0.72rem; }
+    .btn-sm-action { border-radius: 30px; padding: 0.3rem 0.9rem; font-size: 0.75rem; font-weight: 600; margin-right: 4px; border: none; }
+    .action-form { display: inline-block; margin: 0; }
+
+    .cell-person { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .cell-person img, .cell-person .thumb-fallback { width: 40px; height: 40px; border-radius: 12px; object-fit: cover; background: #EAF3FB; display: flex; align-items: center; justify-content: center; color: #94A3B8; flex-shrink: 0; }
+    .cell-person .avatar { border-radius: 50%; }
+    .cell-person strong { display: block; font-size: 0.9rem; }
+    .cell-person span { font-size: 0.76rem; color: var(--text-muted); }
+
+    .role-row { margin-bottom: 0.95rem; }
+    .role-row:last-child { margin-bottom: 0; }
+    .role-row .label { display: flex; justify-content: space-between; font-size: 0.84rem; font-weight: 600; margin-bottom: 4px; text-transform: capitalize; }
+    .role-row .label span { color: var(--text-muted); font-weight: 500; text-transform: none; }
+    .role-bar { height: 8px; border-radius: 8px; background: #E8F1F9; overflow: hidden; }
+    .role-bar div { height: 100%; border-radius: 8px; background: var(--gradient-primary); }
+
+    .empty-state { text-align: center; padding: 2.2rem 1rem; color: var(--text-muted); font-size: 0.9rem; }
+
+    @media (max-width: 991px) {
+      .sidebar { transform: translateX(-100%); width: 270px; }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-toggle { display: flex; align-items: center; justify-content: center; }
+      .content { margin-left: 0; padding: 5rem 1.5rem 2.5rem; }
+      .top-bar h2 { font-size: 1.4rem; }
+    }
+
+    @media (max-width: 575px) {
+      .content { padding: 4.5rem 1rem 2rem; }
+      .top-bar { flex-direction: column; align-items: flex-start; padding: 1rem 1.1rem; }
+      .top-bar .btn-group-custom { width: 100%; }
+      .top-bar .btn { flex: 1; justify-content: center; }
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+      .stat-card { padding: 1.1rem; border-radius: 18px; }
+      .stat-card h2 { font-size: 1.4rem; }
+      .section-title { font-size: 1.1rem; }
+      .btn-sm-action i { display: none; }
+    }
+
+    @media (max-width: 400px) { .stats-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<%
+  const inr = (value) =>
+    Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
+  const formatDate = (value) =>
+    value ? new Date(value).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+
+  const roleClass = { admin: 'bg-danger', farmer: 'bg-success', doctor: 'bg-info text-dark', buyer: 'bg-primary', user: 'bg-secondary' };
+
+  const users = stats.users;
+  const products = stats.products;
+  const orders = stats.orders;
+  const roleRows = users.byRole || [];
+  const maxRole = Math.max(...roleRows.map((row) => row.total), 1);
+  const pending = locals.pendingProducts || [];
+  const recent = locals.recentUsers || [];
+%>
+
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar"><i class="fas fa-bars"></i></button>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="sidebar" id="sidebar">
+    <div class="profile-wrapper">
+      <img src="<%= user.avatar || '/images/default-avatar.png' %>" class="profile-img" alt="Avatar">
+      <div class="user-name"><%= user.fullName %></div>
+      <span class="user-role"><%= user.role %></span>
+    </div>
+
+    <hr>
+
+    <a href="/admin/dashboard" class="nav-link active"><i class="fas fa-gauge"></i> Dashboard</a>
+    <a href="/admin/users" class="nav-link"><i class="fas fa-users"></i> Users</a>
+    <a href="/admin/products" class="nav-link"><i class="fas fa-boxes-stacked"></i> Products</a>
+    <a href="/admin/products?status=Pending" class="nav-link">
+      <i class="fas fa-clipboard-check"></i> Pending approvals
+      <% if (products.pending > 0) { %><span class="count"><%= products.pending %></span><% } %>
+    </a>
+    <a href="/products" class="nav-link"><i class="fas fa-store"></i> Marketplace</a>
+    <a href="/breed/detect" class="nav-link"><i class="fas fa-brain"></i> Breed Detector</a>
+    <a href="/profile" class="nav-link"><i class="fas fa-user"></i> My Profile</a>
+    <hr>
+    <a href="/logout" class="nav-link" style="color: rgba(255,200,200,0.85);"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </div>
+
+  <div class="content">
+
+    <div class="top-bar">
+      <div>
+        <h2>Welcome, <%= user.fullName %></h2>
+        <span class="subhead"><i class="far fa-calendar-alt me-1"></i> Admin Dashboard</span>
+      </div>
+      <div class="btn-group-custom">
+        <a href="/admin/products?status=Pending" class="btn btn-amber"><i class="fas fa-clipboard-check"></i> Review products</a>
+        <a href="/admin/users" class="btn btn-blue"><i class="fas fa-users"></i> Manage users</a>
+      </div>
+    </div>
+
+    <% if (locals.success) { %>
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <%= success %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% } %>
+
+    <% if (locals.error) { %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <%= error %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% } %>
+
+    <div class="stats-grid">
+      <a href="/admin/users" class="stat-card">
+        <h6>Total users</h6>
+        <h2><%= users.total %></h2>
+        <small><%= users.active %> active</small>
+        <span class="stat-icon"><i class="fas fa-users"></i></span>
+      </a>
+      <a href="/admin/products" class="stat-card">
+        <h6>Total products</h6>
+        <h2><%= products.total %></h2>
+        <small><%= products.approved %> approved, <%= products.rejected %> rejected</small>
+        <span class="stat-icon"><i class="fas fa-boxes-stacked"></i></span>
+      </a>
+      <a href="/admin/products?status=Pending" class="stat-card <%= products.pending > 0 ? 'attention' : '' %>">
+        <h6>Awaiting approval</h6>
+        <h2><%= products.pending %></h2>
+        <small><%= products.pending > 0 ? 'Needs your review' : 'All caught up' %></small>
+        <span class="stat-icon"><i class="fas fa-clipboard-check"></i></span>
+      </a>
+      <div class="stat-card">
+        <h6>Total orders</h6>
+        <h2><%= orders.totalOrders %></h2>
+        <small><%= orders.deliveredOrders %> delivered, <%= orders.cancelledOrders %> cancelled</small>
+        <span class="stat-icon"><i class="fas fa-receipt"></i></span>
+      </div>
+      <div class="stat-card">
+        <h6>Revenue</h6>
+        <h2>₹ <%= inr(orders.revenue) %></h2>
+        <small>Paid or delivered orders</small>
+        <span class="stat-icon"><i class="fas fa-indian-rupee-sign"></i></span>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <i class="fas fa-clipboard-check"></i> Waiting for approval
+      <% if (products.pending > 0) { %><a href="/admin/products?status=Pending">View all <i class="fas fa-arrow-right"></i></a><% } %>
+    </div>
+    <div class="table-card">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Seller</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Submitted</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (pending.length) { %>
+              <% pending.forEach((product) => { %>
+                <tr>
+                  <td>
+                    <div class="cell-person">
+                      <% if (product.image) { %>
+                        <img src="<%= product.image %>" alt="" loading="lazy">
+                      <% } else { %>
+                        <span class="thumb-fallback"><i class="fas fa-box-open"></i></span>
+                      <% } %>
+                      <strong><%= product.name %></strong>
+                    </div>
+                  </td>
+                  <td>
+                    <%= product.owner ? product.owner.fullName : 'Deleted user' %>
+                    <% if (product.ownerRole) { %><span class="badge bg-light text-dark ms-1" style="text-transform: capitalize;"><%= product.ownerRole %></span><% } %>
+                  </td>
+                  <td><%= product.category %></td>
+                  <td>₹ <%= inr(product.price) %></td>
+                  <td><%= formatDate(product.createdAt) %></td>
+                  <td class="text-center text-nowrap">
+                    <a href="/products/view/<%= product._id %>" class="btn btn-sm btn-primary btn-sm-action"><i class="fas fa-eye me-1"></i> View</a>
+                    <form action="/admin/products/<%= product._id %>/approve" method="POST" class="action-form">
+                      <input type="hidden" name="redirect" value="/admin/dashboard">
+                      <button type="submit" class="btn btn-sm btn-success btn-sm-action"><i class="fas fa-check me-1"></i> Approve</button>
+                    </form>
+                    <button type="button" class="btn btn-sm btn-danger btn-sm-action" data-bs-toggle="modal" data-bs-target="#rejectModal" data-id="<%= product._id %>" data-name="<%= product.name %>">
+                      <i class="fas fa-xmark me-1"></i> Reject
+                    </button>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr><td colspan="6" class="empty-state">No products are waiting for approval.</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+      <div class="col-lg-4">
+        <div class="section-title" style="margin-top: 1rem;"><i class="fas fa-user-group"></i> Users by role</div>
+        <div class="panel">
+          <% if (roleRows.length) { %>
+            <% roleRows.forEach((row) => { %>
+              <div class="role-row">
+                <div class="label"><%= row.role %> <span><%= row.total %> total, <%= row.active %> active</span></div>
+                <div class="role-bar"><div style="width: <%= Math.round((row.total / maxRole) * 100) %>%;"></div></div>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <div class="empty-state">No users yet.</div>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="col-lg-8">
+        <div class="section-title" style="margin-top: 1rem;">
+          <i class="fas fa-user-plus"></i> Newest users
+          <a href="/admin/users">View all <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Joined</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (recent.length) { %>
+                  <% recent.forEach((person) => { %>
+                    <tr>
+                      <td>
+                        <div class="cell-person">
+                          <% if (person.avatar) { %>
+                            <img src="<%= person.avatar %>" alt="" class="avatar" loading="lazy">
+                          <% } else { %>
+                            <span class="thumb-fallback avatar"><i class="fas fa-user"></i></span>
+                          <% } %>
+                          <div>
+                            <strong><%= person.fullName %></strong>
+                            <span>@<%= person.username %> &middot; <%= person.email %></span>
+                          </div>
+                        </div>
+                      </td>
+                      <td><span class="badge <%= roleClass[person.role] || 'bg-secondary' %> badge-status" style="text-transform: capitalize;"><%= person.role %></span></td>
+                      <td>
+                        <% if (person.isActive === false) { %>
+                          <span class="badge bg-secondary badge-status">Disabled</span>
+                        <% } else { %>
+                          <span class="badge bg-success badge-status">Active</span>
+                        <% } %>
+                      </td>
+                      <td><%= formatDate(person.createdAt) %></td>
+                    </tr>
+                  <% }) %>
+                <% } else { %>
+                  <tr><td colspan="4" class="empty-state">No users yet.</td></tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form method="POST" id="rejectForm">
+          <input type="hidden" name="redirect" value="/admin/dashboard">
+          <div class="modal-header">
+            <h5 class="modal-title" id="rejectTitle">Reject product</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="fw-semibold mb-2" id="rejectName"></p>
+            <label for="rejectReason" class="form-label">Reason (the seller will see this)</label>
+            <textarea id="rejectReason" name="reason" class="form-control" rows="3" minlength="3" maxlength="500" required></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-danger">Reject product</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    (function () {
+      const sidebar = document.getElementById('sidebar');
+      const toggle = document.getElementById('sidebarToggle');
+      const overlay = document.getElementById('sidebarOverlay');
+
+      const openSidebar = () => {
+        sidebar.classList.add('open');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      };
+
+      const closeSidebar = () => {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      };
+
+      toggle.addEventListener('click', () => {
+        sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+      });
+
+      overlay.addEventListener('click', closeSidebar);
+
+      sidebar.querySelectorAll('.nav-link').forEach((link) => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth <= 991) closeSidebar();
+        });
+      });
+
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 991) closeSidebar();
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') closeSidebar();
+      });
+
+      const rejectModal = document.getElementById('rejectModal');
+      const rejectForm = document.getElementById('rejectForm');
+      const rejectName = document.getElementById('rejectName');
+      const rejectReason = document.getElementById('rejectReason');
+
+      rejectModal.addEventListener('show.bs.modal', (event) => {
+        const trigger = event.relatedTarget;
+
+        rejectForm.action = '/admin/products/' + trigger.dataset.id + '/reject';
+        rejectName.textContent = trigger.dataset.name;
+        rejectReason.value = '';
+      });
+
+      rejectModal.addEventListener('shown.bs.modal', () => rejectReason.focus());
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= locals.title || 'Cattle Details' %> | BoviNetra</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #0F62AC;
+      --text-main: #1A2C3E;
+      --text-muted: #5A6E7F;
+      --border-light: rgba(15, 98, 172, 0.12);
+      --gradient-cta: linear-gradient(105deg, #F39C12, #E67E22);
+      --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body { font-family: 'Inter', sans-serif; background: #F4F9FE; color: var(--text-main); line-height: 1.5; overflow-x: hidden; }
+    h1, h2, h3, h4, h5 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; }
+
+    .detail-page { padding: 110px 0 70px; min-height: 100vh; }
+
+    .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--primary); text-decoration: none; font-size: 0.86rem; font-weight: 600; margin-bottom: 1rem; }
+
+    .alert-modern { display: flex; align-items: flex-start; gap: 10px; border-radius: 16px; padding: 12px 16px; font-size: 0.88rem; font-weight: 500; margin-bottom: 1.2rem; }
+    .alert-error { background: #FEE2E2; color: #B91C1C; }
+    .alert-success { background: #DCFCE7; color: #166534; }
+    .alert-info { background: #E2E8F0; color: #334155; }
+
+    .panel { background: #fff; border: 1px solid var(--border-light); border-radius: 24px; box-shadow: var(--shadow-sm); padding: 1.5rem 1.7rem; margin-bottom: 1.3rem; }
+    .panel-title { font-size: 1.02rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; }
+    .panel-title i { width: 34px; height: 34px; border-radius: 11px; background: rgba(15, 98, 172, 0.08); color: var(--primary); display: inline-flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+
+    .gallery { padding: 0.9rem; }
+    .stage { position: relative; height: 420px; border-radius: 18px; background: #EAF3FB; overflow: hidden; display: flex; align-items: center; justify-content: center; color: #94A3B8; font-size: 4rem; }
+    .stage img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .stage .sold-ribbon { position: absolute; top: 16px; left: 16px; background: #475569; color: #fff; font-size: 0.78rem; font-weight: 700; padding: 5px 14px; border-radius: 30px; }
+    .strip { display: flex; gap: 10px; margin-top: 0.8rem; flex-wrap: wrap; }
+    .strip button { width: 72px; height: 72px; padding: 0; border: 2px solid transparent; border-radius: 14px; overflow: hidden; background: #EAF3FB; cursor: pointer; opacity: 0.7; transition: opacity 0.2s, border-color 0.2s; }
+    .strip button img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .strip button[aria-current="true"] { border-color: var(--primary); opacity: 1; }
+    .strip button:focus-visible { outline: 3px solid rgba(15, 98, 172, 0.35); }
+
+    .summary h1 { font-size: 1.7rem; margin: 0.2rem 0 2px; word-break: break-word; }
+    .kind { font-size: 0.84rem; font-weight: 600; color: var(--primary); }
+    .alt-name { color: var(--text-muted); font-size: 0.9rem; }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin: 0.9rem 0; }
+    .badge-pill { font-size: 0.74rem; font-weight: 700; padding: 5px 13px; border-radius: 30px; color: #fff; }
+    .badge-pill.available { background: #16A34A; }
+    .badge-pill.sold { background: #475569; }
+    .badge-pill.unlisted { background: #B45309; }
+    .badge-pill.soft { background: #E0F2FE; color: #075985; }
+
+    .price { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 2rem; margin: 0.3rem 0 1rem; }
+    .price.empty { font-size: 1rem; font-weight: 600; color: var(--text-muted); }
+
+    .key-facts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .key-fact { background: #F4F9FE; border-radius: 16px; padding: 0.7rem 1rem; }
+    .key-fact small { display: block; font-size: 0.74rem; color: var(--text-muted); font-weight: 600; }
+    .key-fact strong { font-size: 0.95rem; word-break: break-word; }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 1.3rem; }
+    .actions form { margin: 0; }
+
+    .btn-soft { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 22px; border-radius: 40px; border: 1.5px solid #E2EDF7; background: #fff; color: var(--text-main); font-weight: 600; font-size: 0.86rem; text-decoration: none; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+    .btn-soft:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-soft.danger { color: #B91C1C; }
+    .btn-soft.danger:hover { border-color: #B91C1C; color: #B91C1C; }
+    .btn-fill { display: inline-flex; align-items: center; gap: 8px; padding: 11px 26px; border: none; border-radius: 44px; background: var(--gradient-cta); color: #fff; font-weight: 700; font-size: 0.9rem; text-decoration: none; }
+    .btn-fill:hover { color: #fff; filter: brightness(1.05); }
+
+    .prose { white-space: pre-line; font-size: 0.94rem; color: #2f4052; margin: 0; word-break: break-word; }
+
+    .rows { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 2rem; margin: 0; }
+    .row-item { display: flex; justify-content: space-between; gap: 1rem; padding: 0.7rem 0; border-bottom: 1px solid #EEF4FA; font-size: 0.9rem; }
+    .row-item dt { color: var(--text-muted); font-weight: 500; }
+    .row-item dd { margin: 0; font-weight: 600; text-align: right; word-break: break-word; }
+    .row-item.long { grid-column: 1 / -1; flex-direction: column; gap: 4px; }
+    .row-item.long dd { text-align: left; font-weight: 500; white-space: pre-line; color: #2f4052; }
+
+    .seller { display: flex; align-items: center; gap: 14px; }
+    .seller img, .seller .avatar-fallback { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; background: #EAF3FB; display: flex; align-items: center; justify-content: center; color: #94A3B8; flex-shrink: 0; }
+    .seller strong { display: block; font-size: 0.98rem; }
+    .seller span { font-size: 0.82rem; color: var(--text-muted); }
+
+    .meta-row { display: flex; justify-content: space-between; gap: 1rem; padding: 0.5rem 0; font-size: 0.86rem; }
+    .meta-row span:first-child { color: var(--text-muted); }
+    .meta-row span:last-child { font-weight: 600; text-align: right; }
+
+    @media (max-width: 767px) {
+      .detail-page { padding: 95px 0 50px; }
+      .stage { height: 300px; }
+      .panel { padding: 1.2rem; }
+      .rows { grid-template-columns: 1fr; }
+      .summary h1 { font-size: 1.4rem; }
+      .actions > * { flex: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  </style>
+</head>
+<body>
+<%- include('../../partials/header') %>
+
+<%
+  const inr = (value) =>
+    Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
+  const hasValue = (value) => value !== undefined && value !== null && value !== '';
+
+  const formatDate = (value) =>
+    value ? new Date(value).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+
+  const formatAge = (months) => {
+    const total = Number(months);
+    if (!Number.isFinite(total)) return '';
+    if (total < 12) return total + (total === 1 ? ' month' : ' months');
+    const years = Math.floor(total / 12);
+    const rest = Math.round(total % 12);
+    return years + (years === 1 ? ' year' : ' years') + (rest ? ' ' + rest + (rest === 1 ? ' month' : ' months') : '');
+  };
+
+  const displayName = cattle.name || cattle.breedName;
+  const owner = Boolean(locals.isOwner);
+  const seller = cattle.farmer && typeof cattle.farmer === 'object' ? cattle.farmer : null;
+
+  const gallery = Array.isArray(cattle.images) ? cattle.images.slice() : [];
+  if (!gallery.length && cattle.imageUrl) gallery.push(cattle.imageUrl);
+
+  const origin = [cattle.originState, cattle.originCountry].filter(hasValue).join(', ');
+
+  const keyFacts = [
+    ['Breed type', cattle.breedType],
+    ['Gender', cattle.gender],
+    ['Age', hasValue(cattle.age) ? formatAge(cattle.age) : ''],
+    ['Weight', hasValue(cattle.weight) ? cattle.weight + ' kg' : ''],
+    ['Colour', cattle.color],
+    ['Body size', cattle.bodySize],
+    ['Milk per day', hasValue(cattle.avgMilkPerDay) ? cattle.avgMilkPerDay + ' litres' : ''],
+    ['Origin', origin],
+    ['Health', cattle.healthStatus]
+  ].filter(([, value]) => hasValue(value));
+
+  const chips = [];
+  if (cattle.artificialInsemination === true) chips.push('Suitable for artificial insemination');
+  if (cattle.registeredBreedStatus === true) chips.push('Registered breed');
+  if (cattle.demandLevel) chips.push(cattle.demandLevel + ' market demand');
+
+  const detailSections = [
+    ['Physical characteristics', 'fa-ruler-combined', [
+      ['Average weight, male', 'avgWeightMale', ' kg'],
+      ['Average weight, female', 'avgWeightFemale', ' kg'],
+      ['Height', 'heightCm', ' cm'],
+      ['Skin type', 'skinType'],
+      ['Horn shape', 'hornShape'],
+      ['Ear type', 'earType'],
+      ['Tail length', 'tailLength'],
+      ['Unique features', 'uniqueFeatures']
+    ]],
+    ['Milk production', 'fa-bottle-droplet', [
+      ['Average milk per day', 'avgMilkPerDay', ' litres'],
+      ['Peak lactation yield', 'peakLactationYield', ' litres/day'],
+      ['Lactation period', 'lactationPeriod', ' days'],
+      ['Fat', 'fatPercentage', '%'],
+      ['SNF', 'snf', '%'],
+      ['Milk quality grade', 'milkQualityGrade'],
+      ['Lifetime milk production', 'lifetimeMilkProduction', ' litres']
+    ]],
+    ['Climate and adaptability', 'fa-temperature-half', [
+      ['Suitable climate', 'suitableClimate'],
+      ['Heat tolerance', 'heatToleranceLevel'],
+      ['Drought resistance', 'droughtResistance'],
+      ['Humidity tolerance', 'humidityTolerance'],
+      ['Disease resistance', 'diseaseResistance'],
+      ['Region suitability', 'regionSuitabilityMap']
+    ]],
+    ['Feed and nutrition', 'fa-wheat-awn', [
+      ['Green fodder', 'greenFodderQty', ' kg/day'],
+      ['Dry fodder', 'dryFodderQty', ' kg/day'],
+      ['Water intake', 'waterIntake', ' litres/day'],
+      ['Concentrate feed', 'concentrateFeed'],
+      ['Daily feed requirement', 'dailyFeedRequirement'],
+      ['Special diet during lactation', 'specialDietLactation'],
+      ['Mineral requirement', 'mineralRequirement']
+    ]],
+    ['Breeding and reproduction', 'fa-baby', [
+      ['Age at first calving', 'ageFirstCalving', ' months'],
+      ['Calving interval', 'calvingInterval', ' months'],
+      ['Gestation period', 'gestationPeriod', ' days'],
+      ['Heat cycle length', 'heatCycleDuration', ' days'],
+      ['Fertility rate', 'fertilityRate'],
+      ['Best breeding season', 'bestBreedingSeason']
+    ]],
+    ['Health and care', 'fa-heart-pulse', [
+      ['Disease resistance level', 'diseaseResistanceLevel'],
+      ['Common diseases', 'commonDiseases'],
+      ['Vaccination schedule', 'vaccinationSchedule'],
+      ['Parasite susceptibility', 'parasiteSusceptibility'],
+      ['Preventive care tips', 'preventiveCareTips']
+    ]],
+    ['Economics', 'fa-chart-line', [
+      ['Average market price', 'avgMarketPrice', '', '₹ '],
+      ['Maintenance cost', 'maintenanceCost', '', '₹ '],
+      ['Lifespan', 'lifespan', ' years'],
+      ['Return on investment', 'ROI', '%'],
+      ['Price by age', 'priceByAge'],
+      ['Price by milk production', 'priceByMilkProduction']
+    ]],
+    ['Productivity scores', 'fa-gauge-high', [
+      ['Milk efficiency', 'milkEfficiencyScore'],
+      ['Feed conversion ratio', 'feedConversionRatio'],
+      ['Growth rate', 'growthRate'],
+      ['Reproduction efficiency', 'reproductionEfficiency'],
+      ['Overall productivity', 'overallProductivityScore']
+    ]],
+    ['Regional information', 'fa-map-location-dot', [
+      ['Migration adaptability', 'migrationAdaptability'],
+      ['Popular in states', 'statePopularity'],
+      ['Availability zones', 'availabilityZones'],
+      ['Best regions for farming', 'bestRegionsForFarming']
+    ]],
+    ['Government and certification', 'fa-landmark', [
+      ['Breed certification', 'breedCertification'],
+      ['Government schemes', 'governmentSchemes'],
+      ['NABARD subsidy information', 'NABARDSubsidyInfo']
+    ]]
+  ];
+
+  const formatValue = (value, unit, prefix) =>
+    typeof value === 'number'
+      ? (prefix || '') + value.toLocaleString('en-IN') + (unit || '')
+      : String(value);
+
+  const visibleSections = detailSections
+    .map(([title, icon, fields]) => ({
+      title,
+      icon,
+      rows: fields
+        .filter(([, key]) => hasValue(cattle[key]))
+        .map(([label, key, unit, prefix]) => ({ label, text: formatValue(cattle[key], unit, prefix) }))
+    }))
+    .filter((section) => section.rows.length);
+%>
+
+<main class="detail-page">
+  <div class="container">
+
+    <a href="<%= owner ? '/farmer/cattle' : '/products' %>" class="back-link">
+      <i class="fas fa-arrow-left"></i> <%= owner ? 'Back to my cattle' : 'Back to marketplace' %>
+    </a>
+
+    <% if (locals.success) { %>
+      <div class="alert-modern alert-success" role="status"><i class="fas fa-circle-check mt-1"></i><span><%= success %></span></div>
+    <% } %>
+
+    <% if (locals.error) { %>
+      <div class="alert-modern alert-error" role="alert"><i class="fas fa-circle-exclamation mt-1"></i><span><%= error %></span></div>
+    <% } %>
+
+    <% if (cattle.sold) { %>
+      <div class="alert-modern alert-info" role="status">
+        <i class="fas fa-handshake mt-1"></i>
+        <span>This animal has been sold<%= cattle.soldAt ? ' on ' + formatDate(cattle.soldAt) : '' %>.</span>
+      </div>
+    <% } %>
+
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <section class="panel gallery">
+          <div class="stage" id="stage">
+            <% if (gallery.length) { %>
+              <img src="<%= gallery[0] %>" alt="<%= displayName %>" id="stageImage">
+            <% } else { %>
+              <i class="fas fa-paw" aria-hidden="true"></i>
+            <% } %>
+            <% if (cattle.sold) { %><span class="sold-ribbon">Sold</span><% } %>
+          </div>
+
+          <% if (gallery.length > 1) { %>
+            <div class="strip" role="group" aria-label="Photos">
+              <% gallery.forEach((url, index) => { %>
+                <button type="button" data-src="<%= url %>" aria-label="Show photo <%= index + 1 %>" aria-current="<%= index === 0 ? 'true' : 'false' %>">
+                  <img src="<%= url %>" alt="" loading="lazy">
+                </button>
+              <% }) %>
+            </div>
+          <% } %>
+        </section>
+      </div>
+
+      <div class="col-lg-6">
+        <section class="panel summary">
+          <span class="kind"><%= [cattle.category, cattle.breedType].filter(Boolean).join(' / ') %></span>
+          <h1><%= displayName %></h1>
+          <% if (cattle.name && cattle.breedName) { %><div class="alt-name"><%= cattle.breedName %><%= cattle.scientificName ? ' (' + cattle.scientificName + ')' : '' %></div><% } %>
+
+          <div class="badges">
+            <span class="badge-pill <%= cattle.sold ? 'sold' : 'available' %>"><%= cattle.sold ? 'Sold' : 'Available' %></span>
+            <% if (cattle.isActive === false) { %><span class="badge-pill unlisted">Unlisted</span><% } %>
+            <% chips.forEach((chip) => { %><span class="badge-pill soft"><%= chip %></span><% }) %>
+          </div>
+
+          <% if (hasValue(cattle.price)) { %>
+            <div class="price">₹ <%= inr(cattle.price) %></div>
+          <% } else { %>
+            <div class="price empty">Price not set</div>
+          <% } %>
+
+          <% if (keyFacts.length) { %>
+            <div class="key-facts">
+              <% keyFacts.forEach(([label, value]) => { %>
+                <div class="key-fact"><small><%= label %></small><strong><%= value %></strong></div>
+              <% }) %>
+            </div>
+          <% } %>
+
+          <% if (owner) { %>
+            <div class="actions">
+              <a href="/farmer/cattle/<%= cattle._id %>/edit" class="btn-fill"><i class="fas fa-pen"></i> Edit details</a>
+              <form action="/farmer/cattle/<%= cattle._id %>/delete" method="POST" onsubmit="return confirm('Delete this cattle listing? This cannot be undone.')">
+                <input type="hidden" name="redirect" value="/farmer/cattle">
+                <button type="submit" class="btn-soft danger"><i class="fas fa-trash"></i> Delete</button>
+              </form>
+            </div>
+          <% } %>
+        </section>
+      </div>
+    </div>
+
+    <% if (cattle.description) { %>
+      <section class="panel">
+        <h4 class="panel-title"><i class="fas fa-align-left"></i> About this animal</h4>
+        <p class="prose"><%= cattle.description %></p>
+      </section>
+    <% } %>
+
+    <% visibleSections.forEach((section) => { %>
+      <section class="panel">
+        <h4 class="panel-title"><i class="fas <%= section.icon %>"></i> <%= section.title %></h4>
+        <dl class="rows">
+          <% section.rows.forEach((row) => { %>
+            <div class="row-item <%= row.text.length > 60 ? 'long' : '' %>">
+              <dt><%= row.label %></dt>
+              <dd><%= row.text %></dd>
+            </div>
+          <% }) %>
+        </dl>
+      </section>
+    <% }) %>
+
+    <div class="row g-4">
+      <% if (seller) { %>
+        <div class="col-md-6">
+          <section class="panel mb-0 h-100">
+            <h4 class="panel-title"><i class="fas fa-user"></i> Listed by</h4>
+            <div class="seller">
+              <% if (seller.avatar) { %>
+                <img src="<%= seller.avatar %>" alt="<%= seller.fullName %>" loading="lazy">
+              <% } else { %>
+                <span class="avatar-fallback"><i class="fas fa-user"></i></span>
+              <% } %>
+              <div>
+                <strong><%= seller.fullName %></strong>
+                <span>@<%= seller.username %><%= seller.role ? ' · ' + seller.role : '' %></span>
+                <% if (seller.farmerDetails && (seller.farmerDetails.farmName || seller.farmerDetails.location)) { %>
+                  <br><span><%= [seller.farmerDetails.farmName, seller.farmerDetails.location].filter(Boolean).join(', ') %></span>
+                <% } %>
+              </div>
+            </div>
+          </section>
+        </div>
+      <% } %>
+
+      <div class="<%= seller ? 'col-md-6' : 'col-12' %>">
+        <section class="panel mb-0 h-100">
+          <h4 class="panel-title"><i class="fas fa-circle-info"></i> Listing information</h4>
+          <div class="meta-row"><span>Listed on</span><span><%= formatDate(cattle.createdAt) %></span></div>
+          <% if (owner) { %>
+            <div class="meta-row"><span>Visibility</span><span><%= cattle.isActive === false ? 'Hidden from other users' : 'Visible to other users' %></span></div>
+          <% } %>
+          <% if (cattle.sold && cattle.soldAt) { %>
+            <div class="meta-row"><span>Sold on</span><span><%= formatDate(cattle.soldAt) %></span></div>
+          <% } %>
+        </section>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../../partials/footer') %>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const navbar = document.querySelector('.navbar');
+
+  if (navbar) {
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 20);
+    });
+  }
+
+  const stageImage = document.getElementById('stageImage');
+  const thumbs = Array.from(document.querySelectorAll('.strip button'));
+
+  thumbs.forEach((button) => {
+    button.addEventListener('click', () => {
+      stageImage.src = button.dataset.src;
+      thumbs.forEach((item) => item.setAttribute('aria-current', String(item === button)));
+    });
+  });
+</script>
+</body>
+</html>

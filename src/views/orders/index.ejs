@@ -1,14 +1,422 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders | BoviNetra</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #0F62AC;
+      --text-main: #1A2C3E;
+      --text-muted: #5A6E7F;
+      --border-light: rgba(15, 98, 172, 0.12);
+      --gradient-cta: linear-gradient(105deg, #F39C12, #E67E22);
+      --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.02);
+      --shadow-cta: 0 12px 28px -8px rgba(243, 156, 18, 0.4);
+      --transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F4F9FE;
+      color: var(--text-main);
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, h5 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; }
+
+    .orders-page { padding: 110px 0 70px; min-height: 100vh; }
+
+    .page-head { margin-bottom: 1.5rem; }
+    .page-head h2 { font-size: 1.7rem; margin: 0; }
+    .page-head p { color: var(--text-muted); font-size: 0.88rem; margin: 2px 0 0; }
+
+    .order-card {
+      background: #fff;
+      border-radius: 24px;
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.2rem;
+      overflow: hidden;
+    }
+
+    .order-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 1rem 1.4rem;
+      background: #F0F9FF;
+      border-bottom: 1px solid #E2EDF7;
+    }
+
+    .order-head strong { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.98rem; }
+    .order-head small { display: block; color: var(--text-muted); font-size: 0.78rem; }
+
+    .badges { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .badge-status {
+      font-weight: 600;
+      padding: 0.38rem 0.95rem;
+      border-radius: 40px;
+      font-size: 0.72rem;
+    }
+
+    .order-body { padding: 1.1rem 1.4rem; }
+
+    .line-item { display: flex; gap: 12px; align-items: center; padding: 0.55rem 0; }
+
+    .line-image {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: #EAF3FB;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #94A3B8;
+      flex-shrink: 0;
+    }
+
+    .line-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .line-info { flex: 1; min-width: 0; }
+
+    .line-info strong {
+      display: block;
+      font-size: 0.9rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .line-info span { font-size: 0.78rem; color: var(--text-muted); }
+    .line-total { font-weight: 700; font-size: 0.9rem; white-space: nowrap; }
+
+    .more-items { font-size: 0.8rem; color: var(--text-muted); padding: 0.3rem 0 0.1rem 68px; }
+
+    .tracker { display: flex; align-items: center; margin: 0.9rem 0 0.2rem; }
+
+    .step { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 0 0 auto; }
+
+    .step i {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #E2EDF7;
+      color: #94A3B8;
+      font-size: 0.72rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .step span { font-size: 0.7rem; font-weight: 600; color: var(--text-muted); }
+    .step.done i { background: var(--primary); color: #fff; }
+    .step.done span { color: var(--text-main); }
+
+    .bar { flex: 1; height: 3px; background: #E2EDF7; margin: 0 6px 18px; border-radius: 3px; }
+    .bar.done { background: var(--primary); }
+
+    .note {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      margin-top: 0.8rem;
+      background: #F1F5F9;
+      color: #475569;
+    }
+
+    .note.refund { background: #E0F2FE; color: #075985; }
+
+    .order-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 1rem 1.4rem;
+      border-top: 1px solid #EEF4FA;
+    }
+
+    .foot-meta { font-size: 0.82rem; color: var(--text-muted); }
+    .foot-meta strong { color: var(--text-main); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; }
+
+    .foot-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .btn-soft {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      border-radius: 40px;
+      border: 1.5px solid #E2EDF7;
+      background: #fff;
+      color: var(--text-main);
+      font-weight: 600;
+      font-size: 0.82rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-soft:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-soft.danger { color: #B91C1C; }
+    .btn-soft.danger:hover { border-color: #B91C1C; color: #B91C1C; }
+
+    .btn-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      border-radius: 44px;
+      background: var(--gradient-cta);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.92rem;
+      text-decoration: none;
+      box-shadow: var(--shadow-cta);
+      transition: var(--transition);
+    }
+
+    .btn-cta:hover { transform: translateY(-2px); color: #fff; }
+
+    .alert-modern {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      border-radius: 16px;
+      padding: 12px 16px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      margin-bottom: 1.2rem;
+    }
+
+    .alert-error { background: #FEE2E2; color: #B91C1C; }
+    .alert-success { background: #DCFCE7; color: #166534; }
+
+    .empty-orders {
+      text-align: center;
+      padding: 4rem 1.5rem;
+      background: #fff;
+      border-radius: 24px;
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .empty-orders i {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      background: #EAF3FB;
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .empty-orders h3 { font-size: 1.4rem; margin-bottom: 6px; }
+    .empty-orders p { color: var(--text-muted); margin-bottom: 1.4rem; }
+
+    .pager { display: flex; justify-content: center; align-items: center; gap: 14px; margin-top: 1.6rem; flex-wrap: wrap; }
+    .pager span { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+    .btn-soft.disabled { opacity: 0.45; pointer-events: none; }
+
+    @media (max-width: 575px) {
+      .orders-page { padding: 95px 0 50px; }
+      .order-head, .order-body, .order-foot { padding-left: 1rem; padding-right: 1rem; }
+      .foot-actions { width: 100%; }
+      .foot-actions .btn-soft { flex: 1; justify-content: center; }
+    }
+  </style>
 </head>
 <body>
-<h1>My Orders</h1>
-<% orders.forEach(order => { %>
-  <p>Total: ₹<%= order.totalAmount %> | <%= order.paymentMethod %></p>
-<% }) %>
+<%- include('../partials/header') %>
+
+<%
+  const inr = (value) =>
+    Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
+  const formatDate = (value) =>
+    new Date(value).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+  const orderClass = { Placed: 'bg-info text-dark', Shipped: 'bg-primary', Delivered: 'bg-success', Cancelled: 'bg-secondary' };
+  const paymentClass = { Paid: 'bg-success', Pending: 'bg-warning text-dark', Initiated: 'bg-warning text-dark', Failed: 'bg-danger', Refunded: 'bg-info text-dark' };
+  const methodLabel = { COD: 'Cash on Delivery', RAZORPAY: 'Paid online' };
+  const stepIndex = { Placed: 0, Shipped: 1, Delivered: 2 };
+  const steps = [['Placed', 'fa-check'], ['Shipped', 'fa-truck'], ['Delivered', 'fa-box-open']];
+  const VISIBLE_ITEMS = 3;
+%>
+
+<main class="orders-page">
+  <div class="container">
+
+    <div class="page-head">
+      <h2>My Orders</h2>
+      <p><%= pagination.total %> order<%= pagination.total === 1 ? '' : 's' %> in total</p>
+    </div>
+
+    <% if (locals.success) { %>
+      <div class="alert-modern alert-success" role="status">
+        <i class="fas fa-circle-check mt-1"></i><span><%= success %></span>
+      </div>
+    <% } %>
+
+    <% if (locals.error) { %>
+      <div class="alert-modern alert-error" role="alert">
+        <i class="fas fa-circle-exclamation mt-1"></i><span><%= error %></span>
+      </div>
+    <% } %>
+
+    <% if (!orders.length) { %>
+      <div class="empty-orders">
+        <i class="fas fa-bag-shopping"></i>
+        <h3>No orders yet</h3>
+        <p>When you place an order, it will show up here.</p>
+        <a href="/products" class="btn-cta"><i class="fas fa-store"></i> Go to Marketplace</a>
+      </div>
+    <% } else { %>
+
+      <% orders.forEach(order => { %>
+        <%
+          const cancelled = order.orderStatus === 'Cancelled';
+          const current = stepIndex[order.orderStatus];
+          const canCancel = order.orderStatus === 'Placed' || order.orderStatus === 'Pending';
+          const shown = order.items.slice(0, VISIBLE_ITEMS);
+          const hidden = order.items.length - shown.length;
+          const refunded = order.paymentStatus === 'Refunded';
+          const cancelMessage = order.paymentStatus === 'Paid'
+            ? 'Cancel this order? Your payment will be refunded.'
+            : 'Cancel this order?';
+        %>
+
+        <article class="order-card">
+          <div class="order-head">
+            <div>
+              <strong><%= order.orderNumber %></strong>
+              <small>Placed on <%= formatDate(order.placedAt || order.createdAt) %></small>
+            </div>
+            <div class="badges">
+              <span class="badge <%= orderClass[order.orderStatus] || 'bg-secondary' %> badge-status"><%= order.orderStatus %></span>
+              <span class="badge <%= paymentClass[order.paymentStatus] || 'bg-secondary' %> badge-status"><%= order.paymentStatus %></span>
+            </div>
+          </div>
+
+          <div class="order-body">
+            <% shown.forEach(item => { %>
+              <div class="line-item">
+                <div class="line-image">
+                  <% if (item.image) { %>
+                    <img src="<%= item.image %>" alt="<%= item.name %>" loading="lazy">
+                  <% } else { %>
+                    <i class="fas fa-box-open"></i>
+                  <% } %>
+                </div>
+                <div class="line-info">
+                  <strong><%= item.name %></strong>
+                  <span><%= item.quantity %> × ₹ <%= inr(item.price) %><%= item.unit ? ' / ' + item.unit : '' %></span>
+                </div>
+                <div class="line-total">₹ <%= inr(item.lineTotal) %></div>
+              </div>
+            <% }) %>
+
+            <% if (hidden > 0) { %>
+              <div class="more-items">+ <%= hidden %> more item<%= hidden === 1 ? '' : 's' %></div>
+            <% } %>
+
+            <% if (!cancelled && current !== undefined) { %>
+              <div class="tracker" aria-label="Order progress">
+                <% steps.forEach(([label, icon], index) => { %>
+                  <div class="step <%= index <= current ? 'done' : '' %>">
+                    <i class="fas <%= icon %>"></i><span><%= label %></span>
+                  </div>
+                  <% if (index < steps.length - 1) { %>
+                    <div class="bar <%= index < current ? 'done' : '' %>"></div>
+                  <% } %>
+                <% }) %>
+              </div>
+            <% } %>
+
+            <% if (cancelled) { %>
+              <div class="note">
+                <i class="fas fa-circle-info mt-1"></i>
+                <span>
+                  Cancelled<%= order.cancelledAt ? ' on ' + formatDate(order.cancelledAt) : '' %>
+                  <%= order.cancelledBy ? 'by ' + (order.cancelledBy === 'buyer' ? 'you' : order.cancelledBy) : '' %>.
+                  <%= order.cancellationReason ? order.cancellationReason : '' %>
+                </span>
+              </div>
+            <% } %>
+
+            <% if (refunded) { %>
+              <div class="note refund">
+                <i class="fas fa-rotate-left mt-1"></i>
+                <span>Refund of ₹ <%= inr(order.refund?.amount || order.totalAmount) %> has been initiated. It usually reaches your account in 5-7 working days.</span>
+              </div>
+            <% } %>
+          </div>
+
+          <div class="order-foot">
+            <div class="foot-meta">
+              Sold by <%= order.seller?.fullName || 'Seller' %> &middot; <%= methodLabel[order.paymentMethod] || order.paymentMethod %><br>
+              Total <strong>₹ <%= inr(order.totalAmount) %></strong>
+            </div>
+
+            <div class="foot-actions">
+              <a href="/orders/<%= order._id %>" class="btn-soft"><i class="fas fa-eye"></i> View Details</a>
+
+              <% if (canCancel) { %>
+                <form action="/orders/<%= order._id %>/cancel" method="POST" onsubmit="return confirm('<%= cancelMessage %>')">
+                  <button type="submit" class="btn-soft danger"><i class="fas fa-ban"></i> Cancel Order</button>
+                </form>
+              <% } %>
+            </div>
+          </div>
+        </article>
+      <% }) %>
+
+      <% if (pagination.totalPages > 1) { %>
+        <nav class="pager" aria-label="Orders pages">
+          <a href="/orders?page=<%= pagination.page - 1 %>" class="btn-soft <%= pagination.hasPrev ? '' : 'disabled' %>">
+            <i class="fas fa-arrow-left"></i> Previous
+          </a>
+          <span>Page <%= pagination.page %> of <%= pagination.totalPages %></span>
+          <a href="/orders?page=<%= pagination.page + 1 %>" class="btn-soft <%= pagination.hasNext ? '' : 'disabled' %>">
+            Next <i class="fas fa-arrow-right"></i>
+          </a>
+        </nav>
+      <% } %>
+
+    <% } %>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const navbar = document.querySelector('.navbar');
+
+  if (navbar) {
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 20);
+    });
+  }
+</script>
 </body>
 </html>

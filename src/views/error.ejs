@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <%- include('./partials/header') %>
+
+<main class="container d-flex flex-column align-items-center justify-content-center text-center"
+      style="min-height: 70vh; padding-top: 120px;">
+
+  <div class="mb-3" style="font-size: 4rem; font-weight: 800; opacity: 0.15;"><%= status %></div>
+
+  <h1 class="h3 mb-2">Something went wrong</h1>
+  <p class="text-muted mb-4" style="max-width: 480px;"><%= message %></p>
+
+  <div class="d-flex gap-2">
+    <a href="/" class="btn btn-cta-nav">Go to homepage</a>
+    <a href="javascript:history.back()" class="btn btn-outline-secondary">Go back</a>
+  </div>
+
+</main>
+
+<%- include('./partials/footer') %>
+
+</body>
+</html>

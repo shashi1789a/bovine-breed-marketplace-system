@@ -81,7 +81,13 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
 
     return next();
 });
+export const optionalAuth = asyncHandler(async (req, res, next) => {
+    const user = await authenticate(req, res);
 
+    if (user) req.user = user;
+
+    return next();
+});
 export const authorizeRoles = (...allowedRoles) => {
     const allowed = allowedRoles.map((role) => role.toLowerCase());
 
@@ -97,6 +103,9 @@ export const authorizeRoles = (...allowedRoles) => {
         return next();
     };
 };
+
+
+
 
 export const isAdmin = authorizeRoles("admin");
 export const isFarmer = authorizeRoles("farmer");

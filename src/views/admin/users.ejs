@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <%
+  function buildQuery(page) {
+    var params = new URLSearchParams();
+    if (filters.q) params.set('q', filters.q);
+    if (filters.role) params.set('role', filters.role);
+    if (filters.status) params.set('status', filters.status);
+    params.set('page', page);
+    return '/admin/users?' + params.toString();
+  }
+%>
+
+<%- include('../partials/header') %>
+
+<main class="container" style="padding-top: 120px; padding-bottom: 60px;">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Manage Users</h1>
+    <span class="text-muted"><%= totalUsers %> user<%= totalUsers === 1 ? '' : 's' %></span>
+  </div>
+
+  <% if (locals.success) { %><div class="alert alert-success"><%= success %></div><% } %>
+  <% if (locals.error) { %><div class="alert alert-danger"><%= error %></div><% } %>
+
+  <form action="/admin/users" method="GET" class="row g-2 align-items-end mb-4">
+
+    <div class="col-md-5">
+      <label class="form-label small mb-1">Search</label>
+      <input type="text" class="form-control" name="q" placeholder="Name, username or email"
+             value="<%= filters.q || '' %>">
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label small mb-1">Role</label>
+      <select class="form-select" name="role">
+        <option value="">All roles</option>
+        <% roles.forEach(function (r) { %>
+          <option value="<%= r %>" <%= filters.role === r ? 'selected' : '' %> class="text-capitalize"><%= r %></option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label small mb-1">Status</label>
+      <select class="form-select" name="status">
+        <option value="">All</option>
+        <option value="active" <%= filters.status === 'active' ? 'selected' : '' %>>Active</option>
+        <option value="inactive" <%= filters.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+      </select>
+    </div>
+
+    <div class="col-md-1 d-grid">
+      <button type="submit" class="btn btn-cta-nav"><i class="fas fa-filter"></i></button>
+    </div>
+
+  </form>
+
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Last login</th>
+            <th>Joined</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (!users.length) { %>
+            <tr><td colspan="7" class="text-center text-muted py-4">No users found.</td></tr>
+          <% } %>
+
+          <% users.forEach(function (row) { %>
+            <% var isSelf = String(user._id) === String(row._id); %>
+            <tr>
+              <td class="d-flex align-items-center gap-2">
+                <% if (row.avatar) { %>
+                  <img src="<%= row.avatar %>" alt="" style="width:32px;height:32px;object-fit:cover;border-radius:50%;">
+                <% } %>
+                <%= row.fullName %>
+                <% if (isSelf) { %><span class="badge bg-light text-dark">You</span><% } %>
+              </td>
+              <td><%= row.email %></td>
+              <td class="text-capitalize"><%= row.role %></td>
+              <td>
+                <% if (row.isActive === false) { %>
+                  <span class="badge bg-secondary">Inactive</span>
+                <% } else { %>
+                  <span class="badge bg-success">Active</span>
+                <% } %>
+              </td>
+              <td class="small text-muted">
+                <%= row.lastLoginAt ? new Date(row.lastLoginAt).toLocaleDateString('en-IN') : '—' %>
+              </td>
+              <td class="small text-muted"><%= new Date(row.createdAt).toLocaleDateString('en-IN') %></td>
+              <td class="text-end">
+                <% if (!isSelf) { %>
+                  <div class="d-flex gap-1 justify-content-end flex-wrap">
+
+                    <form action="/admin/users/<%= row._id %>/role" method="POST" class="d-flex gap-1">
+                      <select name="role" class="form-select form-select-sm" style="width:auto;">
+                        <% roles.forEach(function (r) { %>
+                          <option value="<%= r %>" <%= row.role === r ? 'selected' : '' %>><%= r %></option>
+                        <% }) %>
+                      </select>
+                      <button type="submit" class="btn btn-sm btn-outline-primary">Set</button>
+                    </form>
+
+                    <% if (row.isActive === false) { %>
+                      <form action="/admin/users/<%= row._id %>/status" method="POST">
+                        <input type="hidden" name="isActive" value="true">
+                        <button type="submit" class="btn btn-sm btn-outline-success">Activate</button>
+                      </form>
+                    <% } else { %>
+                      <form action="/admin/users/<%= row._id %>/status" method="POST"
+                            onsubmit="return confirm('Deactivate this account? They will be logged out everywhere.');">
+                        <input type="hidden" name="isActive" value="false">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Deactivate</button>
+                      </form>
+                    <% } %>
+
+                  </div>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <% if (pagination.totalPages > 1) { %>
+    <nav class="mt-4">
+      <ul class="pagination justify-content-center">
+        <li class="page-item <%= pagination.hasPrev ? '' : 'disabled' %>">
+          <a class="page-link" href="<%= buildQuery(pagination.page - 1) %>">Previous</a>
+        </li>
+        <li class="page-item disabled">
+          <span class="page-link">Page <%= pagination.page %> of <%= pagination.totalPages %></span>
+        </li>
+        <li class="page-item <%= pagination.hasNext ? '' : 'disabled' %>">
+          <a class="page-link" href="<%= buildQuery(pagination.page + 1) %>">Next</a>
+        </li>
+      </ul>
+    </nav>
+  <% } %>
+
+</main>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

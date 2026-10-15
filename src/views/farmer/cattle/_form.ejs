@@ -1,0 +1,507 @@
+    <%
+  const source = locals.formData || {};
+  const current = locals.cattle || null;
+  const isEdit = mode === 'edit';
+  const MAX_IMAGES = 6;
+
+  const last = (value) => (Array.isArray(value) ? value[value.length - 1] : value);
+
+  const val = (name) => {
+    const raw = source[name] !== undefined ? last(source[name]) : current ? current[name] : undefined;
+    return raw === undefined || raw === null ? '' : raw;
+  };
+
+  const on = (name, fallback) => {
+    if (source[name] !== undefined) return String(last(source[name])) === 'true';
+    if (current && typeof current[name] === 'boolean') return current[name];
+    return fallback;
+  };
+
+  const existingImages = isEdit && Array.isArray(current.images) ? current.images : [];
+  const removed = [].concat(source.removeImages || []);
+
+  const categoryOptions = locals.categories && locals.categories.length ? locals.categories : ['Cow', 'Buffalo'];
+  const colours = ['Red', 'Brown', 'Black', 'White', 'Grey', 'Fawn', 'Mixed'];
+
+  const text = (name, label, max, extra = {}) => ({ type: 'text', name, label, max, ...extra });
+  const area = (name, label, max, extra = {}) => ({ type: 'textarea', name, label, max, ...extra });
+  const num = (name, label, extra = {}) => ({ type: 'number', name, label, min: 0, ...extra });
+  const pick = (name, label, options, extra = {}) => ({ type: 'select', name, label, options, ...extra });
+  const flag = (name, label, hint, extra = {}) => ({ type: 'flag', name, label, hint, ...extra });
+
+  const sections = [
+    {
+      title: 'Basic details', icon: 'fa-id-card', open: true,
+      fields: [
+        text('breedName', 'Breed name', 120, { required: true, placeholder: 'e.g. Gir, Murrah, Sahiwal' }),
+        text('name', 'Animal name or tag', 100, { placeholder: 'Optional' }),
+        pick('category', 'Category', categoryOptions, { required: true }),
+        pick('breedType', 'Breed type', ['Milch', 'Dual-purpose', 'Draught']),
+        pick('gender', 'Gender', ['Male', 'Female']),
+        num('age', 'Age (months)', { max: 600 }),
+        num('weight', 'Weight (kg)', { max: 2000 }),
+        pick('color', 'Colour', colours),
+        pick('bodySize', 'Body size', ['Small', 'Medium', 'Large']),
+        text('scientificName', 'Scientific name', 150),
+        text('originCountry', 'Origin country', 100),
+        text('originState', 'Origin state', 100),
+        text('healthStatus', 'Health status', 100, { placeholder: 'e.g. Healthy, fully vaccinated' }),
+        area('description', 'Description', 2000, { placeholder: 'Tell buyers what makes this animal worth buying' })
+      ]
+    },
+    {
+      title: 'Price and listing', icon: 'fa-indian-rupee-sign', open: true,
+      fields: [
+        num('price', 'Price (₹)'),
+        flag('isActive', 'Listed for sale', 'Unlisted cattle are hidden from other users.', { fallback: true }),
+        flag('sold', 'Mark as sold', 'Sold cattle stay in your list and are shown as sold.', { only: 'edit' })
+      ]
+    },
+    {
+      title: 'Physical characteristics', icon: 'fa-ruler-combined',
+      fields: [
+        num('avgWeightMale', 'Average weight, male (kg)', { max: 2000 }),
+        num('avgWeightFemale', 'Average weight, female (kg)', { max: 2000 }),
+        num('heightCm', 'Height (cm)', { max: 250 }),
+        pick('skinType', 'Skin type', ['Loose', 'Tight']),
+        text('hornShape', 'Horn shape', 100),
+        text('earType', 'Ear type', 100),
+        text('tailLength', 'Tail length', 100),
+        area('uniqueFeatures', 'Unique features', 1000)
+      ]
+    },
+    {
+      title: 'Milk production', icon: 'fa-bottle-droplet',
+      fields: [
+        num('avgMilkPerDay', 'Average milk per day (litres)', { max: 100 }),
+        num('peakLactationYield', 'Peak lactation yield (litres/day)', { max: 150 }),
+        num('lactationPeriod', 'Lactation period (days)', { max: 1000 }),
+        num('fatPercentage', 'Fat (%)', { max: 100 }),
+        num('snf', 'SNF (%)', { max: 100 }),
+        text('milkQualityGrade', 'Milk quality grade', 50),
+        num('lifetimeMilkProduction', 'Lifetime milk production (litres)')
+      ]
+    },
+    {
+      title: 'Climate and adaptability', icon: 'fa-temperature-half',
+      fields: [
+        pick('suitableClimate', 'Suitable climate', ['Hot', 'Cold', 'Humid']),
+        text('heatToleranceLevel', 'Heat tolerance', 100, { placeholder: 'e.g. High' }),
+        text('droughtResistance', 'Drought resistance', 100),
+        text('humidityTolerance', 'Humidity tolerance', 100),
+        text('diseaseResistance', 'Disease resistance', 200),
+        area('regionSuitabilityMap', 'Region suitability', 500)
+      ]
+    },
+    {
+      title: 'Feed and nutrition', icon: 'fa-wheat-awn',
+      fields: [
+        num('greenFodderQty', 'Green fodder (kg/day)'),
+        num('dryFodderQty', 'Dry fodder (kg/day)'),
+        num('waterIntake', 'Water intake (litres/day)'),
+        text('concentrateFeed', 'Concentrate feed', 200),
+        area('dailyFeedRequirement', 'Daily feed requirement', 300),
+        area('specialDietLactation', 'Special diet during lactation', 500),
+        area('mineralRequirement', 'Mineral requirement', 500)
+      ]
+    },
+    {
+      title: 'Breeding and reproduction', icon: 'fa-baby',
+      fields: [
+        num('ageFirstCalving', 'Age at first calving (months)'),
+        num('calvingInterval', 'Calving interval (months)'),
+        num('gestationPeriod', 'Gestation period (days)'),
+        num('heatCycleDuration', 'Heat cycle length (days)'),
+        text('fertilityRate', 'Fertility rate', 100),
+        text('bestBreedingSeason', 'Best breeding season', 100),
+        flag('artificialInsemination', 'Suitable for artificial insemination')
+      ]
+    },
+    {
+      title: 'Health and care', icon: 'fa-heart-pulse',
+      fields: [
+        text('diseaseResistanceLevel', 'Disease resistance level', 100),
+        area('commonDiseases', 'Common diseases', 1000),
+        area('vaccinationSchedule', 'Vaccination schedule', 1000),
+        area('parasiteSusceptibility', 'Parasite susceptibility', 500),
+        area('preventiveCareTips', 'Preventive care tips', 1000)
+      ]
+    },
+    {
+      title: 'Economics', icon: 'fa-chart-line',
+      fields: [
+        num('avgMarketPrice', 'Average market price (₹)'),
+        num('maintenanceCost', 'Maintenance cost (₹)'),
+        num('lifespan', 'Lifespan (years)'),
+        num('ROI', 'Return on investment (%)', { min: null }),
+        pick('demandLevel', 'Market demand', ['High', 'Medium', 'Low']),
+        area('priceByAge', 'Price by age', 500),
+        area('priceByMilkProduction', 'Price by milk production', 500)
+      ]
+    },
+    {
+      title: 'Productivity scores', icon: 'fa-gauge-high',
+      fields: [
+        num('milkEfficiencyScore', 'Milk efficiency score'),
+        num('feedConversionRatio', 'Feed conversion ratio'),
+        num('growthRate', 'Growth rate'),
+        num('reproductionEfficiency', 'Reproduction efficiency'),
+        num('overallProductivityScore', 'Overall productivity score')
+      ]
+    },
+    {
+      title: 'Regional information', icon: 'fa-map-location-dot',
+      fields: [
+        text('migrationAdaptability', 'Migration adaptability', 200),
+        area('statePopularity', 'Popular in states', 500),
+        area('availabilityZones', 'Availability zones', 500),
+        area('bestRegionsForFarming', 'Best regions for farming', 500)
+      ]
+    },
+    {
+      title: 'Government and certification', icon: 'fa-landmark',
+      fields: [
+        flag('registeredBreedStatus', 'Registered breed'),
+        text('breedCertification', 'Breed certification', 200),
+        area('governmentSchemes', 'Government schemes', 1000),
+        area('NABARDSubsidyInfo', 'NABARD subsidy information', 1000)
+      ]
+    }
+  ];
+
+  const formAction = isEdit ? '/farmer/cattle/' + current._id + '/edit' : '/farmer/cattle/add';
+  const cancelHref = isEdit ? '/farmer/cattle/' + current._id : '/farmer/cattle';
+%>
+
+<style>
+  :root {
+    --primary: #0F62AC;
+    --text-main: #1A2C3E;
+    --text-muted: #5A6E7F;
+    --border-light: rgba(15, 98, 172, 0.12);
+    --gradient-cta: linear-gradient(105deg, #F39C12, #E67E22);
+    --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.02);
+    --shadow-cta: 0 12px 28px -8px rgba(243, 156, 18, 0.4);
+  }
+
+  body { font-family: 'Inter', sans-serif; background: #F4F9FE; color: var(--text-main); line-height: 1.5; overflow-x: hidden; }
+  h2, h4 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; }
+
+  .form-page { padding: 110px 0 40px; min-height: 100vh; }
+  .form-page .container { max-width: 1040px; }
+
+  .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--primary); text-decoration: none; font-size: 0.86rem; font-weight: 600; margin-bottom: 1rem; }
+  .page-head h2 { font-size: 1.7rem; margin: 0; }
+  .page-head p { color: var(--text-muted); font-size: 0.9rem; margin: 2px 0 1.4rem; }
+
+  .alert-modern { display: flex; align-items: flex-start; gap: 10px; border-radius: 16px; padding: 12px 16px; font-size: 0.88rem; font-weight: 500; margin-bottom: 1.2rem; background: #FEE2E2; color: #B91C1C; }
+
+  .card-block { background: #fff; border: 1px solid var(--border-light); border-radius: 22px; box-shadow: var(--shadow-sm); padding: 1.4rem 1.6rem; margin-bottom: 1rem; }
+  .block-title { font-size: 1.02rem; margin: 0 0 0.3rem; display: flex; align-items: center; gap: 10px; }
+  .block-title i, .sec summary i.lead { width: 34px; height: 34px; border-radius: 11px; background: rgba(15, 98, 172, 0.08); color: var(--primary); display: inline-flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+  .muted { color: var(--text-muted); font-size: 0.82rem; }
+
+  .dropzone { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; border: 2px dashed #CFE0F1; border-radius: 18px; padding: 1rem 1.2rem; margin-top: 0.9rem; background: #F8FBFF; transition: border-color 0.2s, background 0.2s; }
+  .dropzone.over { border-color: var(--primary); background: #EEF6FD; }
+
+  .thumbs { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 0.9rem; }
+  .thumb, .existing-image { position: relative; width: 104px; height: 104px; border-radius: 16px; overflow: hidden; background: #EAF3FB; border: 1px solid var(--border-light); }
+  .thumb img, .existing-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .thumb button { position: absolute; top: 5px; right: 5px; width: 24px; height: 24px; border: none; border-radius: 50%; background: rgba(15, 23, 42, 0.75); color: #fff; font-size: 1rem; line-height: 1; cursor: pointer; }
+  .existing-image { cursor: pointer; margin: 0; }
+  .existing-image input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .existing-image span { position: absolute; inset: auto 0 0 0; padding: 4px 0; text-align: center; font-size: 0.7rem; font-weight: 600; color: #fff; background: rgba(15, 23, 42, 0.62); }
+  .existing-image:has(input:checked) img { opacity: 0.3; filter: grayscale(1); }
+  .existing-image:has(input:checked) span { background: #B91C1C; }
+  .existing-image:has(input:focus-visible) { outline: 3px solid rgba(15, 98, 172, 0.35); }
+
+  .note-error { margin-top: 0.8rem; padding: 8px 12px; border-radius: 12px; background: #FEF3C7; color: #92400E; font-size: 0.82rem; }
+
+  .tools { display: flex; justify-content: flex-end; margin: 0.4rem 0 0.8rem; }
+
+  .sec { background: #fff; border: 1px solid var(--border-light); border-radius: 22px; box-shadow: var(--shadow-sm); margin-bottom: 0.8rem; overflow: hidden; }
+  .sec summary { list-style: none; display: flex; align-items: center; gap: 12px; padding: 1rem 1.4rem; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 1rem; }
+  .sec summary::-webkit-details-marker { display: none; }
+  .sec summary:focus-visible { outline: 3px solid rgba(15, 98, 172, 0.3); outline-offset: -3px; border-radius: 22px; }
+  .sec summary .chev { margin-left: auto; color: var(--text-muted); font-size: 0.8rem; transition: transform 0.2s; }
+  .sec[open] summary .chev { transform: rotate(180deg); }
+  .sec[open] summary { border-bottom: 1px solid #EEF4FA; }
+  .sec-body { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem 1.1rem; padding: 1.3rem 1.4rem 1.5rem; }
+
+  .field { min-width: 0; }
+  .field.wide, .field.flag { grid-column: 1 / -1; }
+  .field label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; }
+  .field label em { color: #B91C1C; font-style: normal; }
+
+  .field input[type=text], .field input[type=number], .field select, .field textarea { width: 100%; background: #fff; border: 1.5px solid #E2EDF7; border-radius: 14px; padding: 10px 14px; font-size: 0.92rem; color: var(--text-main); transition: border-color 0.2s, box-shadow 0.2s; }
+  .field textarea { resize: vertical; min-height: 84px; }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(15, 98, 172, 0.12); }
+
+  .switch { position: relative; display: flex; align-items: center; gap: 12px; margin: 0; padding: 0.75rem 1rem; border: 1.5px solid #E2EDF7; border-radius: 16px; background: #fff; cursor: pointer; }
+  .switch input[type=checkbox] { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .track { width: 42px; height: 24px; border-radius: 24px; background: #CBD5E1; position: relative; flex-shrink: 0; transition: background 0.2s; }
+  .track::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform 0.2s; }
+  .switch input:checked ~ .track { background: var(--primary); }
+  .switch input:checked ~ .track::after { transform: translateX(18px); }
+  .switch input:focus-visible ~ .track { outline: 3px solid rgba(15, 98, 172, 0.3); outline-offset: 2px; }
+  .switch-text strong { display: block; font-size: 0.9rem; color: var(--text-main); }
+  .switch-text small { color: var(--text-muted); font-size: 0.78rem; }
+
+  .action-bar { position: sticky; bottom: 0; z-index: 5; display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.2rem; padding: 0.9rem 1.2rem; background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(10px); border: 1px solid var(--border-light); border-radius: 20px; box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.06); }
+
+  .btn-soft { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 22px; border-radius: 40px; border: 1.5px solid #E2EDF7; background: #fff; color: var(--text-main); font-weight: 600; font-size: 0.86rem; text-decoration: none; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+  .btn-soft:hover { border-color: var(--primary); color: var(--primary); }
+  .btn-save { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 30px; border: none; border-radius: 44px; background: var(--gradient-cta); color: #fff; font-weight: 700; font-size: 0.92rem; box-shadow: var(--shadow-cta); cursor: pointer; }
+  .btn-save:disabled { opacity: 0.7; cursor: not-allowed; }
+
+  @media (max-width: 991px) { .sec-body { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 575px) {
+    .form-page { padding: 95px 0 30px; }
+    .card-block { padding: 1.2rem; }
+    .sec-body { grid-template-columns: 1fr; padding: 1.1rem 1.1rem 1.3rem; }
+    .sec summary { padding: 0.9rem 1.1rem; }
+    .action-bar { padding: 0.7rem; }
+    .action-bar > * { flex: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<form id="cattleForm" action="<%= formAction %>" method="POST" enctype="multipart/form-data">
+
+  <section class="card-block">
+    <h4 class="block-title"><i class="fas fa-images"></i> Photos</h4>
+    <p class="muted mb-0">Add up to <%= MAX_IMAGES %> clear photos. Buyers decide faster when they can see the whole animal.</p>
+
+    <% if (existingImages.length) { %>
+      <p class="muted mt-3 mb-0">Current photos. Select a photo to remove it.</p>
+      <div class="thumbs">
+        <% existingImages.forEach((url) => { %>
+          <label class="existing-image">
+            <img src="<%= url %>" alt="Current cattle photo" loading="lazy">
+            <input type="checkbox" name="removeImages" value="<%= url %>" <%= removed.includes(url) ? 'checked' : '' %>>
+            <span>Remove</span>
+          </label>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <div class="dropzone" id="dropzone">
+      <input type="file" id="images" name="images" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden>
+      <button type="button" class="btn-soft" id="pickImages"><i class="fas fa-cloud-arrow-up"></i> Choose photos</button>
+      <span class="muted" id="imageHint">Drag photos here or choose them from your device.</span>
+    </div>
+
+    <div class="note-error" id="imageProblem" role="alert" hidden></div>
+    <div class="thumbs" id="imagePreview"></div>
+  </section>
+
+  <div class="tools">
+    <button type="button" class="btn-soft" id="toggleAll"><i class="fas fa-up-down"></i> <span>Expand all sections</span></button>
+  </div>
+
+  <% sections.forEach((section) => { %>
+    <details class="sec" <%= section.open ? 'open' : '' %>>
+      <summary>
+        <i class="fas <%= section.icon %> lead"></i>
+        <%= section.title %>
+        <i class="fas fa-chevron-down chev"></i>
+      </summary>
+
+      <div class="sec-body">
+        <% section.fields.forEach((f) => { %>
+          <% if (f.only && f.only !== mode) { return; } %>
+
+          <% if (f.type === 'flag') { %>
+            <div class="field flag">
+              <label class="switch">
+                <input type="hidden" name="<%= f.name %>" value="false">
+                <input type="checkbox" name="<%= f.name %>" value="true" <%= on(f.name, f.fallback === true) ? 'checked' : '' %>>
+                <span class="track"></span>
+                <span class="switch-text">
+                  <strong><%= f.label %></strong>
+                  <% if (f.hint) { %><small><%= f.hint %></small><% } %>
+                </span>
+              </label>
+            </div>
+          <% } else { %>
+            <div class="field <%= f.type === 'textarea' ? 'wide' : '' %>">
+              <label for="<%= f.name %>"><%= f.label %><% if (f.required) { %> <em>*</em><% } %></label>
+
+              <% if (f.type === 'select') { %>
+                <select id="<%= f.name %>" name="<%= f.name %>" <%= f.required ? 'required' : '' %>>
+                  <option value="">Select</option>
+                  <% f.options.forEach((option) => { %>
+                    <option value="<%= option %>" <%= String(val(f.name)) === option ? 'selected' : '' %>><%= option %></option>
+                  <% }) %>
+                </select>
+              <% } else if (f.type === 'textarea') { %>
+                <textarea id="<%= f.name %>" name="<%= f.name %>" rows="3" maxlength="<%= f.max %>" placeholder="<%= f.placeholder || '' %>"><%= val(f.name) %></textarea>
+              <% } else if (f.type === 'number') { %>
+                <input type="number" id="<%= f.name %>" name="<%= f.name %>" value="<%= val(f.name) %>" min="<%= f.min ?? '' %>" max="<%= f.max ?? '' %>" step="any" inputmode="decimal">
+              <% } else { %>
+                <input type="text" id="<%= f.name %>" name="<%= f.name %>" value="<%= val(f.name) %>" maxlength="<%= f.max %>" placeholder="<%= f.placeholder || '' %>" <%= f.required ? 'required' : '' %>>
+              <% } %>
+            </div>
+          <% } %>
+        <% }) %>
+      </div>
+    </details>
+  <% }) %>
+
+  <div class="action-bar">
+    <a href="<%= cancelHref %>" class="btn-soft">Cancel</a>
+    <button type="submit" class="btn-save" id="saveButton">
+      <i class="fas fa-floppy-disk"></i> <span><%= isEdit ? 'Save changes' : 'Add cattle' %></span>
+    </button>
+  </div>
+</form>
+
+<script>
+  (function () {
+    const MAX_IMAGES = <%= MAX_IMAGES %>;
+    const MAX_SIZE = 5 * 1024 * 1024;
+    const ALLOWED = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    const SAVE_LABEL = <%- JSON.stringify(isEdit ? 'Save changes' : 'Add cattle') %>;
+
+    const form = document.getElementById('cattleForm');
+    const input = document.getElementById('images');
+    const pickButton = document.getElementById('pickImages');
+    const zone = document.getElementById('dropzone');
+    const preview = document.getElementById('imagePreview');
+    const hint = document.getElementById('imageHint');
+    const problem = document.getElementById('imageProblem');
+    const saveButton = document.getElementById('saveButton');
+    const toggleAll = document.getElementById('toggleAll');
+    const removeBoxes = Array.from(form.querySelectorAll('input[name="removeImages"]'));
+
+    let files = [];
+
+    const slots = () => MAX_IMAGES - removeBoxes.filter((box) => !box.checked).length;
+
+    const showProblem = (messages) => {
+      problem.hidden = messages.length === 0;
+      problem.textContent = messages.join(' ');
+    };
+
+    const render = () => {
+      const transfer = new DataTransfer();
+      files.forEach((file) => transfer.items.add(file));
+      input.files = transfer.files;
+
+      preview.replaceChildren();
+
+      files.forEach((file, index) => {
+        const item = document.createElement('div');
+        item.className = 'thumb';
+
+        const image = document.createElement('img');
+        image.alt = file.name;
+        image.src = URL.createObjectURL(file);
+        image.addEventListener('load', () => URL.revokeObjectURL(image.src));
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.innerHTML = '&times;';
+        button.setAttribute('aria-label', 'Remove ' + file.name);
+        button.addEventListener('click', () => {
+          files.splice(index, 1);
+          showProblem([]);
+          render();
+        });
+
+        item.append(image, button);
+        preview.append(item);
+      });
+
+      const free = Math.max(0, slots() - files.length);
+      hint.textContent = free + ' of ' + MAX_IMAGES + ' photo slots free. JPG, PNG, WEBP or GIF, up to 5 MB each.';
+    };
+
+    const addFiles = (incoming) => {
+      const messages = [];
+
+      Array.from(incoming).forEach((file) => {
+        if (!ALLOWED.includes(file.type)) {
+          messages.push(file.name + ' is not a supported image type.');
+          return;
+        }
+
+        if (file.size > MAX_SIZE) {
+          messages.push(file.name + ' is larger than 5 MB.');
+          return;
+        }
+
+        if (files.length >= slots()) {
+          messages.push('You can add up to ' + MAX_IMAGES + ' photos in total.');
+          return;
+        }
+
+        files.push(file);
+      });
+
+      showProblem(Array.from(new Set(messages)));
+      render();
+    };
+
+    pickButton.addEventListener('click', () => input.click());
+
+    input.addEventListener('change', () => {
+      const chosen = Array.from(input.files);
+      input.value = '';
+      addFiles(chosen);
+    });
+
+    ['dragenter', 'dragover'].forEach((name) => {
+      zone.addEventListener(name, (event) => {
+        event.preventDefault();
+        zone.classList.add('over');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach((name) => {
+      zone.addEventListener(name, (event) => {
+        event.preventDefault();
+        zone.classList.remove('over');
+      });
+    });
+
+    zone.addEventListener('drop', (event) => addFiles(event.dataTransfer.files));
+
+    removeBoxes.forEach((box) => {
+      box.addEventListener('change', () => {
+        if (files.length > slots()) {
+          files = files.slice(0, Math.max(0, slots()));
+          showProblem(['Some new photos were removed to stay within the ' + MAX_IMAGES + ' photo limit.']);
+        }
+
+        render();
+      });
+    });
+
+    form.addEventListener('invalid', (event) => {
+      const section = event.target.closest('details');
+      if (section) section.open = true;
+    }, true);
+
+    form.addEventListener('submit', () => {
+      saveButton.disabled = true;
+      saveButton.querySelector('span').textContent = 'Saving...';
+    });
+
+    window.addEventListener('pageshow', () => {
+      saveButton.disabled = false;
+      saveButton.querySelector('span').textContent = SAVE_LABEL;
+    });
+
+    toggleAll.addEventListener('click', () => {
+      const sections = Array.from(form.querySelectorAll('details.sec'));
+      const open = sections.some((section) => !section.open);
+
+      sections.forEach((section) => { section.open = open; });
+      toggleAll.querySelector('span').textContent = open ? 'Collapse all sections' : 'Expand all sections';
+    });
+
+    render();
+  })();
+</script>
+

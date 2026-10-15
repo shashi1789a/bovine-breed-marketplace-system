@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | BoviNetra</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #0F62AC;
+      --text-main: #1A2C3E;
+      --text-muted: #5A6E7F;
+      --border-light: rgba(15, 98, 172, 0.12);
+      --gradient-cta: linear-gradient(105deg, #F39C12, #E67E22);
+      --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.02);
+      --shadow-cta: 0 12px 28px -8px rgba(243, 156, 18, 0.4);
+      --transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F4F9FE;
+      color: var(--text-main);
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, h5 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; }
+
+    .checkout-page { padding: 110px 0 70px; min-height: 100vh; }
+
+    .page-head h2 { font-size: 1.7rem; margin: 0; }
+    .page-head p { color: var(--text-muted); font-size: 0.88rem; margin: 2px 0 1.5rem; }
+
+    .panel {
+      background: #fff;
+      border-radius: 24px;
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-sm);
+      padding: 1.6rem 1.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .panel-title {
+      font-size: 1.05rem;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-title i {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: rgba(15, 98, 172, 0.08);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+    }
+
+    .field label small { font-weight: 400; }
+
+    .field input, .field select {
+      width: 100%;
+      background: #fff;
+      border: 1.5px solid #E2EDF7;
+      border-radius: 14px;
+      padding: 11px 14px;
+      font-size: 0.92rem;
+      transition: var(--transition);
+    }
+
+    .field input:focus, .field select:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(15, 98, 172, 0.12);
+    }
+
+    .pay-option {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 1rem 1.1rem;
+      border: 1.5px solid #E2EDF7;
+      border-radius: 18px;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-bottom: 10px;
+    }
+
+    .pay-option:last-child { margin-bottom: 0; }
+    .pay-option:hover { border-color: var(--primary); }
+    .pay-option:has(input:checked) { border-color: var(--primary); background: #F2F8FE; }
+    .pay-option input { accent-color: var(--primary); width: 18px; height: 18px; flex-shrink: 0; }
+
+    .pay-option i {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: rgba(15, 98, 172, 0.08);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .pay-option strong { display: block; font-size: 0.92rem; }
+    .pay-option span { font-size: 0.78rem; color: var(--text-muted); }
+
+    .summary { position: sticky; top: 100px; }
+
+    .shipment { border-top: 1px solid #EEF4FA; padding-top: 1rem; margin-top: 1rem; }
+    .shipment:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+
+    .shipment-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.7rem;
+    }
+
+    .shipment-label span { text-transform: capitalize; }
+
+    .line-item { display: flex; gap: 12px; align-items: center; margin-bottom: 0.8rem; }
+
+    .line-image {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background: #EAF3FB;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #94A3B8;
+      flex-shrink: 0;
+    }
+
+    .line-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .line-info { flex: 1; min-width: 0; }
+
+    .line-info strong {
+      display: block;
+      font-size: 0.86rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .line-info span { font-size: 0.76rem; color: var(--text-muted); }
+    .line-total { font-weight: 700; font-size: 0.88rem; white-space: nowrap; }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.86rem;
+      padding: 0.3rem 0;
+      color: var(--text-muted);
+    }
+
+    .summary-row strong { color: var(--text-main); }
+
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #EEF4FA;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      font-weight: 800;
+      font-size: 1.15rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .btn-pay {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      margin-top: 1.2rem;
+      padding: 14px;
+      border: none;
+      border-radius: 44px;
+      background: var(--gradient-cta);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      box-shadow: var(--shadow-cta);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .btn-pay:hover:not(:disabled) { transform: translateY(-2px); }
+    .btn-pay:disabled { opacity: 0.7; cursor: not-allowed; }
+
+    .alert-modern {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      border-radius: 16px;
+      padding: 12px 16px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      margin-bottom: 1.2rem;
+      background: #FEE2E2;
+      color: #B91C1C;
+    }
+
+    .alert-modern[hidden] { display: none; }
+
+    @media (max-width: 991px) {
+      .summary { position: static; }
+    }
+
+    @media (max-width: 575px) {
+      .checkout-page { padding: 95px 0 50px; }
+      .panel { padding: 1.3rem 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+<%- include('../partials/header') %>
+
+<%
+  const inr = (value) =>
+    Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
+  const states = [
+    'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat',
+    'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh',
+    'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab',
+    'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh',
+    'Uttarakhand', 'West Bengal', 'Andaman and Nicobar Islands', 'Chandigarh',
+    'Dadra and Nagar Haveli and Daman and Diu', 'Delhi', 'Jammu and Kashmir', 'Ladakh',
+    'Lakshadweep', 'Puducherry'
+  ];
+%>
+
+<main class="checkout-page">
+  <div class="container">
+
+    <div class="page-head">
+      <h2>Checkout</h2>
+      <p>Enter your delivery address and choose how you want to pay.</p>
+    </div>
+
+    <% if (locals.error) { %>
+      <div class="alert-modern" role="alert">
+        <i class="fas fa-circle-exclamation mt-1"></i><span><%= error %></span>
+      </div>
+    <% } %>
+
+    <div class="alert-modern" id="formAlert" role="alert" hidden></div>
+
+    <form
+      id="checkoutForm"
+      novalidate
+      data-name="<%= user.fullName %>"
+      data-email="<%= user.email %>"
+    >
+      <div class="row g-4">
+        <div class="col-lg-7">
+          <section class="panel">
+            <h4 class="panel-title"><i class="fas fa-location-dot"></i> Delivery Address</h4>
+
+            <div class="row g-3">
+              <div class="col-md-6 field">
+                <label for="fullName">Full name</label>
+                <input type="text" id="fullName" name="fullName" maxlength="100" autocomplete="name" value="<%= user.fullName %>" required>
+              </div>
+
+              <div class="col-md-6 field">
+                <label for="phone">Mobile number</label>
+                <input type="tel" id="phone" name="phone" maxlength="10" inputmode="numeric" autocomplete="tel-national" placeholder="10 digit mobile number" required>
+              </div>
+
+              <div class="col-12 field">
+                <label for="line1">Address line 1</label>
+                <input type="text" id="line1" name="line1" maxlength="200" autocomplete="address-line1" placeholder="House no., street, village" value="<%= user.buyerDetails?.address || '' %>" required>
+              </div>
+
+              <div class="col-12 field">
+                <label for="line2">Address line 2 <small>(optional)</small></label>
+                <input type="text" id="line2" name="line2" maxlength="200" autocomplete="address-line2">
+              </div>
+
+              <div class="col-12 field">
+                <label for="landmark">Landmark <small>(optional)</small></label>
+                <input type="text" id="landmark" name="landmark" maxlength="100">
+              </div>
+
+              <div class="col-md-5 field">
+                <label for="city">City</label>
+                <input type="text" id="city" name="city" maxlength="80" autocomplete="address-level2" required>
+              </div>
+
+              <div class="col-md-4 field">
+                <label for="state">State</label>
+                <select id="state" name="state" autocomplete="address-level1" required>
+                  <option value="">Select state</option>
+                  <% states.forEach(state => { %>
+                    <option value="<%= state %>"><%= state %></option>
+                  <% }) %>
+                </select>
+              </div>
+
+              <div class="col-md-3 field">
+                <label for="pincode">Pincode</label>
+                <input type="text" id="pincode" name="pincode" maxlength="6" inputmode="numeric" autocomplete="postal-code" required>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h4 class="panel-title"><i class="fas fa-wallet"></i> Payment Method</h4>
+
+            <label class="pay-option">
+              <input type="radio" name="paymentMethod" value="RAZORPAY" checked>
+              <i class="fas fa-credit-card"></i>
+              <div>
+                <strong>Pay online</strong>
+                <span>UPI, cards, net banking and wallets via Razorpay</span>
+              </div>
+            </label>
+
+            <label class="pay-option">
+              <input type="radio" name="paymentMethod" value="COD">
+              <i class="fas fa-money-bill-wave"></i>
+              <div>
+                <strong>Cash on Delivery</strong>
+                <span>Pay in cash when your order arrives</span>
+              </div>
+            </label>
+          </section>
+        </div>
+
+        <div class="col-lg-5">
+          <section class="panel summary">
+            <h4 class="panel-title"><i class="fas fa-bag-shopping"></i> Order Summary</h4>
+
+            <% groups.forEach((group, index) => { %>
+              <div class="shipment">
+                <div class="shipment-label">
+                  Shipment <%= index + 1 %> of <%= groups.length %> &middot; <span><%= group.sellerRole %></span>
+                </div>
+
+                <% group.items.forEach(item => { %>
+                  <div class="line-item">
+                    <div class="line-image">
+                      <% if (item.image) { %>
+                        <img src="<%= item.image %>" alt="<%= item.name %>">
+                      <% } else { %>
+                        <i class="fas fa-box-open"></i>
+                      <% } %>
+                    </div>
+
+                    <div class="line-info">
+                      <strong><%= item.name %></strong>
+                      <span><%= item.quantity %> × ₹ <%= inr(item.price) %><%= item.unit ? ' / ' + item.unit : '' %></span>
+                    </div>
+
+                    <div class="line-total">₹ <%= inr(item.lineTotal) %></div>
+                  </div>
+                <% }) %>
+
+                <div class="summary-row"><span>Subtotal</span><strong>₹ <%= inr(group.subtotal) %></strong></div>
+                <div class="summary-row">
+                  <span>Shipping</span>
+                  <strong><%= group.shippingTotal > 0 ? '₹ ' + inr(group.shippingTotal) : 'Free' %></strong>
+                </div>
+              </div>
+            <% }) %>
+
+            <div class="summary-total">
+              <span>Total</span>
+              <span>₹ <%= inr(totalAmount) %></span>
+            </div>
+
+            <button type="submit" class="btn-pay" id="payButton" data-total="<%= inr(totalAmount) %>">
+              <i class="fas fa-lock"></i> <span></span>
+            </button>
+
+            <p class="text-muted mt-3 mb-0" style="font-size: 0.76rem;">
+              <% if (groups.length > 1) { %>
+                Your items come from <%= groups.length %> sellers, so they will be placed as <%= groups.length %> separate orders.
+              <% } else { %>
+                Prices and stock are checked again when you place the order.
+              <% } %>
+            </p>
+
+            <a href="/cart" class="d-inline-block mt-3" style="font-size: 0.85rem; color: var(--primary); text-decoration: none;">
+              <i class="fas fa-arrow-left me-1"></i> Back to cart
+            </a>
+          </section>
+        </div>
+      </div>
+    </form>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const navbar = document.querySelector('.navbar');
+
+  if (navbar) {
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 20);
+    });
+  }
+
+  const form = document.getElementById('checkoutForm');
+  const alertBox = document.getElementById('formAlert');
+  const payButton = document.getElementById('payButton');
+  const buttonLabel = payButton.querySelector('span');
+  const total = payButton.dataset.total;
+
+  const PHONE_PATTERN = /^[6-9]\d{9}$/;
+  const PINCODE_PATTERN = /^[1-9]\d{5}$/;
+
+  let submitting = false;
+
+  const selectedMethod = () => form.elements.paymentMethod.value;
+
+  const idleLabel = () =>
+    selectedMethod() === 'COD' ? `Place Order · ₹ ${total}` : `Pay ₹ ${total}`;
+
+  const setBusy = (busy, label) => {
+    submitting = busy;
+    payButton.disabled = busy;
+    buttonLabel.textContent = busy ? label : idleLabel();
+  };
+
+  const showError = (message) => {
+    alertBox.innerHTML = '<i class="fas fa-circle-exclamation mt-1"></i><span></span>';
+    alertBox.querySelector('span').textContent = message;
+    alertBox.hidden = false;
+    alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  const clearError = () => {
+    alertBox.hidden = true;
+    alertBox.textContent = '';
+  };
+
+  const readAddress = () => {
+    const data = {};
+
+    new FormData(form).forEach((value, key) => {
+      if (key !== 'paymentMethod') data[key] = String(value).trim();
+    });
+
+    return data;
+  };
+
+  const validate = (address) => {
+    if (!address.fullName) return 'Please enter your full name.';
+    if (!PHONE_PATTERN.test(address.phone)) return 'Enter a valid 10 digit mobile number.';
+    if (!address.line1) return 'Please enter your address.';
+    if (!address.city) return 'Please enter your city.';
+    if (!address.state) return 'Please select your state.';
+    if (!PINCODE_PATTERN.test(address.pincode)) return 'Enter a valid 6 digit pincode.';
+    return null;
+  };
+
+  const postJson = async (url, body) => {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(body)
+    });
+
+    let payload = null;
+
+    try {
+      payload = await response.json();
+    } catch (error) {
+      payload = null;
+    }
+
+    if (!response.ok) {
+      throw new Error(payload?.message || 'Something went wrong. Please try again.');
+    }
+
+    return payload;
+  };
+
+  const goToOrders = (message) => {
+    window.location.href = `/orders?success=${encodeURIComponent(message)}`;
+  };
+
+  const placeCodOrder = async (address) => {
+    setBusy(true, 'Placing order...');
+    await postJson('/orders/checkout/cod', address);
+    goToOrders('Order placed successfully.');
+  };
+
+  const payOnline = async (address) => {
+    if (typeof Razorpay === 'undefined') {
+      throw new Error('Online payment is unavailable right now. Please try again or choose Cash on Delivery.');
+    }
+
+    setBusy(true, 'Preparing payment...');
+
+    const { data } = await postJson('/orders/checkout/razorpay', address);
+
+    const checkout = new Razorpay({
+      key: data.keyId,
+      amount: data.amount,
+      currency: data.currency,
+      order_id: data.razorpayOrderId,
+      name: 'BoviNetra',
+      description: 'Order payment',
+      prefill: {
+        name: address.fullName,
+        email: form.dataset.email,
+        contact: address.phone
+      },
+      theme: { color: '#0F62AC' },
+      handler: async (response) => {
+        setBusy(true, 'Confirming payment...');
+
+        try {
+          await postJson('/orders/checkout/razorpay/verify', {
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature
+          });
+
+          goToOrders('Payment successful. Your order has been placed.');
+        } catch (error) {
+          setBusy(false);
+          showError('Your payment was received but we could not confirm it yet. Please check My Orders in a minute before paying again.');
+        }
+      },
+      modal: {
+        ondismiss: () => {
+          setBusy(false);
+          showError('Payment was not completed. Your items stay reserved for 15 minutes.');
+        }
+      }
+    });
+
+    checkout.on('payment.failed', (response) => {
+      setBusy(false);
+      showError(response.error?.description || 'Payment failed. Please try again.');
+    });
+
+    checkout.open();
+  };
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    if (submitting) return;
+
+    clearError();
+
+    const address = readAddress();
+    const problem = validate(address);
+
+    if (problem) return showError(problem);
+
+    try {
+      if (selectedMethod() === 'COD') {
+        await placeCodOrder(address);
+      } else {
+        await payOnline(address);
+      }
+    } catch (error) {
+      setBusy(false);
+      showError(error.message);
+    }
+  });
+
+  form.querySelectorAll('input[name="paymentMethod"]').forEach((radio) => {
+    radio.addEventListener('change', () => setBusy(false));
+  });
+
+  ['phone', 'pincode'].forEach((name) => {
+    form.elements[name].addEventListener('input', (event) => {
+      event.target.value = event.target.value.replace(/\D/g, '');
+    });
+  });
+
+  setBusy(false);
+</script>
+</body>
+</html>

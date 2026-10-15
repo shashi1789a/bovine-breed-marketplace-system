@@ -646,105 +646,152 @@
 </head>
 <body>
 
-  <!-- Mobile Sidebar Toggle -->
-  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
-    <i class="fas fa-bars"></i>
-  </button>
+ <%
+  const inr = (value) => Number(value || 0).toLocaleString('en-IN');
+  const approvalClass = { Approved: 'bg-success', Pending: 'bg-warning text-dark', Rejected: 'bg-danger' };
+  const orderClass = { Placed: 'bg-info text-dark', Shipped: 'bg-primary', Delivered: 'bg-success', Cancelled: 'bg-secondary' };
+%>
 
-  <!-- Mobile Sidebar Overlay -->
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-  <!-- ========== SIDEBAR ========== -->
   <div class="sidebar" id="sidebar">
     <div class="profile-wrapper">
-      <img
-        src="<%= user.avatar || '/images/default-avatar.png' %>"
-        class="profile-img"
-        alt="Avatar"
-      >
+      <img src="<%= user.avatar || '/images/default-avatar.png' %>" class="profile-img" alt="Avatar">
       <div class="user-name"><%= user.fullName %></div>
       <span class="user-role"><%= user.role %></span>
     </div>
 
     <hr>
 
-    <a href="/api/v1/farmer/dashboard" class="nav-link active">
-      <i class="fas fa-home"></i> Dashboard
-    </a>
-    <a href="/api/v1/farmer/profile" class="nav-link">
-      <i class="fas fa-user"></i> My Profile
-    </a>
-    <a href="/api/v1/farmer/products" class="nav-link">
-      <i class="fas fa-box"></i> My Products
-    </a>
-    <a href="/api/v1/farmer/products/add" class="nav-link">
-      <i class="fas fa-plus-circle"></i> Add Product
-    </a>
-    <a href="/api/v1/farmer/cattles" class="nav-link">
-      <i class="fas fa-paw"></i> My Cattles
-    </a>
-    <a href="/api/v1/farmer/cattles/add" class="nav-link">
-      <i class="fas fa-plus-circle"></i> Add Cattle
-    </a>
-    <a href="/api/v1/farmer/purchases" class="nav-link">
-      <i class="fas fa-shopping-cart"></i> Purchases
-    </a>
-    <a href="/api/v1/users/profile" class="nav-link">
-      <i class="fas fa-cog"></i> Account Settings
-    </a>
+    <a href="/farmer/dashboard" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="/profile" class="nav-link"><i class="fas fa-user"></i> My Profile</a>
+    <a href="/farmer/products" class="nav-link"><i class="fas fa-box"></i> My Products</a>
+    <a href="/products/add" class="nav-link"><i class="fas fa-plus-circle"></i> Add Product</a>
+    <a href="/farmer/cattle" class="nav-link"><i class="fas fa-paw"></i> My Cattle</a>
+    <a href="/farmer/cattle/add" class="nav-link"><i class="fas fa-plus-circle"></i> Add Cattle</a>
+    <a href="/farmer/orders" class="nav-link"><i class="fas fa-receipt"></i> Orders Received</a>
+    <a href="/orders" class="nav-link"><i class="fas fa-shopping-cart"></i> My Purchases</a>
+    <a href="/products" class="nav-link"><i class="fas fa-store"></i> Marketplace</a>
+    <a href="/breed/detect" class="nav-link"><i class="fas fa-brain"></i> Breed Detector</a>
+    <a href="/update-account" class="nav-link"><i class="fas fa-cog"></i> Account Settings</a>
     <hr>
-    <a href="/api/v1/users/logout" class="nav-link" style="color: rgba(255,200,200,0.85);">
-      <i class="fas fa-sign-out-alt"></i> Logout
-    </a>
+    <a href="/logout" class="nav-link" style="color: rgba(255,200,200,0.85);"><i class="fas fa-sign-out-alt"></i> Logout</a>
   </div>
 
-  <!-- ========== MAIN CONTENT ========== -->
   <div class="content">
 
-    <!-- Top bar -->
     <div class="top-bar">
       <div>
         <h2>Welcome, <%= user.fullName %></h2>
         <span class="subhead"><i class="far fa-calendar-alt me-1"></i> Farmer Dashboard</span>
       </div>
       <div class="btn-group-custom">
-        <a href="/api/v1/farmer/products/add" class="btn btn-success">
-          <i class="fas fa-plus-circle"></i> Add Product
-        </a>
-        <a href="/api/v1/farmer/cattles/add" class="btn btn-primary">
-          <i class="fas fa-plus-circle"></i> Add Cattle
-        </a>
+        <a href="/products/add" class="btn btn-success"><i class="fas fa-plus-circle"></i> Add Product</a>
+        <a href="/farmer/cattle/add" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Add Cattle</a>
       </div>
     </div>
 
-    <!-- Stats -->
+    <% if (success) { %>
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <%= success %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% } %>
+
+    <% if (error) { %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <%= error %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% } %>
+
+    <% if (warnings.length) { %>
+      <div class="alert alert-warning" role="alert">
+        Some sections could not be loaded: <%= warnings.join(', ') %>.
+      </div>
+    <% } %>
+
+    <% if (alerts.length) { %>
+      <div class="mb-4">
+        <% alerts.forEach(alert => { %>
+          <a href="<%= alert.link %>" class="alert alert-<%= alert.level %> d-flex justify-content-between align-items-center text-decoration-none mb-2">
+            <span><%= alert.message %></span>
+            <i class="fas fa-chevron-right"></i>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+
     <div class="stats-grid">
       <div class="stat-card">
         <h6>Total Products</h6>
-        <h2><%= stats.totalProducts %></h2>
+        <h2><%= stats.products.total %></h2>
         <span class="stat-icon"><i class="fas fa-boxes"></i></span>
       </div>
       <div class="stat-card">
         <h6>Total Stock</h6>
-        <h2><%= stats.totalStock %></h2>
+        <h2><%= stats.products.totalStock %></h2>
         <span class="stat-icon"><i class="fas fa-warehouse"></i></span>
       </div>
       <div class="stat-card">
         <h6>Total Cattle</h6>
-        <h2><%= stats.totalCattles %></h2>
-        <span class="stat-icon"><i class="fas fa-cow"></i></span>
+        <h2><%= stats.cattle.total %></h2>
+        <span class="stat-icon"><i class="fas fa-paw"></i></span>
       </div>
       <div class="stat-card">
         <h6>Available Cattle</h6>
-        <h2><%= stats.availableCattles %></h2>
+        <h2><%= stats.cattle.available %></h2>
         <span class="stat-icon"><i class="fas fa-check-circle"></i></span>
+      </div>
+      <div class="stat-card">
+        <h6>Open Orders</h6>
+        <h2><%= stats.sales.openOrders %></h2>
+        <span class="stat-icon"><i class="fas fa-receipt"></i></span>
+      </div>
+      <div class="stat-card">
+        <h6>Revenue</h6>
+        <h2>₹ <%= inr(stats.sales.revenue) %></h2>
+        <span class="stat-icon"><i class="fas fa-indian-rupee-sign"></i></span>
       </div>
     </div>
 
-    <!-- Recent Products -->
-    <div class="section-title">
-      <i class="fas fa-tag"></i> Recent Products
+    <div class="section-title"><i class="fas fa-receipt"></i> Recent Orders</div>
+    <div class="table-card">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Order</th>
+              <th>Buyer</th>
+              <th>Date</th>
+              <th>Total</th>
+              <th>Payment</th>
+              <th>Status</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (recentOrders.length) { %>
+              <% recentOrders.forEach(order => { %>
+                <tr>
+                  <td><strong><%= order.orderNumber %></strong></td>
+                  <td><%= order.buyerName %></td>
+                  <td><%= new Date(order.createdAt).toLocaleDateString('en-IN') %></td>
+                  <td>₹ <%= inr(order.sellerTotal) %></td>
+                  <td><%= order.paymentStatus %></td>
+                  <td><span class="badge <%= orderClass[order.orderStatus] || 'bg-secondary' %> badge-status"><%= order.orderStatus %></span></td>
+                  <td class="text-center">
+                    <a href="/farmer/orders/<%= order._id %>" class="btn btn-sm btn-primary btn-sm-action"><i class="fas fa-eye"></i> View</a>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr><td colspan="7" class="text-center py-4 text-muted">No Orders Yet</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
     </div>
+
+    <div class="section-title"><i class="fas fa-tag"></i> Recent Products</div>
     <div class="table-card">
       <div class="table-responsive">
         <table class="table table-hover align-middle">
@@ -759,42 +806,32 @@
             </tr>
           </thead>
           <tbody>
-            <% if(products.length){ %>
-              <% products.forEach(product=>{ %>
+            <% if (recentProducts.length) { %>
+              <% recentProducts.forEach(product => { %>
                 <tr>
                   <td><strong><%= product.name %></strong></td>
                   <td><span class="badge bg-light text-dark"><%= product.category %></span></td>
-                  <td>₹ <%= product.price %></td>
+                  <td>₹ <%= inr(product.price) %></td>
                   <td><%= product.stock %></td>
                   <td>
-                    <% if(product.stock>0){ %>
-                      <span class="badge bg-success badge-status">In Stock</span>
-                    <% }else{ %>
+                    <span class="badge <%= approvalClass[product.approvalStatus] || 'bg-secondary' %> badge-status"><%= product.approvalStatus %></span>
+                    <% if (product.stock <= 0) { %>
                       <span class="badge bg-danger badge-status">Out of Stock</span>
                     <% } %>
                   </td>
                   <td class="text-center">
-                    <a href="/api/v1/products/view/<%= product._id %>"
-                       class="btn btn-sm btn-primary btn-sm-action">
-                      <i class="fas fa-eye"></i> View
-                    </a>
-                    <a href="/api/v1/products/edit/<%= product._id %>"
-                       class="btn btn-sm btn-warning btn-sm-action">
-                      <i class="fas fa-edit"></i> Edit
-                    </a>
-                    <form action="/api/v1/products/delete/<%= product._id %>"
-                          method="POST"
-                          class="action-form">
-                      <button type="submit"
-                              class="btn btn-sm btn-danger btn-sm-action"
-                              onclick="return confirm('Delete this product?')">
+                    <a href="/products/view/<%= product._id %>" class="btn btn-sm btn-primary btn-sm-action"><i class="fas fa-eye"></i> View</a>
+                    <a href="/products/edit/<%= product._id %>" class="btn btn-sm btn-warning btn-sm-action"><i class="fas fa-edit"></i> Edit</a>
+                    <form action="/products/delete/<%= product._id %>" method="POST" class="action-form">
+                      <input type="hidden" name="redirect" value="/farmer/dashboard">
+                      <button type="submit" class="btn btn-sm btn-danger btn-sm-action" onclick="return confirm('Delete this product?')">
                         <i class="fas fa-trash"></i> Delete
                       </button>
                     </form>
                   </td>
                 </tr>
               <% }) %>
-            <% }else{ %>
+            <% } else { %>
               <tr><td colspan="6" class="text-center py-4 text-muted">No Products Found</td></tr>
             <% } %>
           </tbody>
@@ -802,10 +839,7 @@
       </div>
     </div>
 
-    <!-- Cattles -->
-    <div class="section-title">
-      <i class="fas fa-paw"></i> My Cattles
-    </div>
+    <div class="section-title"><i class="fas fa-paw"></i> My Cattle</div>
     <div class="table-card">
       <div class="table-responsive">
         <table class="table table-hover align-middle">
@@ -820,28 +854,26 @@
             </tr>
           </thead>
           <tbody>
-            <% if(cattles.length){ %>
-              <% cattles.forEach(cattle=>{ %>
+            <% if (recentCattles.length) { %>
+              <% recentCattles.forEach(cattle => { %>
                 <tr>
-                  <td><strong><%= cattle.name %></strong></td>
-                  <td><%= cattle.breed %></td>
-                  <td><%= cattle.age %></td>
-                  <td>₹ <%= cattle.price %></td>
+                  <td><strong><%= cattle.name || cattle.breedName %></strong></td>
+                  <td><%= cattle.breedName %></td>
+                  <td><%= cattle.age ?? '-' %></td>
+                  <td><%= cattle.price ? '₹ ' + inr(cattle.price) : '-' %></td>
                   <td>
-                    <% if(cattle.sold){ %>
+                    <% if (cattle.sold) { %>
                       <span class="badge bg-secondary badge-status">Sold</span>
-                    <% }else{ %>
+                    <% } else { %>
                       <span class="badge bg-success badge-status">Available</span>
                     <% } %>
                   </td>
                   <td class="text-center">
-                    <a href="/api/v1/farmer/cattles/<%= cattle._id %>" class="btn btn-sm btn-primary btn-sm-action">
-                      <i class="fas fa-eye"></i> View
-                    </a>
+                    <a href="/farmer/cattle/<%= cattle._id %>" class="btn btn-sm btn-primary btn-sm-action"><i class="fas fa-eye"></i> View</a>
                   </td>
                 </tr>
               <% }) %>
-            <% }else{ %>
+            <% } else { %>
               <tr><td colspan="6" class="text-center py-4 text-muted">No Cattle Added</td></tr>
             <% } %>
           </tbody>
@@ -849,13 +881,18 @@
       </div>
     </div>
 
-    <!-- Farmer Info Card -->
     <div class="info-card">
       <h4><i class="fas fa-id-card me-2" style="color:#0284C7;"></i>Farmer Information</h4>
       <hr>
       <p><strong>Name :</strong> <%= user.fullName %></p>
       <p><strong>Email :</strong> <%= user.email %></p>
       <p><strong>Role :</strong> <%= user.role %></p>
+      <% if (user.farmerDetails?.farmName) { %>
+        <p><strong>Farm :</strong> <%= user.farmerDetails.farmName %></p>
+      <% } %>
+      <% if (user.farmerDetails?.location) { %>
+        <p><strong>Location :</strong> <%= user.farmerDetails.location %></p>
+      <% } %>
       <p><strong>Joined :</strong> <%= new Date(user.createdAt).toDateString() %></p>
     </div>
 

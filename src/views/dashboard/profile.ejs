@@ -1,12 +1,373 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile | BoviNetra</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #0F62AC;
+      --secondary: #F39C12;
+      --text-main: #1A2C3E;
+      --text-muted: #5A6E7F;
+      --border-light: rgba(15, 98, 172, 0.12);
+      --gradient-hero: linear-gradient(145deg, #0A2647 0%, #0F62AC 100%);
+      --gradient-cta: linear-gradient(105deg, #F39C12, #E67E22);
+      --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.02);
+      --shadow-md: 0 20px 38px -12px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
+      --transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F4F9FE;
+      color: var(--text-main);
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, h5 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; }
+
+    .profile-page { padding: 110px 0 70px; min-height: 100vh; }
+
+    .profile-card, .panel {
+      background: #fff;
+      border-radius: 28px;
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .cover {
+      height: 150px;
+      background: var(--gradient-hero);
+      position: relative;
+    }
+
+    .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .avatar-wrap {
+      width: 104px;
+      height: 104px;
+      margin: -52px auto 0;
+      border-radius: 50%;
+      border: 4px solid #fff;
+      background: #fff;
+      overflow: hidden;
+      position: relative;
+      box-shadow: var(--shadow-md);
+    }
+
+    .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .profile-body { padding: 1rem 1.5rem 1.8rem; text-align: center; }
+
+    .profile-body h3 { font-size: 1.35rem; margin-bottom: 2px; word-break: break-word; }
+
+    .username { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 0.8rem; }
+
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(243, 156, 18, 0.14);
+      border: 1px solid rgba(243, 156, 18, 0.35);
+      color: #B7690A;
+      border-radius: 60px;
+      padding: 4px 14px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: capitalize;
+    }
+
+    .meta-list { margin-top: 1.4rem; text-align: left; }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0.7rem 0;
+      border-top: 1px solid #EEF4FA;
+      font-size: 0.86rem;
+    }
+
+    .meta-item i { width: 18px; text-align: center; color: var(--primary); }
+    .meta-item span { color: var(--text-muted); word-break: break-word; }
+
+    .panel { padding: 1.6rem 1.8rem; margin-bottom: 1.5rem; }
+
+    .panel-title {
+      font-size: 1.05rem;
+      margin-bottom: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-title i {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: rgba(15, 98, 172, 0.08);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid #EEF4FA;
+      font-size: 0.9rem;
+    }
+
+    .detail-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .detail-row dt { color: var(--text-muted); font-weight: 500; }
+    .detail-row dd { font-weight: 600; text-align: right; word-break: break-word; margin: 0; }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+    }
+
+    .action-tile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0.85rem 1rem;
+      border-radius: 18px;
+      border: 1.5px solid #E2EDF7;
+      background: #fff;
+      color: var(--text-main);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.88rem;
+      transition: var(--transition);
+    }
+
+    .action-tile i {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: rgba(15, 98, 172, 0.08);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .action-tile:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+      color: var(--text-main);
+    }
+
+    .action-tile.danger i { background: #FEE2E2; color: #B91C1C; }
+    .action-tile.danger:hover { border-color: #B91C1C; }
+
+    .alert-modern {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      border-radius: 16px;
+      padding: 12px 16px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      margin-bottom: 1.4rem;
+    }
+
+    .alert-error { background: #FEE2E2; color: #B91C1C; }
+    .alert-success { background: #DCFCE7; color: #166534; }
+
+    @media (max-width: 575px) {
+      .profile-page { padding: 95px 0 50px; }
+      .panel { padding: 1.3rem 1.2rem; }
+      .detail-row { flex-direction: column; gap: 2px; }
+      .detail-row dd { text-align: left; }
+    }
+  </style>
 </head>
 <body>
-    <h1>change success</h1>
-    
+<%- include('../partials/header') %>
+
+<%
+  const role = String(user.role || 'user').toLowerCase();
+
+  const formatDate = (value) =>
+    value
+      ? new Date(value).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+      : '-';
+
+  const formatDateTime = (value) =>
+    value
+      ? new Date(value).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+      : '-';
+
+  const roleLinks = {
+    user: [['Dashboard', '/dashboard', 'fa-gauge']],
+    buyer: [['Dashboard', '/buyer/dashboard', 'fa-gauge']],
+    farmer: [
+      ['Dashboard', '/farmer/dashboard', 'fa-gauge'],
+      ['My Products', '/farmer/products', 'fa-box'],
+      ['My Cattle', '/farmer/cattle', 'fa-paw'],
+      ['Orders Received', '/farmer/orders', 'fa-receipt']
+    ],
+    doctor: [
+      ['Dashboard', '/doctor/dashboard', 'fa-gauge'],
+      ['My Products', '/doctor/products', 'fa-box'],
+      ['Orders Received', '/doctor/orders', 'fa-receipt']
+    ],
+    admin: [
+      ['Dashboard', '/admin/dashboard', 'fa-gauge'],
+      ['Manage Users', '/admin/users', 'fa-users'],
+      ['Manage Products', '/admin/products', 'fa-boxes-stacked']
+    ]
+  };
+
+  const commonLinks = [
+    ['Marketplace', '/products', 'fa-store'],
+    ['My Cart', '/cart', 'fa-cart-shopping'],
+    ['My Orders', '/orders', 'fa-bag-shopping'],
+    ['Breed Detector', '/breed/detect', 'fa-brain']
+  ];
+
+  const quickLinks = [...(roleLinks[role] || roleLinks.user), ...commonLinks];
+
+  const roleDetails = [];
+
+  if (role === 'farmer') {
+    roleDetails.push(['Farm name', user.farmerDetails?.farmName], ['Location', user.farmerDetails?.location]);
+  }
+
+  if (role === 'doctor') {
+    roleDetails.push(
+      ['Specialization', user.doctorDetails?.specialization],
+      ['Experience', user.doctorDetails?.experience != null ? user.doctorDetails.experience + ' years' : '']
+    );
+  }
+
+  if (role === 'buyer') {
+    roleDetails.push(['Address', user.buyerDetails?.address]);
+  }
+
+  const filledDetails = roleDetails.filter(([, value]) => value);
+%>
+
+<main class="profile-page">
+  <div class="container">
+
+    <% if (locals.success) { %>
+      <div class="alert-modern alert-success" role="status">
+        <i class="fas fa-circle-check mt-1"></i><span><%= success %></span>
+      </div>
+    <% } %>
+
+    <% if (locals.error) { %>
+      <div class="alert-modern alert-error" role="alert">
+        <i class="fas fa-circle-exclamation mt-1"></i><span><%= error %></span>
+      </div>
+    <% } %>
+
+    <div class="row g-4">
+      <aside class="col-lg-4">
+        <div class="profile-card">
+          <div class="cover">
+            <% if (user.coverImage) { %>
+              <img src="<%= user.coverImage %>" alt="Cover image">
+            <% } %>
+          </div>
+
+          <div class="avatar-wrap">
+            <img src="<%= user.avatar || '/images/default-avatar.png' %>" alt="<%= user.fullName %>">
+          </div>
+
+          <div class="profile-body">
+            <h3><%= user.fullName %></h3>
+            <p class="username">@<%= user.username %></p>
+            <span class="role-badge"><i class="fas fa-user-shield"></i> <%= role %></span>
+
+            <div class="meta-list">
+              <div class="meta-item"><i class="fas fa-envelope"></i><span><%= user.email %></span></div>
+              <div class="meta-item"><i class="fas fa-calendar-check"></i><span>Joined <%= formatDate(user.createdAt) %></span></div>
+              <div class="meta-item"><i class="fas fa-clock"></i><span>Last login <%= formatDateTime(user.lastLoginAt) %></span></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <div class="col-lg-8">
+        <section class="panel">
+          <h4 class="panel-title"><i class="fas fa-id-card"></i> Account Details</h4>
+          <dl class="mb-0">
+            <div class="detail-row"><dt>Full name</dt><dd><%= user.fullName %></dd></div>
+            <div class="detail-row"><dt>Username</dt><dd>@<%= user.username %></dd></div>
+            <div class="detail-row"><dt>Email</dt><dd><%= user.email %></dd></div>
+            <div class="detail-row"><dt>Account type</dt><dd style="text-transform: capitalize;"><%= role %></dd></div>
+            <div class="detail-row"><dt>Member since</dt><dd><%= formatDate(user.createdAt) %></dd></div>
+          </dl>
+        </section>
+
+        <% if (filledDetails.length) { %>
+          <section class="panel">
+            <h4 class="panel-title"><i class="fas fa-address-card"></i> <span style="text-transform: capitalize;"><%= role %></span> Details</h4>
+            <dl class="mb-0">
+              <% filledDetails.forEach(([label, value]) => { %>
+                <div class="detail-row"><dt><%= label %></dt><dd><%= value %></dd></div>
+              <% }) %>
+            </dl>
+          </section>
+        <% } %>
+
+        <section class="panel">
+          <h4 class="panel-title"><i class="fas fa-sliders"></i> Account Settings</h4>
+          <div class="action-grid">
+            <a href="/update-account" class="action-tile"><i class="fas fa-user-pen"></i> Edit Account</a>
+            <a href="/avatar" class="action-tile"><i class="fas fa-image-portrait"></i> Change Avatar</a>
+            <a href="/cover-image" class="action-tile"><i class="fas fa-panorama"></i> Change Cover Image</a>
+            <a href="/change-password" class="action-tile"><i class="fas fa-key"></i> Change Password</a>
+            <a href="/logout" class="action-tile danger"><i class="fas fa-right-from-bracket"></i> Logout</a>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h4 class="panel-title"><i class="fas fa-link"></i> Quick Links</h4>
+          <div class="action-grid">
+            <% quickLinks.forEach(([label, href, icon]) => { %>
+              <a href="<%= href %>" class="action-tile"><i class="fas <%= icon %>"></i> <%= label %></a>
+            <% }) %>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const navbar = document.querySelector('.navbar');
+
+  if (navbar) {
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 20);
+    });
+  }
+</script>
 </body>
 </html>

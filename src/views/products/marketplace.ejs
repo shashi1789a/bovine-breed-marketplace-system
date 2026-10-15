@@ -1,16 +1,13 @@
 <%
-  function buildQuery(page) {
-    var params = new URLSearchParams();
-    if (filters.q) params.set('q', filters.q);
-    if (filters.category) params.set('category', filters.category);
-    if (filters.minPrice !== '' && filters.minPrice !== undefined && filters.minPrice !== null) params.set('minPrice', filters.minPrice);
-    if (filters.maxPrice !== '' && filters.maxPrice !== undefined && filters.maxPrice !== null) params.set('maxPrice', filters.maxPrice);
-    if (filters.sort && filters.sort !== 'newest') params.set('sort', filters.sort);
-    params.set('page', page);
-    return '/products?' + params.toString();
-  }
+  /* ============================================================
+     BOVINETRA MARKETPLACE PAGE → views/products/marketplace.ejs
+     Unified design system: Poppins + Inter, Blue + Amber
+     Layout: Vertical sidebar filter (LEFT) + product grid (RIGHT)
+     ============================================================ */
+  const currentFilters = filters || {};
+  const categoryList   = categories || [];
 
-  var sortLabels = {
+  const sortLabels = {
     newest: 'Newest first',
     oldest: 'Oldest first',
     price_asc: 'Price: low to high',
@@ -18,15 +15,40 @@
     popular: 'Most popular',
     rating: 'Top rated'
   };
+
+  function buildQuery(page) {
+    const params = new URLSearchParams();
+
+    Object.entries({
+      q: currentFilters.q,
+      category: currentFilters.category,
+      minPrice: currentFilters.minPrice,
+      maxPrice: currentFilters.maxPrice,
+      sort: currentFilters.sort
+    }).forEach(([key, value]) => {
+      if (value === undefined || value === null || String(value).trim() === '') return;
+      if (key === 'sort' && value === 'newest') return;
+      params.set(key, String(value));
+    });
+
+    params.set('page', String(Math.max(1, page)));
+    return '/products?' + params.toString();
+  }
 %>
 
 <%- include('../partials/header') %>
 
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
   /* ============================================================
-     BOVINETRA MARKETPLACE — DESIGN SYSTEM
+     BOVINETRA MARKETPLACE — UNIFIED DESIGN SYSTEM
+     Fonts: Poppins (headings) + Inter (body)
      Colors: Blue + Amber (matching main site)
      ============================================================ */
+
+  /* ---------- 1. Design Tokens (unified) ---------- */
   :root {
     --primary: #0284C7;
     --primary-dark: #0C4A6E;
@@ -39,59 +61,60 @@
     --text-main: #111827;
     --text-muted: #6B7280;
     --border-light: rgba(2, 132, 199, 0.12);
+
     --gradient-hero: linear-gradient(135deg, #082F49 0%, #0C4A6E 45%, #0284C7 100%);
     --gradient-cta: linear-gradient(105deg, #F59E0B, #D97706);
     --gradient-primary: linear-gradient(135deg, #0284C7, #0EA5E9);
+
     --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.06);
     --shadow-md: 0 8px 28px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.14);
+
     --radius-card: 20px;
     --radius-md: 16px;
     --radius-sm: 10px;
     --radius-pill: 50px;
+
     --transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    --font-heading: 'Poppins', sans-serif;
+    --font-body: 'Inter', sans-serif;
   }
 
-  /* ---------- Page Wrapper ---------- */
+  /* ---------- 2. Page Layout ---------- */
   .marketplace-page {
     background: #F4F9FE;
     min-height: 100vh;
-  }
-
-  /* ---------- Page Header ---------- */
-  .mp-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-    background: #fff;
-    padding: 1.3rem 1.6rem;
-    border-radius: var(--radius-card);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-light);
-    animation: mpFadeIn 0.5s ease;
+    padding-top: 120px;
+    padding-bottom: 60px;
+    font-family: var(--font-body);
+    color: var(--text-main);
   }
 
   @keyframes mpFadeIn {
     from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
-  .mp-header h1 {
-    font-family: 'Poppins', sans-serif;
+  @keyframes mpCardIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- 3. Page Title ---------- */
+  .mp-page-title {
+    font-family: var(--font-heading);
     font-weight: 800;
     color: var(--text-main);
-    font-size: 1.7rem;
-    margin: 0;
+    font-size: 1.75rem;
     letter-spacing: -0.02em;
+    margin: 0 0 1.5rem;
     display: flex;
     align-items: center;
     gap: 12px;
+    animation: mpFadeIn 0.5s ease;
   }
 
-  .mp-header h1 i {
+  .mp-page-title i {
     color: var(--primary);
     font-size: 1.5rem;
     width: 44px;
@@ -104,119 +127,182 @@
     border: 1px solid rgba(2, 132, 199, 0.15);
   }
 
-  .mp-count {
-    color: var(--primary);
-    font-weight: 700;
-    background: var(--light);
-    border: 1px solid rgba(2, 132, 199, 0.18);
-    padding: 6px 16px;
-    border-radius: var(--radius-pill);
-    font-size: 0.85rem;
-    font-family: 'Inter', sans-serif;
-  }
-
-  /* ---------- Filter Form ---------- */
+  /* ---------- 4. LEFT SIDEBAR — VERTICAL FILTER ---------- */
   .filter-form {
+    padding: 1.5rem 1.4rem;
     background: #fff;
     border: 1px solid var(--border-light);
     border-radius: var(--radius-card);
-    padding: 1.4rem 1.5rem;
     box-shadow: var(--shadow-sm);
-    margin-bottom: 2rem;
     animation: mpFadeIn 0.5s ease 0.05s both;
+    transition: var(--transition);
+  }
+
+  .filter-form:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  .filter-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 1.4rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid rgba(2, 132, 199, 0.1);
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -0.01em;
+  }
+
+  .filter-title i {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    color: var(--primary);
+    background: var(--light);
+    border: 1px solid rgba(2, 132, 199, 0.15);
+    border-radius: 10px;
+  }
+
+  .filter-group {
+    margin-bottom: 1.15rem;
   }
 
   .filter-form .form-label {
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 0.76rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 6px;
     display: block;
+    margin-bottom: 7px;
+    font-family: var(--font-body);
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
   }
 
   .filter-form .form-control,
   .filter-form .form-select {
+    padding: 11px 15px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--text-main);
     background: #F8FDFF;
     border: 1.5px solid #E2EDF7;
     border-radius: 14px;
-    padding: 11px 15px;
-    font-size: 0.9rem;
-    font-family: 'Inter', sans-serif;
-    color: var(--text-main);
     transition: var(--transition);
+    width: 100%;
   }
 
   .filter-form .form-control::placeholder { color: #9ca3af; }
 
   .filter-form .form-control:focus,
   .filter-form .form-select:focus {
-    border-color: var(--accent);
     outline: none;
-    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.14);
     background: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.14);
   }
 
   .filter-form .form-select {
     appearance: none;
+    padding-right: 40px;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%230284C7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
     background-repeat: no-repeat;
     background-position: right 14px center;
-    padding-right: 40px;
   }
 
-  .filter-form .btn-cta-nav {
+  /* Clear filters button */
+  .btn-filter-clear {
     width: 100%;
-    height: 100%;
     min-height: 44px;
-    background: var(--gradient-cta);
-    color: #fff;
-    border: none;
-    border-radius: 14px;
-    font-weight: 700;
-    font-size: 0.95rem;
-    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.32);
-    transition: var(--transition);
-    display: flex;
+    padding: 10px 16px;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-  }
-
-  .filter-form .btn-cta-nav:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 24px rgba(245, 158, 11, 0.48);
-    color: #fff;
-  }
-
-  /* ---------- Product Cards ---------- */
-  .product-grid-card {
-    display: block;
+    gap: 7px;
+    font-family: var(--font-body);
+    font-size: 0.87rem;
+    font-weight: 700;
     text-decoration: none;
-    color: inherit;
-    height: 100%;
+    color: var(--primary);
+    background: #fff;
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-pill);
+    cursor: pointer;
     transition: var(--transition);
-    border-radius: var(--radius-card);
   }
 
-  .product-grid-card:hover {
-    transform: translateY(-6px);
-    color: inherit;
+  .btn-filter-clear:hover {
+    color: var(--primary-dark);
+    background: var(--light);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.15);
+  }
+
+  /* ---------- 5. Results Area ---------- */
+  #productResults {
+    scroll-margin-top: 110px;
+    transition: opacity 0.2s ease;
+  }
+
+  #productResults.is-loading {
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  .mp-results-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 1.25rem;
+    animation: mpFadeIn 0.5s ease 0.1s both;
+  }
+
+  .mp-results-bar {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 18px;
+    font-family: var(--font-body);
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--primary);
+    background: var(--light);
+    border: 1px solid rgba(2, 132, 199, 0.18);
+    border-radius: var(--radius-pill);
+  }
+
+  .mp-results-sort-label {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  /* ---------- 6. Product Card ---------- */
+  .marketplace-product {
+    min-width: 0;
+    animation: mpCardIn 0.4s ease both;
+    animation-delay: calc(var(--i, 0) * 40ms);
   }
 
   .product-card-inner {
-    background: #fff;
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-card);
-    overflow: hidden;
+    position: relative;
     height: 100%;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-card);
     box-shadow: var(--shadow-sm);
     transition: var(--transition);
-    position: relative;
   }
 
   .product-card-inner::before {
@@ -224,27 +310,31 @@
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 3px;
+    z-index: 2;
     background: var(--gradient-primary);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.35s ease;
-    z-index: 2;
   }
 
-  .product-grid-card:hover .product-card-inner::before {
-    transform: scaleX(1);
-  }
-
-  .product-grid-card:hover .product-card-inner {
-    box-shadow: var(--shadow-md);
+  .product-card-inner:hover {
+    transform: translateY(-6px);
     border-color: rgba(2, 132, 199, 0.25);
+    box-shadow: var(--shadow-md);
   }
 
-  /* ---------- Product Image ---------- */
+  .product-card-inner:hover::before { transform: scaleX(1); }
+
+  /* Image */
+  .product-image-link {
+    display: block;
+    text-decoration: none;
+  }
+
   .product-img-wrap {
     position: relative;
+    height: 200px;
     overflow: hidden;
-    height: 190px;
     background: linear-gradient(135deg, #F0F9FF, #E0F2FE);
   }
 
@@ -255,9 +345,7 @@
     transition: transform 0.5s ease;
   }
 
-  .product-grid-card:hover .product-img-wrap img {
-    transform: scale(1.06);
-  }
+  .product-card-inner:hover .product-img-wrap img { transform: scale(1.06); }
 
   .product-img-placeholder {
     width: 100%;
@@ -265,80 +353,85 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 2.4rem;
     color: #BAE6FD;
-    font-size: 2.2rem;
   }
 
-  /* Discount badge floating on image */
-  .product-discount-float {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: var(--gradient-cta);
-    color: #fff;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 700;
-    font-size: 0.68rem;
-    padding: 5px 12px;
-    border-radius: var(--radius-pill);
-    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.42);
-    letter-spacing: 0.02em;
-    z-index: 3;
-  }
-
-  /* Category badge floating on image */
+  .product-discount-float,
   .product-category-float {
     position: absolute;
     top: 12px;
-    left: 12px;
-    background: rgba(255, 255, 255, 0.94);
-    color: var(--primary);
-    font-family: 'Inter', sans-serif;
-    font-weight: 700;
-    font-size: 0.66rem;
+    z-index: 3;
     padding: 5px 12px;
     border-radius: var(--radius-pill);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    z-index: 3;
   }
 
-  /* ---------- Product Body ---------- */
+  .product-discount-float {
+    right: 12px;
+    font-family: var(--font-heading);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #fff;
+    background: var(--gradient-cta);
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.42);
+  }
+
+  .product-category-float {
+    left: 12px;
+    font-family: var(--font-body);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--primary);
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Body */
   .product-body {
-    padding: 1.1rem 1.2rem 1.2rem;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    padding: 1.15rem 1.25rem 1.25rem;
   }
 
   .product-title {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 700;
-    font-size: 1rem;
-    color: var(--text-main);
-    margin-bottom: 0.55rem;
-    line-height: 1.35;
+    min-height: 2.7em;
+    margin: 0 0 0.6rem;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    min-height: 2.7em;
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--text-main);
   }
+
+  .product-name-link {
+    color: inherit;
+    text-decoration: none;
+    transition: var(--transition);
+  }
+
+  .product-name-link:hover { color: var(--primary); }
 
   .product-price-row {
     display: flex;
     align-items: baseline;
     gap: 8px;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.55rem;
   }
 
   .product-price {
-    font-family: 'Poppins', sans-serif;
+    font-family: var(--font-heading);
+    font-size: 1.22rem;
     font-weight: 800;
-    font-size: 1.2rem;
-    color: var(--primary);
     letter-spacing: -0.02em;
+    color: var(--primary);
   }
 
   .product-mrp {
@@ -348,97 +441,163 @@
   }
 
   .product-seller {
-    font-size: 0.78rem;
-    color: var(--text-muted);
-    margin-bottom: 0.6rem;
     display: flex;
     align-items: center;
     gap: 5px;
+    margin-bottom: 0.65rem;
+    font-size: 0.78rem;
+    color: var(--text-muted);
   }
 
   .product-seller i {
-    color: var(--primary);
     font-size: 0.72rem;
+    color: var(--primary);
+  }
+
+  .product-stock-row {
+    min-height: 32px;
+    margin: 4px 0 14px;
   }
 
   .product-stock {
-    font-size: 0.8rem;
-    font-weight: 600;
+    width: fit-content;
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 4px 10px;
+    padding: 4px 11px;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 600;
     border-radius: var(--radius-pill);
-    width: fit-content;
+  }
+
+  .stock-in  { color: #0284C7; background: rgba(2, 132, 199, 0.1); }
+  .stock-out { color: #DC2626; background: rgba(220, 38, 38, 0.1); }
+
+  /* Actions */
+  .product-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 9px;
     margin-top: auto;
   }
 
-  .stock-in {
-    color: #0284C7;
-    background: rgba(2, 132, 199, 0.1);
+  .product-cart-form {
+    width: 100%;
+    margin: 0;
   }
 
-  .stock-out {
-    color: #DC2626;
-    background: rgba(220, 38, 38, 0.1);
+  .btn-add-cart,
+  .btn-buy-now {
+    width: 100%;
+    min-height: 42px;
+    padding: 10px 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    font-family: var(--font-body);
+    font-size: 0.84rem;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: var(--transition);
   }
 
-  /* ---------- Empty State ---------- */
+  .btn-add-cart {
+    color: #fff;
+    background: var(--gradient-primary);
+    border: none;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28);
+  }
+
+  .btn-add-cart:hover:not(:disabled) {
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(2, 132, 199, 0.42);
+  }
+
+  .btn-add-cart:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .btn-buy-now {
+    color: #fff;
+    background: var(--gradient-cta);
+    border: none;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.32);
+  }
+
+  .btn-buy-now:hover {
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(245, 158, 11, 0.48);
+  }
+
+  /* ---------- 7. Empty State ---------- */
   .empty-state {
-    text-align: center;
     padding: 4rem 1.5rem;
+    text-align: center;
     background: #fff;
-    border-radius: var(--radius-card);
     border: 1.5px dashed rgba(2, 132, 199, 0.2);
+    border-radius: var(--radius-card);
     animation: mpFadeIn 0.5s ease;
+  }
+
+  .empty-state .btn-filter-clear {
+    width: auto;
+    display: inline-flex;
   }
 
   .empty-state-icon {
     width: 88px;
     height: 88px;
-    border-radius: 26px;
-    background: var(--light);
-    border: 1px solid rgba(2, 132, 199, 0.15);
+    margin: 0 auto 1.3rem;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 2.2rem;
     color: var(--primary);
-    margin: 0 auto 1.3rem;
+    background: var(--light);
+    border: 1px solid rgba(2, 132, 199, 0.15);
+    border-radius: 26px;
   }
 
   .empty-state h4 {
-    font-family: 'Poppins', sans-serif;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
     font-weight: 700;
     color: var(--text-main);
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
   }
 
   .empty-state p {
-    color: var(--text-muted);
-    font-size: 0.9rem;
     margin-bottom: 1.4rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
   }
 
-  /* ---------- Pagination ---------- */
+  /* ---------- 8. Pagination ---------- */
   .mp-pagination .page-link {
-    border-radius: 12px !important;
     margin: 0 4px;
     padding: 0.6rem 1.1rem;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
+    font-family: var(--font-body);
     font-size: 0.86rem;
+    font-weight: 600;
     color: var(--primary);
-    border: 1.5px solid var(--border-light);
     background: #fff;
+    border: 1.5px solid var(--border-light);
+    border-radius: 12px !important;
     transition: var(--transition);
   }
 
   .mp-pagination .page-link:hover {
+    color: var(--primary-dark);
     background: var(--light);
     border-color: var(--primary);
-    color: var(--primary-dark);
     transform: translateY(-2px);
   }
 
@@ -450,247 +609,402 @@
   }
 
   .mp-pagination .page-item.active .page-link {
+    color: #fff;
     background: var(--gradient-primary);
     border-color: transparent;
-    color: #fff;
     box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28);
   }
 
-  /* ---------- Responsive ---------- */
+  /* ---------- 9. Responsive ---------- */
+  @media (min-width: 992px) {
+    /* Sticky sidebar on desktop */
+    .filter-form {
+      position: sticky;
+      top: 100px;
+    }
+  }
+
   @media (max-width: 991px) {
-    .mp-header { padding: 1.1rem 1.3rem; }
-    .mp-header h1 { font-size: 1.45rem; }
-    .mp-header h1 i { width: 40px; height: 40px; font-size: 1.3rem; }
-    .filter-form { padding: 1.2rem 1.2rem; }
-    .product-img-wrap { height: 170px; }
+    .marketplace-page { padding-top: 110px; padding-bottom: 50px; }
+    .mp-page-title { font-size: 1.5rem; }
+    .mp-page-title i { width: 40px; height: 40px; font-size: 1.3rem; }
+    .product-img-wrap { height: 180px; }
+    .filter-form { margin-bottom: 1.5rem; }
   }
 
   @media (max-width: 767px) {
-    .mp-header {
-      flex-direction: column;
-      align-items: flex-start;
-      padding: 1rem 1.1rem;
-    }
-    .mp-header h1 { font-size: 1.3rem; }
-    .filter-form { padding: 1rem 1rem; }
-    .filter-form .btn-cta-nav { min-height: 42px; }
+    .marketplace-page { padding-top: 100px; }
+    .mp-page-title { font-size: 1.35rem; }
     .product-img-wrap { height: 200px; }
     .product-title { font-size: 0.95rem; }
     .product-price { font-size: 1.1rem; }
+    .filter-form { padding: 1.2rem 1.15rem; }
   }
 
   @media (max-width: 575px) {
-    .mp-header h1 { font-size: 1.15rem; }
-    .mp-header h1 i { width: 36px; height: 36px; font-size: 1.1rem; }
-    .mp-count { font-size: 0.78rem; padding: 5px 12px; }
-    .filter-form { padding: 0.9rem 0.85rem; border-radius: 16px; }
+    .marketplace-page { padding-top: 95px; padding-bottom: 40px; }
+    .mp-page-title { font-size: 1.15rem; }
+    .mp-page-title i { width: 36px; height: 36px; font-size: 1.1rem; }
+
+    .filter-form { padding: 1.1rem 1rem; border-radius: 16px; }
+    .filter-title { font-size: 0.95rem; }
+    .filter-title i { width: 32px; height: 32px; font-size: 0.8rem; }
     .filter-form .form-control,
     .filter-form .form-select {
       padding: 10px 13px;
       font-size: 0.86rem;
       border-radius: 12px;
     }
+
     .product-img-wrap { height: 190px; }
     .product-body { padding: 1rem 1rem 1.1rem; }
     .product-title { font-size: 0.92rem; }
     .product-price { font-size: 1.05rem; }
+    .product-actions { gap: 7px; }
+
+    .btn-add-cart,
+    .btn-buy-now { padding: 9px 6px; font-size: 0.76rem; }
+    .btn-filter-clear { padding: 9px 12px; font-size: 0.8rem; }
+
     .empty-state { padding: 2.5rem 1.2rem; }
     .empty-state-icon { width: 72px; height: 72px; font-size: 1.8rem; }
     .mp-pagination .page-link { padding: 0.5rem 0.9rem; font-size: 0.8rem; }
   }
 
   @media (max-width: 375px) {
-    .mp-header h1 { font-size: 1.05rem; }
     .product-img-wrap { height: 170px; }
+    .mp-page-title { font-size: 1.05rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
+      animation-delay: 0s !important;
       transition-duration: 0.01ms !important;
     }
   }
 </style>
 
-<main class="marketplace-page container" style="padding-top: 120px; padding-bottom: 60px;">
+<main class="marketplace-page container">
 
-  <!-- Page Header -->
-  <div class="mp-header">
-    <h1><i class="fas fa-store"></i> Marketplace</h1>
-    <span class="mp-count">
-      <i class="fas fa-box me-1"></i>
-      <%= totalProducts %> product<%= totalProducts === 1 ? '' : 's' %> found
-    </span>
-  </div>
+  <h1 class="mp-page-title">
+    <i class="fas fa-store"></i> Marketplace
+  </h1>
 
-  <!-- Filter Form -->
-  <form action="/products" method="GET" class="filter-form row g-3 align-items-end">
+  <div class="row g-4">
 
-    <div class="col-md-4 col-lg-4">
-      <label class="form-label">Search</label>
-      <input type="text" class="form-control" name="q" placeholder="Search products..." value="<%= filters.q || '' %>">
-    </div>
+    <!-- ===== LEFT SIDEBAR: VERTICAL FILTERS ===== -->
+    <aside class="col-12 col-lg-3">
+      <form action="/products" method="GET" class="filter-form" id="marketplaceFilters" autocomplete="off">
 
-    <div class="col-md-3 col-lg-3">
-      <label class="form-label">Category</label>
-      <select class="form-select" name="category">
-        <option value="">All categories</option>
-        <% categories.forEach(function (cat) { %>
-          <option value="<%= cat %>" <%= filters.category === cat ? 'selected' : '' %>><%= cat %></option>
-        <% }) %>
-      </select>
-    </div>
+        <h2 class="filter-title"><i class="fas fa-sliders"></i> Filters</h2>
 
-    <div class="col-6 col-md-2 col-lg-2">
-      <label class="form-label">Min price</label>
-      <input type="number" class="form-control" name="minPrice" min="0" placeholder="₹0" value="<%= filters.minPrice %>">
-    </div>
+        <div class="filter-group">
+          <label class="form-label" for="filterSearch">Search products</label>
+          <input
+            id="filterSearch"
+            type="search"
+            class="form-control"
+            name="q"
+            maxlength="100"
+            placeholder="Search cattle, feed, medicine..."
+            value="<%= currentFilters.q || '' %>"
+          >
+        </div>
 
-    <div class="col-6 col-md-2 col-lg-2">
-      <label class="form-label">Max price</label>
-      <input type="number" class="form-control" name="maxPrice" min="0" placeholder="₹9999" value="<%= filters.maxPrice %>">
-    </div>
+        <div class="filter-group">
+          <label class="form-label" for="filterCategory">Category</label>
+          <select id="filterCategory" class="form-select" name="category">
+            <option value="">All categories</option>
+            <% categoryList.forEach(function (cat) { %>
+              <option value="<%= cat %>" <%= currentFilters.category === cat ? 'selected' : '' %>><%= cat %></option>
+            <% }) %>
+          </select>
+        </div>
 
-    <div class="col-md-1 col-lg-1">
-      <button type="submit" class="btn-cta-nav" title="Apply filters">
-        <i class="fas fa-search"></i>
-      </button>
-    </div>
+        <div class="filter-group">
+          <label class="form-label" for="filterMinPrice">Min Price (₹)</label>
+          <input
+            id="filterMinPrice"
+            type="number"
+            class="form-control"
+            name="minPrice"
+            min="0"
+            step="0.01"
+            placeholder="0"
+            value="<%= currentFilters.minPrice ?? '' %>"
+          >
+        </div>
 
-    <div class="col-md-5 col-lg-4">
-      <label class="form-label">Sort by</label>
-      <select class="form-select" name="sort" onchange="this.form.submit()">
-        <% Object.keys(sortLabels).forEach(function (key) { %>
-          <option value="<%= key %>" <%= filters.sort === key ? 'selected' : '' %>><%= sortLabels[key] %></option>
-        <% }) %>
-      </select>
-    </div>
+        <div class="filter-group">
+          <label class="form-label" for="filterMaxPrice">Max Price (₹)</label>
+          <input
+            id="filterMaxPrice"
+            type="number"
+            class="form-control"
+            name="maxPrice"
+            min="0"
+            step="0.01"
+            placeholder="10000"
+            value="<%= currentFilters.maxPrice ?? '' %>"
+          >
+        </div>
 
-  </form>
+        <div class="filter-group">
+          <label class="form-label" for="filterSort">Sort by</label>
+          <select id="filterSort" class="form-select" name="sort">
+            <% Object.keys(sortLabels).forEach(function (key) { %>
+              <option value="<%= key %>" <%= (currentFilters.sort || 'newest') === key ? 'selected' : '' %>><%= sortLabels[key] %></option>
+            <% }) %>
+          </select>
+        </div>
 
-  <!-- Products Grid -->
-  <% if (!products.length) { %>
+        <a href="/products" class="btn-filter-clear" data-clear-filters>
+          <i class="fas fa-rotate-left me-1"></i> Clear Filters
+        </a>
 
-    <div class="empty-state">
-      <div class="empty-state-icon">
-        <i class="fas fa-search"></i>
+      </form>
+    </aside>
+
+    <!-- ===== RIGHT: RESULTS GRID ===== -->
+    <section class="col-12 col-lg-9" id="productResults" aria-live="polite">
+
+      <div class="mp-results-header">
+        <div class="mp-results-bar">
+          <i class="fas fa-box me-2"></i>
+          <%= totalProducts %> product<%= totalProducts === 1 ? '' : 's' %> found
+        </div>
+        <span class="mp-results-sort-label">
+          <i class="fas fa-sort me-1"></i>
+          <%= sortLabels[currentFilters.sort || 'newest'] %>
+        </span>
       </div>
-      <h4>No Products Found</h4>
-      <p>No products match your filters right now. Try adjusting your search or filters.</p>
-      <a href="/products" class="btn btn-primary" style="background: linear-gradient(135deg, #0284C7, #0EA5E9); border:none; border-radius:50px; padding:0.7rem 1.6rem; color:#fff; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:8px;">
-        <i class="fas fa-redo"></i> Clear Filters
-      </a>
-    </div>
 
-  <% } else { %>
+      <% if (!products || products.length === 0) { %>
 
-    <div class="row g-4">
-      <% products.forEach(function (product) { %>
-        <div class="col-6 col-sm-6 col-lg-4 col-xl-3">
-          <a href="/products/view/<%= product._id %>" class="product-grid-card">
-            <div class="product-card-inner">
-
-              <!-- Image -->
-              <div class="product-img-wrap">
-                <% if (product.image) { %>
-                  <img src="<%= product.image %>" alt="<%= product.name %>">
-                <% } else { %>
-                  <div class="product-img-placeholder">
-                    <i class="fas fa-image"></i>
-                  </div>
-                <% } %>
-
-                <% if (product.category) { %>
-                  <span class="product-category-float"><%= product.category %></span>
-                <% } %>
-
-                <% if (product.discount > 0) { %>
-                  <span class="product-discount-float">
-                    <i class="fas fa-fire me-1"></i><%= product.discount %>% OFF
-                  </span>
-                <% } %>
-              </div>
-
-              <!-- Body -->
-              <div class="product-body">
-
-                <h6 class="product-title"><%= product.name %></h6>
-
-                <div class="product-price-row">
-                  <span class="product-price">₹<%= product.price %></span>
-                  <% if (product.mrp > product.price) { %>
-                    <span class="product-mrp">₹<%= product.mrp %></span>
-                  <% } %>
-                </div>
-
-                <div class="product-seller">
-                  <i class="fas fa-user-circle"></i>
-                  Sold by <%= product.owner && product.owner.fullName ? product.owner.fullName : 'Seller' %>
-                </div>
-
-                <% if (product.stock > 0) { %>
-                  <span class="product-stock stock-in">
-                    <i class="fas fa-check-circle"></i> In stock
-                  </span>
-                <% } else { %>
-                  <span class="product-stock stock-out">
-                    <i class="fas fa-times-circle"></i> Out of stock
-                  </span>
-                <% } %>
-
-              </div>
-
-            </div>
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <i class="fas fa-basket-shopping"></i>
+          </div>
+          <h4>No Products Found</h4>
+          <p>Try another keyword, category or price range.</p>
+          <a href="/products" class="btn-filter-clear" data-clear-filters>
+            <i class="fas fa-rotate-left me-1"></i> Show all products
           </a>
         </div>
-      <% }) %>
-    </div>
 
-    <!-- Pagination -->
-    <% if (pagination.totalPages > 1) { %>
-      <nav class="mt-5">
-        <ul class="pagination justify-content-center mp-pagination">
+      <% } else { %>
 
-          <li class="page-item <%= pagination.hasPrev ? '' : 'disabled' %>">
-            <a class="page-link" href="<%= buildQuery(pagination.page - 1) %>">
-              <i class="fas fa-chevron-left me-1"></i> Prev
-            </a>
-          </li>
+        <div class="row g-4">
+          <% products.forEach(function (product, index) {
+            const stock      = Number(product.stock || 0);
+            const price      = Number(product.price || 0);
+            const mrp        = Number(product.mrp || 0);
+            const discount   = Number(product.discount || 0);
+            const sellerName = product.owner && product.owner.fullName ? product.owner.fullName : 'Verified seller';
+            const productUrl = '/products/view/' + product._id;
+          %>
 
-          <li class="page-item disabled">
-            <span class="page-link">
-              Page <%= pagination.page %> of <%= pagination.totalPages %>
-            </span>
-          </li>
+            <div class="col-6 col-md-4 marketplace-product" style="--i: <%= Math.min(index, 12) %>;">
+              <article class="product-card-inner">
 
-          <li class="page-item <%= pagination.hasNext ? '' : 'disabled' %>">
-            <a class="page-link" href="<%= buildQuery(pagination.page + 1) %>">
-              Next <i class="fas fa-chevron-right ms-1"></i>
-            </a>
-          </li>
+                <!-- Image -->
+                <a href="<%= productUrl %>" class="product-image-link" aria-label="View <%= product.name %>">
+                  <div class="product-img-wrap">
+                    <% if (product.image) { %>
+                      <img src="<%= product.image %>" alt="<%= product.name %>" loading="lazy">
+                    <% } else { %>
+                      <div class="product-img-placeholder"><i class="fas fa-image"></i></div>
+                    <% } %>
 
-        </ul>
-      </nav>
-    <% } %>
+                    <% if (product.category) { %>
+                      <span class="product-category-float"><%= product.category %></span>
+                    <% } %>
 
-  <% } %>
+                    <% if (discount > 0) { %>
+                      <span class="product-discount-float">
+                        <i class="fas fa-fire me-1"></i><%= discount %>% OFF
+                      </span>
+                    <% } %>
+                  </div>
+                </a>
 
+                <!-- Body -->
+                <div class="product-body">
+                  <h3 class="product-title">
+                    <a href="<%= productUrl %>" class="product-name-link"><%= product.name %></a>
+                  </h3>
+
+                  <div class="product-price-row">
+                    <span class="product-price">₹<%= price.toLocaleString('en-IN') %></span>
+                    <% if (mrp > price) { %>
+                      <span class="product-mrp">₹<%= mrp.toLocaleString('en-IN') %></span>
+                    <% } %>
+                  </div>
+
+                  <div class="product-seller">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Sold by <%= sellerName %></span>
+                  </div>
+
+                  <div class="product-stock-row">
+                    <% if (stock > 0) { %>
+                      <span class="product-stock stock-in">
+                        <i class="fas fa-check-circle"></i> In stock (<%= stock %>)
+                      </span>
+                    <% } else { %>
+                      <span class="product-stock stock-out">
+                        <i class="fas fa-times-circle"></i> Out of stock
+                      </span>
+                    <% } %>
+                  </div>
+
+                  <div class="product-actions">
+                    <form action="/cart/<%= product._id %>/add" method="POST" class="product-cart-form">
+                      <input type="hidden" name="quantity" value="1">
+                      <button type="submit" class="btn-add-cart" <%= stock <= 0 ? 'disabled' : '' %>>
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                      </button>
+                    </form>
+
+                    <a href="<%= productUrl %>" class="btn-buy-now">
+                      <i class="fas fa-eye"></i> View &amp; Buy
+                    </a>
+                  </div>
+                </div>
+
+              </article>
+            </div>
+
+          <% }) %>
+        </div>
+
+        <!-- Pagination -->
+        <% if (pagination && pagination.totalPages > 1) { %>
+          <nav class="mt-5" aria-label="Marketplace pagination">
+            <ul class="pagination justify-content-center mp-pagination">
+
+              <li class="page-item <%= pagination.hasPrev ? '' : 'disabled' %>">
+                <% if (pagination.hasPrev) { %>
+                  <a class="page-link" href="<%= buildQuery(pagination.page - 1) %>">
+                    <i class="fas fa-chevron-left me-1"></i> Previous
+                  </a>
+                <% } else { %>
+                  <span class="page-link">Previous</span>
+                <% } %>
+              </li>
+
+              <li class="page-item active">
+                <span class="page-link">Page <%= pagination.page %> of <%= pagination.totalPages %></span>
+              </li>
+
+              <li class="page-item <%= pagination.hasNext ? '' : 'disabled' %>">
+                <% if (pagination.hasNext) { %>
+                  <a class="page-link" href="<%= buildQuery(pagination.page + 1) %>">
+                    Next <i class="fas fa-chevron-right ms-1"></i>
+                  </a>
+                <% } else { %>
+                  <span class="page-link">Next</span>
+                <% } %>
+              </li>
+
+            </ul>
+          </nav>
+        <% } %>
+
+      <% } %>
+
+    </section>
+  </div>
 </main>
 
 <%- include('../partials/footer') %>
 
 <script>
-  // Subtle staggered entrance for product cards
-  document.addEventListener('DOMContentLoaded', function () {
-    const cards = document.querySelectorAll('.product-grid-card');
-    cards.forEach((card, i) => {
-      card.style.opacity = '0';
-      card.style.transform = 'translateY(14px)';
-      card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-      setTimeout(() => {
-        card.style.opacity = '1';
-        card.style.transform = 'translateY(0)';
-      }, 60 + i * 40);
+  /* ============================================================
+     LIVE FILTERING — no page reload
+     ============================================================ */
+  (function () {
+    var form    = document.getElementById('marketplaceFilters');
+    var results = document.getElementById('productResults');
+    if (!form || !results) return;
+
+    var DEBOUNCE_MS = 400;
+    var timer = null;
+    var controller = null;
+
+    function buildUrl() {
+      var params = new URLSearchParams();
+      new FormData(form).forEach(function (value, key) {
+        value = String(value).trim();
+        if (!value) return;
+        if (key === 'sort' && value === 'newest') return;
+        params.set(key, value);
+      });
+      var qs = params.toString();
+      return '/products' + (qs ? '?' + qs : '');
+    }
+
+    function load(url, scrollToTop) {
+      if (controller) controller.abort();
+      var current = controller = new AbortController();
+      results.classList.add('is-loading');
+
+      fetch(url, { signal: current.signal, headers: { 'X-Requested-With': 'fetch' } })
+        .then(function (res) {
+          if (!res.ok) throw new Error('Bad response');
+          return res.text();
+        })
+        .then(function (html) {
+          var doc = new DOMParser().parseFromString(html, 'text/html');
+          var fresh = doc.getElementById('productResults');
+          if (!fresh) throw new Error('Results not found');
+
+          results.innerHTML = fresh.innerHTML;
+          history.replaceState(null, '', url);
+          if (scrollToTop) results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        })
+        .catch(function (err) {
+          if (err.name === 'AbortError') return;
+          window.location.href = url;
+        })
+        .finally(function () {
+          if (controller === current) results.classList.remove('is-loading');
+        });
+    }
+
+    form.addEventListener('input', function (e) {
+      clearTimeout(timer);
+      if (e.target.tagName === 'SELECT') {
+        load(buildUrl());
+      } else {
+        timer = setTimeout(function () { load(buildUrl()); }, DEBOUNCE_MS);
+      }
     });
-  });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      clearTimeout(timer);
+      load(buildUrl());
+    });
+
+    document.addEventListener('click', function (e) {
+      var clearBtn = e.target.closest('[data-clear-filters]');
+      if (!clearBtn) return;
+      e.preventDefault();
+      clearTimeout(timer);
+
+      form.querySelectorAll('input').forEach(function (input) { input.value = ''; });
+      form.querySelector('[name="category"]').value = '';
+      form.querySelector('[name="sort"]').value = 'newest';
+      load('/products');
+    });
+
+    results.addEventListener('click', function (e) {
+      var link = e.target.closest('.mp-pagination a.page-link');
+      if (!link) return;
+      e.preventDefault();
+      load(link.getAttribute('href'), true);
+    });
+  })();
 </script>

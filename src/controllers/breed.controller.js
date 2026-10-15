@@ -1,70 +1,99 @@
-// src/controllers/breed.controller.js
-import fs from "fs";
-import axios from "axios";
-import FormData from "form-data";
-import Prediction from "../models/prediction.model.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { discardUploads } from "../utils/uploads.js";
+import { isObjectId } from "../utils/http.js";
+import { requestPrediction } from "../utils/mlServiceClient.js";
+import { Prediction } from "../models/prediction.model.js";
 
-const ML_SERVICE_URL = process.env.ML_SERVICE_URL || "http://localhost:8001";
+const HISTORY_LIMIT = 20;
 
-export const renderDetectPage = (req, res) => {
-    res.render("breed/detect", { error: null });
-};
+const renderDetect = (req, res, { status = 200, error = null } = {}) =>
+    res.status(status).render("breed/detect", {
+        title: "AI Cow Breed Detector",
+        user: req.user,
+        error
+    });
 
-export const predictBreed = async (req, res) => {
+const renderNotFound = (req, res) =>
+    res.status(404).render("404", { title: "Result Not Found", user: req.user });
+
+const showDetectPage = (req, res) => renderDetect(req, res);
+
+const predictBreed = asyncHandler(async (req, res) => {
     if (!req.file) {
-        return res.render("breed/detect", {
-            error: "Please select or capture an image first"
+        return renderDetect(req, res, {
+            status: 400,
+            error: "Please select or capture an image first."
         });
     }
 
-    const tempPath = req.file.path;
-
     try {
-        const form = new FormData();
-        form.append("image", fs.createReadStream(tempPath), req.file.originalname);
+        const result = await requestPrediction({
+            filePath: req.file.path,
+            filename: req.file.originalname,
+            mimetype: req.file.mimetype
+        });
 
-        const { data } = await axios.post(`${ML_SERVICE_URL}/predict`, form, {
-            headers: form.getHeaders(),
-            timeout: 15000
+        const uploaded = await uploadOnCloudinary(req.file.path, {
+            folder: "bovinetra/predictions"
         });
 
         const prediction = await Prediction.create({
             user: req.user?._id || null,
-            breed: data.breed,
-            confidence: data.confidence,
-            info: data.info,
-            imagePath: data.image_path,
-            source: req.body.source === "camera" ? "camera" : "upload"
+            breed: result.breed,
+            confidence: result.confidence,
+            info: result.info,
+            imageUrl: uploaded?.secure_url || "",
+            source: req.body?.source === "camera" ? "camera" : "upload"
         });
 
-        fs.unlink(tempPath, () => {});
+        return res.redirect(`/breed/result/${prediction._id}`);
+    } catch (error) {
+        if (!(error instanceof ApiError)) throw error;
 
-        return res.render("breed/result", {
-            prediction: prediction.breed,
-            confidence: prediction.confidence,
-            info: prediction.info,
-            imagePath: prediction.imagePath
+        return renderDetect(req, res, {
+            status: error.statusCode,
+            error: error.message
         });
-    } catch (err) {
-        fs.unlink(tempPath, () => {});
-
-        const message =
-            err.code === "ECONNREFUSED"
-                ? "AI service is currently unavailable, please try again later"
-                : "Prediction failed, please try again";
-
-        return res.render("breed/detect", { error: message });
+    } finally {
+        await discardUploads(req);
     }
-};
+});
 
-export const getPredictionHistory = async (req, res) => {
-    if (!req.user?._id) {
-        return res.status(401).json({ success: false, message: "Login required" });
-    }
+const showResultPage = asyncHandler(async (req, res) => {
+    if (!isObjectId(req.params.id)) return renderNotFound(req, res);
 
+    const prediction = await Prediction.findById(req.params.id).lean();
+
+    if (!prediction) return renderNotFound(req, res);
+
+    const ownerId = prediction.user ? String(prediction.user) : null;
+    const viewerId = req.user?._id ? String(req.user._id) : null;
+
+    if (ownerId && ownerId !== viewerId) return renderNotFound(req, res);
+
+    return res.status(200).render("breed/result", {
+        title: `${prediction.breed} - Breed Result`,
+        user: req.user,
+        prediction: prediction.breed,
+        confidence: prediction.confidence,
+        info: prediction.info,
+        imageUrl: prediction.imageUrl
+    });
+});
+
+const getPredictionHistory = asyncHandler(async (req, res) => {
     const history = await Prediction.find({ user: req.user._id })
+        .select("breed confidence imageUrl createdAt")
         .sort({ createdAt: -1 })
-        .limit(20);
+        .limit(HISTORY_LIMIT)
+        .lean();
 
-    return res.json({ success: true, data: history });
-};
+    return res
+        .status(200)
+        .json(new ApiResponse(200, history, "Prediction history fetched successfully"));
+});
+
+export { showDetectPage, predictBreed, showResultPage, getPredictionHistory };

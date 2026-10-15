@@ -45,6 +45,11 @@ const userSchema = new Schema(
             maxlength: [254, "Email cannot exceed 254 characters"],
             match: [EMAIL_PATTERN, "Enter a valid email address"]
         },
+        googleId: {
+    type: String,
+    unique: true,
+    sparse: true
+},
 
         fullName: {
             type: String,
@@ -87,14 +92,15 @@ const userSchema = new Schema(
         buyerDetails: {
             address: { type: String, trim: true, maxlength: 300 }
         },
-
-        password: {
-            type: String,
-            required: [true, "Password is required"],
-            minlength: [8, "Password must be at least 8 characters"],
-            maxlength: [72, "Password cannot exceed 72 characters"],
-            select: false
-        },
+password: {
+    type: String,
+    required: function () {
+        return !this.googleId;
+    },
+    minlength: [8, "Password must be at least 8 characters"],
+    maxlength: [72, "Password cannot exceed 72 characters"],
+    select: false
+},
 
         isActive: {
             type: Boolean,
@@ -111,6 +117,7 @@ const userSchema = new Schema(
             select: false
         }
     },
+    
     {
         timestamps: true,
         toJSON: {

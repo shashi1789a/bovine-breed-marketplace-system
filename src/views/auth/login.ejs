@@ -279,7 +279,7 @@
           <p class="text-muted mb-4" style="font-size: 0.85rem;">Sign in to manage your dairy ecosystem</p>
           
           <!-- Standard Login Form -->
-          <form action="/api/v1/users/login" method="POST">
+          <form action="/login" method="POST">
             <div class="input-icon-wrap">
               <i class="fas fa-envelope"></i>
               <input type="text" name="email" class="input-glass" placeholder="Email or username" required autocomplete="email">
@@ -305,9 +305,10 @@
           
           <!-- Social Login Grid (Google, Facebook, Apple) + extra professional -->
           <div class="social-grid">
-            <a href="#" class="btn-social-premium" onclick="alert('Google OAuth demo — integration ready'); return false;">
-              <i class="fab fa-google google-color"></i> Google
-            </a>
+          <a href="/auth/google" class="btn-social-premium">
+    <i class="fab fa-google google-color"></i>
+    Continue with Google
+</a>
             <a href="#" class="btn-social-premium" onclick="alert('Facebook OAuth demo — integration ready'); return false;">
               <i class="fab fa-facebook-f facebook-color"></i> Facebook
             </a>
@@ -320,7 +321,7 @@
           </div>
           
           <div class="text-center mt-2">
-            <p class="mb-0" style="font-size: 0.85rem;">Don't have an account? <a href="/api/v1/users/register" class="fw-bold" style="color: var(--primary); text-decoration: none;">Start free trial →</a></p>
+            <p class="mb-0" style="font-size: 0.85rem;">Don't have an account? <a href="/register" class="fw-bold" style="color: var(--primary); text-decoration: none;">Start free trial →</a></p>
           </div>
           
           <!-- Trust indicators (production vibe) -->
