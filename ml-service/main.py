@@ -10,7 +10,10 @@ from utils.predict import predict_image
 IS_PRODUCTION = os.getenv("ENVIRONMENT", "development") == "production"
 API_KEY = os.getenv("ML_API_KEY", "")
 MAX_UPLOAD_BYTES = 8 * 1024 * 1024
+MAX_PIXELS = 20_000_000  # a decoded image is ~3 bytes/pixel, so this caps RAM use
 ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp"}
+
+Image.MAX_IMAGE_PIXELS = MAX_PIXELS
 
 if IS_PRODUCTION and not API_KEY:
     raise RuntimeError("ML_API_KEY must be set in production")
@@ -45,6 +48,10 @@ def predict(image: UploadFile = File(...)):
 
     try:
         pil_image = Image.open(io.BytesIO(raw))
+
+        if pil_image.width * pil_image.height > MAX_PIXELS:
+            raise HTTPException(status_code=413, detail="Image dimensions are too large")
+
         pil_image.load()
     except (UnidentifiedImageError, OSError, Image.DecompressionBombError):
         raise HTTPException(status_code=422, detail="Invalid image file")

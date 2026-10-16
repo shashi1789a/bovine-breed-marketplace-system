@@ -5,7 +5,7 @@ import tempfile
 import urllib.request
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BASE_DIR, "model", "best_model_final.pth")
+MODEL_PATH = os.path.join(BASE_DIR, "model", "best_model_slim.pth")
 MIN_MODEL_BYTES = 1024 * 1024
 CHUNK_BYTES = 1024 * 1024
 
@@ -45,7 +45,7 @@ def main():
     url = os.getenv("MODEL_URL", "").strip()
 
     if not url:
-        sys.exit("model/best_model_final.pth is missing and MODEL_URL is not set.")
+        sys.exit("model/best_model_slim.pth is missing and MODEL_URL is not set.")
 
     model_dir = os.path.dirname(MODEL_PATH)
     os.makedirs(model_dir, exist_ok=True)
