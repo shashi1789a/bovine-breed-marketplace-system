@@ -80,9 +80,13 @@ runs/
 
 # ==========================================
 
+# Dataset Files
 dataset/
 datasets/
-data/
+
+# Keep ML prediction labels
+!ml-service/data/
+!ml-service/data/labels.json
 
 # ==========================================
 
