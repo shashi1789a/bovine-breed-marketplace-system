@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title><%= typeof title !== 'undefined' ? title : 'Breed Result' %></title>
 </head>
 <body>
     <!-- views/breed/result.ejs -->
@@ -15,6 +15,7 @@
     .result-body { display: flex; flex-direction: row; min-height: 500px; flex-wrap: wrap; }
     .image-col { flex: 1; min-width: 300px; background: #0a0f14; display: flex; align-items: center; justify-content: center; padding: 24px; }
     .image-col img { max-width: 100%; max-height: 450px; object-fit: contain; border-radius: 20px; }
+    .no-image { color: #94a3b8; font-weight: 600; text-align: center; }
     .details-col { flex: 1; min-width: 300px; padding: 32px; background: #fff; }
     .breed-name { font-size: 2.2rem; font-weight: 800; color: #0284C7; }
     .conf-text { font-weight: 700; color: #0284C7; }
@@ -25,26 +26,36 @@
     .btn-try-again { background: linear-gradient(135deg, #2ecc71, #27ae60); color: #fff; padding: 12px 28px; border-radius: 60px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
 </style>
 
+<%
+    const details = info && typeof info === 'object' ? info : {};
+    const hasInfo = Object.keys(details).length > 0;
+    const show = (value) => (value ? value : '-');
+%>
+
 <div class="result-wrapper">
     <div class="result-card">
         <div class="result-body">
             <div class="image-col">
-                <img src="<%= imagePath %>" alt="Cow Image">
+                <% if (typeof imageUrl !== 'undefined' && imageUrl) { %>
+                    <img src="<%= imageUrl %>" alt="Cow Image">
+                <% } else { %>
+                    <div class="no-image">Image not available</div>
+                <% } %>
             </div>
 
             <div class="details-col">
                 <div class="breed-name"><%= prediction %></div>
                 <p class="conf-text"><%= confidence %>% Match</p>
 
-                <% if (info) { %>
+                <% if (hasInfo) { %>
                     <div class="info-grid">
-                        <div class="info-card"><div class="info-label">Origin</div><div class="info-value"><%= info.origin %></div></div>
-                        <div class="info-card"><div class="info-label">Milk Yield</div><div class="info-value"><%= info.milk_yield %></div></div>
-                        <div class="info-card"><div class="info-label">Features</div><div class="info-value"><%= info.features %></div></div>
-                        <div class="info-card"><div class="info-label">Primary Use</div><div class="info-value"><%= info.use %></div></div>
-                        <div class="info-card"><div class="info-label">Breed Type</div><div class="info-value"><%= info.type %></div></div>
-                        <div class="info-card"><div class="info-label">Disease Resistance</div><div class="info-value"><%= info.disease_resistance %></div></div>
-                        <div class="info-card"><div class="info-label">Heat Tolerance</div><div class="info-value"><%= info.heat_tolerance %></div></div>
+                        <div class="info-card"><div class="info-label">Origin</div><div class="info-value"><%= show(details.origin) %></div></div>
+                        <div class="info-card"><div class="info-label">Milk Yield</div><div class="info-value"><%= show(details.milk_yield) %></div></div>
+                        <div class="info-card"><div class="info-label">Features</div><div class="info-value"><%= show(details.features) %></div></div>
+                        <div class="info-card"><div class="info-label">Primary Use</div><div class="info-value"><%= show(details.use) %></div></div>
+                        <div class="info-card"><div class="info-label">Breed Type</div><div class="info-value"><%= show(details.type) %></div></div>
+                        <div class="info-card"><div class="info-label">Disease Resistance</div><div class="info-value"><%= show(details.disease_resistance) %></div></div>
+                        <div class="info-card"><div class="info-label">Heat Tolerance</div><div class="info-value"><%= show(details.heat_tolerance) %></div></div>
                     </div>
                 <% } %>
 
