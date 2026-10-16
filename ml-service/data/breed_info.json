@@ -1,0 +1,371 @@
+{
+  "Alambadi": {
+    "origin": "India (Tamil Nadu)",
+    "milk_yield": "6–10 liters/day",
+    "features": "Strong body, good draught ability",
+    "use": "Draught + Milk",
+    "type": "Dual purpose",
+    "disease_resistance": "Medium",
+    "heat_tolerance": "High"
+  },
+  "Amritmahal": {
+    "origin": "India (Karnataka)",
+    "milk_yield": "2–5 liters/day",
+    "features": "Fast running, white/grey color",
+    "use": "Draught",
+    "type": "Draught",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Ayrshire": {
+    "origin": "Scotland",
+    "milk_yield": "15–20 liters/day",
+    "features": "Red and white patches",
+    "use": "Milk production",
+    "type": "Dairy",
+    "disease_resistance": "Medium",
+    "heat_tolerance": "Medium"
+  },
+  "Banni": {
+    "origin": "India (Gujarat)",
+    "milk_yield": "10–18 liters/day",
+    "features": "White coat, strong build",
+    "use": "Milk production",
+    "type": "Dairy",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Bargur": {
+    "origin": "India (Tamil Nadu)",
+    "milk_yield": "4–6 liters/day",
+    "features": "Fast running, brown coat",
+    "use": "Draught",
+    "type": "Draught",
+    "disease_resistance": "Medium",
+    "heat_tolerance": "High"
+  },
+  "Bhadawari": {
+    "origin": "India (UP/MP)",
+    "milk_yield": "5–8 liters/day",
+    "features": "Black color, strong body",
+    "use": "Milk + Draught",
+    "type": "Dual purpose",
+    "disease_resistance": "Medium",
+    "heat_tolerance": "High"
+  },
+  "Brown_Swiss": {
+    "origin": "Switzerland",
+    "milk_yield": "20–25 liters/day",
+    "features": "Brown coat, strong frame",
+    "use": "Milk production",
+    "type": "Dairy",
+    "disease_resistance": "High",
+    "heat_tolerance": "Medium"
+  },
+  "Dangi": {
+    "origin": "India (Maharashtra)",
+    "milk_yield": "3–6 liters/day",
+    "features": "White coat with red spots",
+    "use": "Draught + Milk",
+    "type": "Dual purpose",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Deoni": {
+    "origin": "India (Maharashtra/Karnataka)",
+    "milk_yield": "5–10 liters/day",
+    "features": "Black & white body",
+    "use": "Milk + Draught",
+    "type": "Dual purpose",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Gir": {
+    "origin": "India (Gujarat)",
+    "milk_yield": "12–15 liters/day",
+    "features": "Hump, long ears, red color",
+    "use": "Milk production",
+    "type": "Dairy",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Guernsey": {
+    "origin": "UK (Channel Islands)",
+    "milk_yield": "15–18 liters/day",
+    "features": "Golden yellow milk, brown-white coat",
+    "use": "Milk production",
+    "type": "Dairy",
+    "disease_resistance": "Medium",
+    "heat_tolerance": "Medium"
+  },
+  "Hallikar": {
+    "origin": "India (Karnataka)",
+    "milk_yield": "2–4 liters/day",
+    "features": "Strong legs, draught breed",
+    "use": "Draught",
+    "type": "Draught",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Hariana": {
+    "origin": "India (Haryana)",
+    "milk_yield": "4–6 liters/day",
+    "features": "White-grey body",
+    "use": "Milk + Draught",
+    "type": "Dual purpose",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Holstein_Friesian": {
+    "origin": "Netherlands",
+    "milk_yield": "25–35 liters/day",
+    "features": "Black & white large body",
+    "use": "Milk production",
+    "type": "Dairy",
+    "disease_resistance": "Medium",
+    "heat_tolerance": "Low"
+  },
+  "Jaffrabadi": {
+    "origin": "India (Gujarat)",
+    "milk_yield": "8–12 liters/day",
+    "features": "Black buffalo, strong horns",
+    "use": "Milk production",
+    "type": "Buffalo dairy",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Jersey": {
+    "origin": "UK",
+    "milk_yield": "15–20 liters/day",
+    "features": "Small size, brown color",
+    "use": "Milk production",
+    "type": "Dairy",
+    "disease_resistance": "Medium",
+    "heat_tolerance": "Medium"
+  },
+  "Kangayam": {
+    "origin": "India (Tamil Nadu)",
+    "milk_yield": "3–5 liters/day",
+    "features": "Strong bull breed",
+    "use": "Draught",
+    "type": "Draught",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Kankrej": {
+    "origin": "India (Gujarat/Rajasthan)",
+    "milk_yield": "8–12 liters/day",
+    "features": "Strong hump, grey color",
+    "use": "Milk + Draught",
+    "type": "Dual purpose",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Kasargod": {
+    "origin": "India (Kerala)",
+    "milk_yield": "4–6 liters/day",
+    "features": "Small size cattle",
+    "use": "Milk production",
+    "type": "Dairy",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Kenkatha": {
+    "origin": "India (MP/UP)",
+    "milk_yield": "3–5 liters/day",
+    "features": "Small hardy cattle",
+    "use": "Draught",
+    "type": "Draught",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Kherigarh": {
+    "origin": "India (UP)",
+    "milk_yield": "3–4 liters/day",
+    "features": "Small white cattle",
+    "use": "Draught",
+    "type": "Draught",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Khillari": {
+    "origin": "India (Maharashtra)",
+    "milk_yield": "3–5 liters/day",
+    "features": "Strong working cattle",
+    "use": "Draught",
+    "type": "Draught",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Krishna_Valley": {
+    "origin": "India (Karnataka)",
+    "milk_yield": "5–8 liters/day",
+    "features": "Large body, white-grey",
+    "use": "Milk + Draught",
+    "type": "Dual purpose",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Malnad_gidda": {
+    "origin": "India (Karnataka)",
+    "milk_yield": "2–3 liters/day",
+    "features": "Small hill cattle",
+    "use": "Milk",
+    "type": "Dairy",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Mehsana": {
+    "origin": "India (Gujarat)",
+    "milk_yield": "8–12 liters/day",
+    "features": "Black buffalo",
+    "use": "Milk production",
+    "type": "Buffalo dairy",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Murrah": {
+    "origin": "India (Haryana)",
+    "milk_yield": "10–16 liters/day",
+    "features": "Curved horns buffalo",
+    "use": "Milk production",
+    "type": "Buffalo dairy",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Nagori": {
+    "origin": "India (Rajasthan)",
+    "milk_yield": "3–5 liters/day",
+    "features": "White cattle",
+    "use": "Draught",
+    "type": "Draught",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Nagpuri": {
+    "origin": "India (Maharashtra)",
+    "milk_yield": "4–6 liters/day",
+    "features": "Strong working cattle",
+    "use": "Draught",
+    "type": "Draught",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Nili_Ravi": {
+    "origin": "India/Pakistan",
+    "milk_yield": "12–18 liters/day",
+    "features": "Black buffalo",
+    "use": "Milk production",
+    "type": "Buffalo dairy",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Nimari": {
+    "origin": "India (MP)",
+    "milk_yield": "4–6 liters/day",
+    "features": "White with red patches",
+    "use": "Milk + Draught",
+    "type": "Dual purpose",
+    "disease_resistance": "Medium",
+    "heat_tolerance": "High"
+  },
+  "Ongole": {
+    "origin": "India (Andhra Pradesh)",
+    "milk_yield": "5–7 liters/day",
+    "features": "Large white cattle",
+    "use": "Draught",
+    "type": "Draught",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Pulikulam": {
+    "origin": "India (Tamil Nadu)",
+    "milk_yield": "3–5 liters/day",
+    "features": "Bull fighting breed",
+    "use": "Draught",
+    "type": "Draught",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Rathi": {
+    "origin": "India (Rajasthan)",
+    "milk_yield": "8–10 liters/day",
+    "features": "White with brown patches",
+    "use": "Milk production",
+    "type": "Dairy",
+    "disease_resistance": "Medium",
+    "heat_tolerance": "High"
+  },
+  "Red_Dane": {
+    "origin": "Denmark",
+    "milk_yield": "20–25 liters/day",
+    "features": "Red dairy cattle",
+    "use": "Milk production",
+    "type": "Dairy",
+    "disease_resistance": "Medium",
+    "heat_tolerance": "Low"
+  },
+  "Red_Sindhi": {
+    "origin": "India/Pakistan",
+    "milk_yield": "10–15 liters/day",
+    "features": "Red body cattle",
+    "use": "Milk production",
+    "type": "Dairy",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Sahiwal": {
+    "origin": "India/Pakistan",
+    "milk_yield": "8–12 liters/day",
+    "features": "Reddish brown body",
+    "use": "Milk production",
+    "type": "Dairy",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Surti": {
+    "origin": "India (Gujarat)",
+    "milk_yield": "6–10 liters/day",
+    "features": "Medium buffalo breed",
+    "use": "Milk production",
+    "type": "Buffalo dairy",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Tharparkar": {
+    "origin": "India (Rajasthan)",
+    "milk_yield": "8–12 liters/day",
+    "features": "White-grey cattle",
+    "use": "Milk production",
+    "type": "Dairy",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Toda": {
+    "origin": "India (Tamil Nadu)",
+    "milk_yield": "2–4 liters/day",
+    "features": "Hill buffalo breed",
+    "use": "Milk production",
+    "type": "Buffalo dairy",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Umblachery": {
+    "origin": "India (Tamil Nadu)",
+    "milk_yield": "3–5 liters/day",
+    "features": "Strong draught cattle",
+    "use": "Draught",
+    "type": "Draught",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  },
+  "Vechur": {
+    "origin": "India (Kerala)",
+    "milk_yield": "2–4 liters/day",
+    "features": "World's smallest cattle",
+    "use": "Milk production",
+    "type": "Dairy",
+    "disease_resistance": "High",
+    "heat_tolerance": "High"
+  }
+}
