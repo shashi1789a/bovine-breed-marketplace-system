@@ -1,3 +1,4 @@
+import contactRoutes from "./contact.routes.js";
 import { Router } from "express";
 
 const router = Router();
@@ -13,12 +14,12 @@ router.get("/about-us", (req, res) => {
         title: "BoviNetra about-us"
     });
 });
-
-router.get("/contact-us", (req, res) => {
-    res.render("pages/contact-us", {
-        title: "BoviNetra contact-us"
-    });
-});
+router.use("/", contactRoutes);
+    // router.get("/contact-us", (req, res) => {
+    //     res.render("pages/contact-us", {
+    //         title: "BoviNetra contact-us"
+    //     });
+    // });
 
 router.get("/cattele-management-softeware", (req, res) => {
     res.render("pages/cattele-management-softeware", {

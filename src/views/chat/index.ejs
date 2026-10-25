@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title><%= locals.title || "Messages | BoviNetra" %></title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0f3d2a">
+  <link rel="icon" href="/assets/images/fav.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    :root{--green-900:#0f3d2a;--green-700:#176b45;--green-100:#e3f1e9;--paper:#f6f7f3;--card:#fff;--ink:#1c2a23;--muted:#66756d;--line:#dde4de;--amber:#f59e0b;--danger:#c8372d}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{font-family:Inter,system-ui,sans-serif;font-size:15px;color:var(--ink);background:var(--paper)}
+    [hidden]{display:none!important}
+    button,input,select,textarea{font:inherit;color:inherit}
+    button{cursor:pointer}
+    :focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+    .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+    .app{display:grid;grid-template-columns:340px 1fr;height:100vh;height:100dvh}
+    .list-pane{display:flex;flex-direction:column;min-height:0;background:var(--card);border-right:1px solid var(--line)}
+    .list-head{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--green-900);color:#fff}
+    .list-head h1{margin:0;font:600 18px Poppins,sans-serif}
+    .list-head a{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;color:#fff;font-size:20px;text-decoration:none}
+    .search{display:flex;gap:8px;padding:12px;border-bottom:1px solid var(--line)}
+    .search input{flex:1;min-width:0;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper)}
+    .search select{padding:0 8px;border:1px solid var(--line);border-radius:8px;background:var(--paper)}
+    .people{flex:1;min-height:0;margin:0;padding:0;list-style:none;overflow-y:auto}
+    .person{display:flex;align-items:center;gap:12px;width:100%;padding:12px 16px;border:0;border-bottom:1px solid var(--line);background:none;text-align:left}
+    .person:hover,.person[aria-current="true"]{background:var(--green-100)}
+    .person-body{flex:1;min-width:0}
+    .person-name{display:flex;justify-content:space-between;gap:8px;font-weight:600}
+    .person-name time{font-size:12px;font-weight:400;color:var(--muted)}
+    .person-sub{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+    .person-sub span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .badge{min-width:20px;padding:1px 7px;border-radius:999px;background:var(--amber);color:#2b1d00;font-size:12px;font-weight:600;text-align:center}
+    .role{padding:1px 6px;border-radius:6px;background:var(--green-100);color:var(--green-700);font-size:12px;text-transform:capitalize}
+    .avatar{display:grid;place-items:center;flex:none;width:42px;height:42px;overflow:hidden;border-radius:50%;background:var(--green-700);color:#fff;font-weight:600}
+    .avatar img{width:100%;height:100%;object-fit:cover}
+    .empty{padding:24px 16px;text-align:center;color:var(--muted)}
+
+    .thread-pane{display:flex;flex-direction:column;min-width:0;min-height:0}
+    .thread-empty{max-width:320px;margin:auto;padding:24px;text-align:center;color:var(--muted)}
+    .thread{display:flex;flex:1;flex-direction:column;min-height:0}
+    .thread-head{display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+    .thread-title{flex:1;min-width:0}
+    .thread-title strong{display:block;font-family:Poppins,sans-serif;font-weight:600}
+    .thread-title small{color:var(--muted)}
+    .icon-btn{display:grid;place-items:center;width:40px;height:40px;border:0;border-radius:50%;background:var(--green-100);color:var(--green-700);font-size:18px}
+    .icon-btn:hover{background:#cfe6d8}
+    .icon-btn.solid{background:var(--green-700);color:#fff}
+    #backBtn{display:none}
+    .messages{display:flex;flex:1;flex-direction:column;gap:6px;min-height:0;padding:16px;overflow-y:auto}
+    .msg{align-self:flex-start;max-width:min(520px,78%);padding:8px 12px;border:1px solid var(--line);border-radius:14px;background:var(--card);overflow-wrap:anywhere}
+    .msg.mine{align-self:flex-end;border-color:var(--green-700);background:var(--green-700);color:#fff}
+    .msg p{margin:0;white-space:pre-wrap}
+    .msg time{display:block;margin-top:2px;font-size:11px;text-align:right;opacity:.7}
+    .msg.pending{opacity:.6}
+    .msg.failed{border-color:var(--danger)}
+    .call-log{display:flex;align-items:center;gap:8px;align-self:center;padding:5px 12px;border-radius:999px;background:var(--green-100);font-size:13px;color:var(--muted)}
+    .call-log.missed{background:#fbe9e7;color:var(--danger)}
+    .load-older{align-self:center;padding:5px 14px;border:1px solid var(--line);border-radius:999px;background:var(--card);font-size:13px}
+    .composer{display:flex;gap:8px;padding:10px 12px;padding-bottom:max(10px,env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--card)}
+    .composer textarea{flex:1;max-height:120px;padding:9px 12px;border:1px solid var(--line);border-radius:12px;background:var(--paper);resize:none}
+
+    .conn-banner{position:fixed;top:0;left:50%;z-index:30;padding:4px 14px;border-radius:0 0 8px 8px;background:var(--amber);color:#2b1d00;font-size:13px;transform:translateX(-50%)}
+    .toast{position:fixed;bottom:24px;left:50%;z-index:70;max-width:90vw;padding:10px 16px;border-radius:10px;background:var(--green-900);color:#fff;transform:translateX(-50%)}
+
+    .incoming{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:rgba(15,61,42,.6)}
+    .incoming-card{display:grid;gap:12px;justify-items:center;width:min(340px,90vw);padding:24px;border-radius:16px;background:var(--card);text-align:center}
+    .incoming-card .avatar{width:72px;height:72px;font-size:26px}
+    .incoming-actions{display:flex;gap:20px}
+    .round-btn{display:grid;place-items:center;width:56px;height:56px;border:0;border-radius:50%;color:#fff;font-size:22px}
+    .round-btn.accept{background:var(--green-700)}
+    .round-btn.decline{background:var(--danger)}
+
+    .call{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;background:var(--green-900)}
+    .call video{background:#06241a}
+    #remoteVideo{flex:1;width:100%;min-height:0;object-fit:cover}
+    #localVideo{position:absolute;right:16px;bottom:110px;width:min(28vw,160px);aspect-ratio:3/4;border:2px solid rgba(255,255,255,.7);border-radius:12px;object-fit:cover;transform:scaleX(-1)}
+    .call-top{position:absolute;top:0;left:0;right:0;padding:16px;color:#fff;background:linear-gradient(rgba(0,0,0,.45),transparent)}
+    .call-top strong{display:block;font-family:Poppins,sans-serif}
+    .call-bar{display:flex;justify-content:center;gap:18px;padding:18px;padding-bottom:max(18px,env(safe-area-inset-bottom))}
+    .call-bar .round-btn{background:rgba(255,255,255,.18)}
+    .call-bar .round-btn[aria-pressed="true"]{background:#fff;color:var(--green-900)}
+    .call-bar .round-btn.decline{background:var(--danger);color:#fff}
+    .call-bar .round-btn:disabled{opacity:.4;cursor:not-allowed}
+
+    @media (max-width:768px){
+      .app{grid-template-columns:1fr}
+      .app[data-view="list"] .thread-pane{display:none}
+      .app[data-view="thread"] .list-pane{display:none}
+      #backBtn{display:grid}
+    }
+    @media (prefers-reduced-motion:no-preference){
+      .incoming-card .avatar{animation:ring 1.4s ease-in-out infinite}
+      @keyframes ring{0%,100%{box-shadow:0 0 0 0 rgba(23,107,69,.45)}50%{box-shadow:0 0 0 14px rgba(23,107,69,0)}}
+    }
+  </style>
+</head>
+<body>
+
+<div class="conn-banner" id="connBanner" role="status" hidden>Reconnecting…</div>
+
+<div class="app" id="app" data-view="list">
+
+  <aside class="list-pane" id="listPane" aria-label="Conversations">
+    <header class="list-head">
+      <a href="/dashboard" aria-label="Back to dashboard"><i class="bi bi-arrow-left" aria-hidden="true"></i></a>
+      <h1>Messages</h1>
+    </header>
+
+    <div class="search">
+      <label class="visually-hidden" for="userSearch">Find people</label>
+      <input id="userSearch" type="search" placeholder="Find a farmer, doctor or buyer" autocomplete="off" maxlength="50">
+      <label class="visually-hidden" for="roleFilter">Filter by role</label>
+      <select id="roleFilter">
+        <option value="">Everyone</option>
+        <option value="farmer">Farmers</option>
+        <option value="doctor">Doctors</option>
+        <option value="buyer">Buyers</option>
+        <option value="user">Users</option>
+        <option value="admin">Admins</option>
+      </select>
+    </div>
+
+    <ul class="people" id="searchResults" hidden></ul>
+    <ul class="people" id="conversationList"></ul>
+    <p class="empty" id="listEmpty" hidden>No conversations yet. Search for someone above to start one.</p>
+  </aside>
+
+  <main class="thread-pane" id="threadPane">
+    <p class="thread-empty" id="threadEmpty">Pick a conversation, or search for someone to message or call.</p>
+
+    <section class="thread" id="thread" hidden>
+      <header class="thread-head">
+        <button type="button" class="icon-btn" id="backBtn" aria-label="Back to conversations"><i class="bi bi-chevron-left" aria-hidden="true"></i></button>
+        <span class="avatar" id="threadAvatar"></span>
+        <div class="thread-title">
+          <strong id="threadName"></strong>
+          <small id="threadStatus"></small>
+        </div>
+        <button type="button" class="icon-btn solid" id="callBtn" aria-label="Start video call"><i class="bi bi-camera-video-fill" aria-hidden="true"></i></button>
+      </header>
+
+      <div class="messages" id="messages" role="log" aria-live="polite" aria-label="Messages"></div>
+
+      <form class="composer" id="composer" autocomplete="off">
+        <label class="visually-hidden" for="messageInput">Write a message</label>
+        <textarea id="messageInput" rows="1" maxlength="2000" placeholder="Write a message"></textarea>
+        <button type="submit" class="icon-btn solid" id="sendBtn" aria-label="Send message"><i class="bi bi-send-fill" aria-hidden="true"></i></button>
+      </form>
+    </section>
+  </main>
+</div>
+
+<div class="incoming" id="incomingCall" role="alertdialog" aria-modal="true" aria-labelledby="incomingName" hidden>
+  <div class="incoming-card">
+    <span class="avatar" id="incomingAvatar"></span>
+    <div>
+      <strong id="incomingName"></strong>
+      <div>is calling you on video</div>
+    </div>
+    <div class="incoming-actions">
+      <button type="button" class="round-btn decline" id="incomingDecline" aria-label="Decline call"><i class="bi bi-telephone-x-fill" aria-hidden="true"></i></button>
+      <button type="button" class="round-btn accept" id="incomingAccept" aria-label="Accept call"><i class="bi bi-camera-video-fill" aria-hidden="true"></i></button>
+    </div>
+  </div>
+</div>
+
+<div class="call" id="callOverlay" role="dialog" aria-modal="true" aria-label="Video call" hidden>
+  <video id="remoteVideo" autoplay playsinline></video>
+  <video id="localVideo" autoplay playsinline muted></video>
+  <div class="call-top">
+    <strong id="callPeer"></strong>
+    <span id="callStatus" role="status"></span>
+  </div>
+  <div class="call-bar">
+    <button type="button" class="round-btn" id="micBtn" aria-pressed="false" aria-label="Mute microphone"><i class="bi bi-mic-fill" aria-hidden="true"></i></button>
+    <button type="button" class="round-btn" id="camBtn" aria-pressed="false" aria-label="Turn camera off"><i class="bi bi-camera-video-fill" aria-hidden="true"></i></button>
+    <button type="button" class="round-btn decline" id="hangupBtn" aria-label="End call"><i class="bi bi-telephone-x-fill" aria-hidden="true"></i></button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/assets/js/chat-client.js"></script>
+</body>
+</html>

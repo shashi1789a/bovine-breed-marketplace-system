@@ -5,9 +5,29 @@
      Layout: Vertical sidebar filter (LEFT) + product grid (RIGHT)
      ============================================================ */
   const currentFilters = filters || {};
-  const categoryList   = categories || [];
+  const activeType     = locals.type === 'cattle' ? 'cattle' : 'products';
+  const isCattle       = activeType === 'cattle';
+  const categoryList   = (isCattle ? locals.cattleCategories : locals.categories) || [];
+  const cattleList     = locals.cattles || [];
+  const productList    = locals.products || [];
+  const items          = isCattle ? cattleList : productList;
+  const tabCounts      = locals.counts || {};
+  const totalItems     = isCattle
+    ? (locals.totalCattle !== undefined ? locals.totalCattle : cattleList.length)
+    : (locals.totalProducts || 0);
+  const clearHref      = isCattle ? '/products?type=cattle' : '/products';
+  const breedTypes     = ['Milch', 'Dual-purpose', 'Draught'];
 
-  const sortLabels = {
+  const fmtAge = function (months) {
+    const total = Number(months);
+    if (months === undefined || months === null || months === '' || !Number.isFinite(total)) return '';
+    if (total < 12) return total + ' mo';
+    const years = Math.floor(total / 12);
+    const rest  = Math.round(total % 12);
+    return years + ' yr' + (rest ? ' ' + rest + ' mo' : '');
+  };
+
+  const productSortLabels = {
     newest: 'Newest first',
     oldest: 'Oldest first',
     price_asc: 'Price: low to high',
@@ -16,12 +36,24 @@
     rating: 'Top rated'
   };
 
+  const cattleSortLabels = {
+    newest: 'Newest first',
+    oldest: 'Oldest first',
+    price_asc: 'Price: low to high',
+    price_desc: 'Price: high to low',
+    milk_desc: 'Milk yield: high to low'
+  };
+
+  const sortLabels = isCattle ? cattleSortLabels : productSortLabels;
+
   function buildQuery(page) {
     const params = new URLSearchParams();
 
     Object.entries({
+      type: isCattle ? 'cattle' : '',
       q: currentFilters.q,
       category: currentFilters.category,
+      breedType: isCattle ? currentFilters.breedType : '',
       minPrice: currentFilters.minPrice,
       maxPrice: currentFilters.maxPrice,
       sort: currentFilters.sort
@@ -615,6 +647,87 @@
     box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28);
   }
 
+  /* ---------- 8b. Section tabs (Products / Cattle) ---------- */
+  .mp-tabs {
+    display: inline-flex;
+    gap: 6px;
+    padding: 6px;
+    margin: 0 0 1.5rem;
+    background: #fff;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .mp-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 22px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-radius: var(--radius-pill);
+    transition: var(--transition);
+  }
+
+  .mp-tab:hover { color: var(--primary); background: var(--light); }
+
+  .mp-tab.active {
+    color: #fff;
+    background: var(--gradient-primary);
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28);
+  }
+
+  .mp-tab-count {
+    padding: 1px 9px;
+    font-size: 0.72rem;
+    border-radius: var(--radius-pill);
+    background: rgba(2, 132, 199, 0.12);
+    color: var(--primary);
+  }
+
+  .mp-tab.active .mp-tab-count { background: rgba(255, 255, 255, 0.25); color: #fff; }
+
+  /* Cattle card extras */
+  .cattle-kind {
+    margin-bottom: 4px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  .cattle-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0 0 0.7rem;
+  }
+
+  .cattle-fact {
+    padding: 3px 10px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #334E68;
+    background: #F0F6FC;
+    border-radius: var(--radius-pill);
+  }
+
+  .product-sold-float {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 3;
+    padding: 5px 12px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #fff;
+    background: #475569;
+    border-radius: var(--radius-pill);
+  }
+
   /* ---------- 9. Responsive ---------- */
   @media (min-width: 992px) {
     /* Sticky sidebar on desktop */
@@ -642,6 +755,8 @@
   }
 
   @media (max-width: 575px) {
+    .mp-tabs { display: flex; }
+    .mp-tab { flex: 1; justify-content: center; padding: 9px 12px; }
     .marketplace-page { padding-top: 95px; padding-bottom: 40px; }
     .mp-page-title { font-size: 1.15rem; }
     .mp-page-title i { width: 36px; height: 36px; font-size: 1.1rem; }
@@ -691,6 +806,17 @@
     <i class="fas fa-store"></i> Marketplace
   </h1>
 
+  <nav class="mp-tabs" aria-label="Marketplace sections">
+    <a href="/products" class="mp-tab <%= isCattle ? '' : 'active' %>" <%- isCattle ? '' : 'aria-current="page"' %>>
+      <i class="fas fa-box-open"></i> Products
+      <% if (tabCounts.products !== undefined) { %><span class="mp-tab-count"><%= tabCounts.products %></span><% } %>
+    </a>
+    <a href="/products?type=cattle" class="mp-tab <%= isCattle ? 'active' : '' %>" <%- isCattle ? 'aria-current="page"' : '' %>>
+      <i class="fas fa-paw"></i> Cattle
+      <% if (tabCounts.cattle !== undefined) { %><span class="mp-tab-count"><%= tabCounts.cattle %></span><% } %>
+    </a>
+  </nav>
+
   <div class="row g-4">
 
     <!-- ===== LEFT SIDEBAR: VERTICAL FILTERS ===== -->
@@ -699,15 +825,17 @@
 
         <h2 class="filter-title"><i class="fas fa-sliders"></i> Filters</h2>
 
+        <% if (isCattle) { %><input type="hidden" name="type" value="cattle"><% } %>
+
         <div class="filter-group">
-          <label class="form-label" for="filterSearch">Search products</label>
+          <label class="form-label" for="filterSearch"><%= isCattle ? 'Search cattle' : 'Search products' %></label>
           <input
             id="filterSearch"
             type="search"
             class="form-control"
             name="q"
             maxlength="100"
-            placeholder="Search cattle, feed, medicine..."
+            placeholder="<%= isCattle ? 'Search breed, name or state...' : 'Search cattle, feed, medicine...' %>"
             value="<%= currentFilters.q || '' %>"
           >
         </div>
@@ -721,6 +849,18 @@
             <% }) %>
           </select>
         </div>
+
+        <% if (isCattle) { %>
+        <div class="filter-group">
+          <label class="form-label" for="filterBreedType">Breed type</label>
+          <select id="filterBreedType" class="form-select" name="breedType">
+            <option value="">All types</option>
+            <% breedTypes.forEach(function (t) { %>
+              <option value="<%= t %>" <%= currentFilters.breedType === t ? 'selected' : '' %>><%= t %></option>
+            <% }) %>
+          </select>
+        </div>
+        <% } %>
 
         <div class="filter-group">
           <label class="form-label" for="filterMinPrice">Min Price (₹)</label>
@@ -745,7 +885,7 @@
             name="maxPrice"
             min="0"
             step="0.01"
-            placeholder="10000"
+            placeholder="<%= isCattle ? '100000' : '10000' %>"
             value="<%= currentFilters.maxPrice ?? '' %>"
           >
         </div>
@@ -759,7 +899,7 @@
           </select>
         </div>
 
-        <a href="/products" class="btn-filter-clear" data-clear-filters>
+        <a href="<%= clearHref %>" class="btn-filter-clear" data-clear-filters>
           <i class="fas fa-rotate-left me-1"></i> Clear Filters
         </a>
 
@@ -771,8 +911,8 @@
 
       <div class="mp-results-header">
         <div class="mp-results-bar">
-          <i class="fas fa-box me-2"></i>
-          <%= totalProducts %> product<%= totalProducts === 1 ? '' : 's' %> found
+          <i class="fas <%= isCattle ? 'fa-paw' : 'fa-box' %> me-2"></i>
+          <%= totalItems %> <%= isCattle ? 'cattle' : 'product' + (totalItems === 1 ? '' : 's') %> found
         </div>
         <span class="mp-results-sort-label">
           <i class="fas fa-sort me-1"></i>
@@ -780,20 +920,106 @@
         </span>
       </div>
 
-      <% if (!products || products.length === 0) { %>
+      <% if (!items.length) { %>
 
         <div class="empty-state">
           <div class="empty-state-icon">
-            <i class="fas fa-basket-shopping"></i>
+            <i class="fas <%= isCattle ? 'fa-paw' : 'fa-basket-shopping' %>"></i>
           </div>
-          <h4>No Products Found</h4>
-          <p>Try another keyword, category or price range.</p>
-          <a href="/products" class="btn-filter-clear" data-clear-filters>
-            <i class="fas fa-rotate-left me-1"></i> Show all products
+          <h4><%= isCattle ? 'No Cattle Found' : 'No Products Found' %></h4>
+          <p><%= isCattle ? 'No cattle are listed right now. Try another breed, category or price range.' : 'Try another keyword, category or price range.' %></p>
+          <a href="<%= clearHref %>" class="btn-filter-clear" data-clear-filters>
+            <i class="fas fa-rotate-left me-1"></i> <%= isCattle ? 'Show all cattle' : 'Show all products' %>
           </a>
         </div>
 
       <% } else { %>
+
+        <% if (isCattle) { %>
+
+        <div class="row g-4">
+          <% cattleList.forEach(function (c, index) {
+            const cover    = (Array.isArray(c.images) && c.images[0]) || c.imageUrl || '';
+            const title    = c.name || c.breedName || 'Cattle';
+            const hasPrice = c.price !== undefined && c.price !== null && c.price !== '' && Number(c.price) > 0;
+            const price    = Number(c.price || 0);
+            const isSold   = c.sold === true;
+            const canBuy   = hasPrice && !isSold;
+            const seller   = c.farmer && c.farmer.fullName ? c.farmer.fullName : 'Verified seller';
+            const cUrl     = '/cattle/' + c._id;
+            const kind     = [c.category, c.breedType].filter(Boolean).join(' / ');
+            const ageText  = fmtAge(c.age);
+          %>
+
+            <div class="col-6 col-md-4 marketplace-product" style="--i: <%= Math.min(index, 12) %>;">
+              <article class="product-card-inner">
+
+                <a href="<%= cUrl %>" class="product-image-link" aria-label="View <%= title %>">
+                  <div class="product-img-wrap">
+                    <% if (cover) { %>
+                      <img src="<%= cover %>" alt="<%= title %>" loading="lazy">
+                    <% } else { %>
+                      <div class="product-img-placeholder"><i class="fas fa-paw"></i></div>
+                    <% } %>
+
+                    <% if (c.category) { %>
+                      <span class="product-category-float"><%= c.category %></span>
+                    <% } %>
+
+                    <% if (isSold) { %>
+                      <span class="product-sold-float">Sold</span>
+                    <% } %>
+                  </div>
+                </a>
+
+                <div class="product-body">
+                  <% if (kind) { %><div class="cattle-kind"><%= kind %></div><% } %>
+
+                  <h3 class="product-title">
+                    <a href="<%= cUrl %>" class="product-name-link"><%= title %></a>
+                  </h3>
+
+                  <div class="product-price-row">
+                    <% if (hasPrice) { %>
+                      <span class="product-price">₹<%= price.toLocaleString('en-IN') %></span>
+                    <% } else { %>
+                      <span class="product-mrp" style="text-decoration:none;">Price not set</span>
+                    <% } %>
+                  </div>
+
+                  <div class="cattle-facts">
+                    <% if (c.gender) { %><span class="cattle-fact"><%= c.gender %></span><% } %>
+                    <% if (ageText) { %><span class="cattle-fact"><%= ageText %></span><% } %>
+                    <% if (c.weight) { %><span class="cattle-fact"><%= c.weight %> kg</span><% } %>
+                    <% if (c.avgMilkPerDay) { %><span class="cattle-fact"><%= c.avgMilkPerDay %> L/day</span><% } %>
+                    <% if (c.originState) { %><span class="cattle-fact"><%= c.originState %></span><% } %>
+                  </div>
+
+                  <div class="product-seller">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Sold by <%= seller %></span>
+                  </div>
+
+                  <div class="product-actions">
+                    <% if (c.farmer && c.farmer._id && !isSold) { %>
+                      <a href="/chat?with=<%= c.farmer._id %>" class="btn-add-cart" style="text-align:center;text-decoration:none;">
+                        <i class="fas fa-comments"></i> Message seller
+                      </a>
+                    <% } %>
+
+                    <a href="<%= cUrl %>" class="btn-buy-now">
+                      <i class="fas fa-eye"></i> View details
+                    </a>
+                  </div>
+                </div>
+
+              </article>
+            </div>
+
+          <% }) %>
+        </div>
+
+        <% } else { %>
 
         <div class="row g-4">
           <% products.forEach(function (product, index) {
@@ -879,9 +1105,11 @@
           <% }) %>
         </div>
 
+        <% } %>
+
         <!-- Pagination -->
         <% if (pagination && pagination.totalPages > 1) { %>
-          <nav class="mt-5" aria-label="Marketplace pagination">
+          <nav class="mt-5" aria-label="<%= isCattle ? 'Cattle pagination' : 'Marketplace pagination' %>">
             <ul class="pagination justify-content-center mp-pagination">
 
               <li class="page-item <%= pagination.hasPrev ? '' : 'disabled' %>">
@@ -994,10 +1222,12 @@
       e.preventDefault();
       clearTimeout(timer);
 
-      form.querySelectorAll('input').forEach(function (input) { input.value = ''; });
+      form.querySelectorAll('input:not([type="hidden"])').forEach(function (input) { input.value = ''; });
       form.querySelector('[name="category"]').value = '';
+      var breedType = form.querySelector('[name="breedType"]');
+      if (breedType) breedType.value = '';
       form.querySelector('[name="sort"]').value = 'newest';
-      load('/products');
+      load(clearBtn.getAttribute('href') || '/products');
     });
 
     results.addEventListener('click', function (e) {

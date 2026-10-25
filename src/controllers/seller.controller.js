@@ -33,6 +33,10 @@ const matchOption = (values, raw) => {
     return values.find((item) => item.toLowerCase() === normalized) || "";
 };
 
+/* Seller pages live under /farmer or /doctor. */
+const orderUrl = (req, order) =>
+    `/${req.user.role === "doctor" ? "doctor" : "farmer"}/orders/${order._id}`;
+
 const findSellerOrder = async (id, sellerId) => {
     if (!isObjectId(id)) {
         throw new ApiError(400, "Invalid order id");
@@ -103,7 +107,9 @@ const getSellerOrderById = asyncHandler(async (req, res) => {
     return res.status(200).render("seller/order-details", {
         title: `Order ${order.orderNumber}`,
         user: req.user,
-        order: populated
+        order: populated,
+        success: readFlash(req.query.success),
+        error: readFlash(req.query.error)
     });
 });
 
@@ -120,7 +126,7 @@ const markOrderShipped = asyncHandler(async (req, res) => {
     await order.save();
 
     return respond(req, res, {
-        redirectTo: "/orders",
+        redirectTo: orderUrl(req, order),
         data: { id: order._id },
         message: "Order marked as shipped"
     });
@@ -147,7 +153,7 @@ const markOrderDelivered = asyncHandler(async (req, res) => {
     await order.save();
 
     return respond(req, res, {
-        redirectTo: "/orders",
+        redirectTo: orderUrl(req, order),
         data: { id: order._id },
         message: "Order marked as delivered"
     });
@@ -210,7 +216,7 @@ const sellerCancelOrder = asyncHandler(async (req, res) => {
     }
 
     return respond(req, res, {
-        redirectTo: "/orders",
+        redirectTo: orderUrl(req, order),
         data: { id: order._id },
         message: shouldRefund
             ? "Order cancelled. Refund has been initiated."

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= locals.title || 'My Products' %> | BoviNetra</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #0F62AC;
+      --text-main: #1A2C3E;
+      --text-muted: #5A6E7F;
+      --border-light: rgba(15, 98, 172, 0.12);
+      --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.02);
+      --transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body { font-family: 'Inter', sans-serif; background: #F4F9FE; color: var(--text-main); line-height: 1.5; overflow-x: hidden; }
+    h1, h2, h3, h4, h5 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; }
+
+    .products-page { padding: 110px 0 70px; min-height: 100vh; }
+
+    .page-head { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px; margin-bottom: 1.2rem; }
+    .page-head h2 { font-size: 1.7rem; margin: 0; }
+    .page-head p { color: var(--text-muted); font-size: 0.88rem; margin: 2px 0 0; }
+
+    .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.4rem; }
+    .filter-tabs a { padding: 7px 18px; border-radius: 40px; border: 1.5px solid #E2EDF7; background: #fff; color: var(--text-main); font-size: 0.84rem; font-weight: 600; text-decoration: none; transition: var(--transition); }
+    .filter-tabs a:hover { border-color: var(--primary); color: var(--primary); }
+    .filter-tabs a.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    .product-row { background: #fff; border-radius: 22px; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm); padding: 1.1rem 1.3rem; margin-bottom: 1rem; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+
+    .thumb { width: 84px; height: 84px; border-radius: 18px; background: #EAF3FB; overflow: hidden; display: flex; align-items: center; justify-content: center; color: #94A3B8; font-size: 1.4rem; flex-shrink: 0; }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .info { flex: 1; min-width: 220px; }
+    .info h5 { font-size: 1rem; margin: 0 0 4px; word-break: break-word; }
+    .info h5 a { color: var(--text-main); text-decoration: none; }
+    .info h5 a:hover { color: var(--primary); }
+    .meta { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.82rem; color: var(--text-muted); }
+    .meta strong { color: var(--text-main); }
+    .badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+    .badge-status { font-weight: 600; padding: 0.32rem 0.8rem; border-radius: 40px; font-size: 0.72rem; }
+
+    .reject-note { margin-top: 8px; border-radius: 12px; padding: 7px 12px; font-size: 0.8rem; background: #FEE2E2; color: #B91C1C; }
+    .review-note { margin-top: 8px; border-radius: 12px; padding: 7px 12px; font-size: 0.8rem; background: #FEF3C7; color: #92400E; }
+
+    .row-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+    .btn-main, .btn-soft { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 16px; border-radius: 40px; font-weight: 600; font-size: 0.82rem; text-decoration: none; cursor: pointer; transition: var(--transition); }
+    .btn-main { border: none; background: var(--primary); color: #fff; }
+    .btn-main:hover { background: #0B4F8C; color: #fff; }
+    .btn-soft { border: 1.5px solid #E2EDF7; background: #fff; color: var(--text-main); }
+    .btn-soft:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-soft.danger { color: #B91C1C; }
+    .btn-soft.danger:hover { border-color: #B91C1C; color: #B91C1C; }
+    .btn-soft.disabled { opacity: 0.45; pointer-events: none; }
+
+    .empty-box { text-align: center; background: #fff; border-radius: 24px; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm); padding: 3.5rem 1.5rem; }
+    .empty-box i.big { width: 76px; height: 76px; border-radius: 50%; background: rgba(15, 98, 172, 0.08); color: var(--primary); font-size: 1.8rem; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
+    .empty-box h3 { font-size: 1.35rem; margin-bottom: 6px; }
+    .empty-box p { color: var(--text-muted); margin-bottom: 1.2rem; }
+
+    .pager { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 1.6rem; font-size: 0.86rem; color: var(--text-muted); }
+
+    .alert-modern { display: flex; align-items: flex-start; gap: 10px; border-radius: 16px; padding: 12px 16px; font-size: 0.88rem; font-weight: 500; margin-bottom: 1.2rem; }
+    .alert-error { background: #FEE2E2; color: #B91C1C; }
+    .alert-success { background: #DCFCE7; color: #166534; }
+
+    @media (max-width: 575px) {
+      .products-page { padding: 95px 0 50px; }
+      .product-row { padding: 1rem; }
+      .row-actions { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<%- include('../partials/header') %>
+
+<%
+  const inr = (value) =>
+    Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
+  const approvalClass = { Pending: 'bg-warning text-dark', Approved: 'bg-success', Rejected: 'bg-danger' };
+
+  /* Seller pages live under /farmer or /doctor, depending on who is logged in. */
+  const role = locals.user && locals.user.role;
+  const base = '/' + (role === 'doctor' ? 'doctor' : 'farmer');
+
+  const activeStatus = locals.status || '';
+  const tabs = ['Pending', 'Approved', 'Rejected'];
+  const list = locals.products || [];
+  const paging = locals.pagination || { page: 1, totalPages: 1, total: list.length, hasPrev: false, hasNext: false };
+
+  const pageUrl = (page) =>
+    base + '/products?' + (activeStatus ? 'status=' + encodeURIComponent(activeStatus.toLowerCase()) + '&' : '') + 'page=' + page;
+%>
+
+<main class="products-page">
+  <div class="container">
+
+    <div class="page-head">
+      <div>
+        <h2>My Products</h2>
+        <p><%= paging.total %> product<%= paging.total === 1 ? '' : 's' %><%= activeStatus ? ' · ' + activeStatus : ' in total' %></p>
+      </div>
+      <a href="/products/add" class="btn-main"><i class="fas fa-plus"></i> Add Product</a>
+    </div>
+
+    <% if (locals.success) { %>
+      <div class="alert-modern alert-success" role="status"><i class="fas fa-circle-check mt-1"></i><span><%= success %></span></div>
+    <% } %>
+
+    <% if (locals.error) { %>
+      <div class="alert-modern alert-error" role="alert"><i class="fas fa-circle-exclamation mt-1"></i><span><%= error %></span></div>
+    <% } %>
+
+    <nav class="filter-tabs" aria-label="Filter products by approval status">
+      <a href="<%= base %>/products" class="<%= activeStatus ? '' : 'active' %>">All</a>
+      <% tabs.forEach(tab => { %>
+        <a href="<%= base %>/products?status=<%= tab.toLowerCase() %>" class="<%= activeStatus === tab ? 'active' : '' %>"><%= tab %></a>
+      <% }) %>
+    </nav>
+
+    <% if (!list.length) { %>
+
+      <div class="empty-box">
+        <i class="fas fa-box-open big"></i>
+        <h3>No products found</h3>
+        <p><%= activeStatus ? 'You have no ' + activeStatus.toLowerCase() + ' products.' : 'Add your first product to start selling in the marketplace.' %></p>
+        <a href="/products/add" class="btn-main"><i class="fas fa-plus"></i> Add Product</a>
+      </div>
+
+    <% } else { %>
+
+      <% list.forEach(product => {
+           const cover = product.image || (Array.isArray(product.images) && product.images[0]) || '';
+           const stock = Number(product.stock || 0);
+           const lowStock = stock > 0 && product.minStock && stock <= product.minStock;
+           const approved = product.approvalStatus === 'Approved';
+      %>
+        <article class="product-row">
+          <div class="thumb">
+            <% if (cover) { %>
+              <img src="<%= cover %>" alt="<%= product.name %>" loading="lazy">
+            <% } else { %>
+              <i class="fas fa-box-open"></i>
+            <% } %>
+          </div>
+
+          <div class="info">
+            <h5>
+              <% if (approved) { %>
+                <a href="/products/details/<%= product._id %>"><%= product.name %></a>
+              <% } else { %>
+                <%= product.name %>
+              <% } %>
+            </h5>
+
+            <div class="meta">
+              <span>Price <strong>₹ <%= inr(product.price) %></strong><%= product.unit ? ' / ' + product.unit : '' %></span>
+              <span>Stock <strong><%= stock %></strong></span>
+              <% if (product.category) { %><span><%= product.category %></span><% } %>
+              <% if (product.soldCount) { %><span>Sold <strong><%= product.soldCount %></strong></span><% } %>
+            </div>
+
+            <div class="badges">
+              <span class="badge <%= approvalClass[product.approvalStatus] || 'bg-secondary' %> badge-status"><%= product.approvalStatus %></span>
+              <% if (product.isActive === false) { %><span class="badge bg-secondary badge-status">Inactive</span><% } %>
+              <% if (stock === 0) { %><span class="badge bg-danger badge-status">Out of stock</span><% } %>
+              <% if (lowStock) { %><span class="badge bg-warning text-dark badge-status">Low stock</span><% } %>
+            </div>
+
+            <% if (product.approvalStatus === 'Pending') { %>
+              <div class="review-note"><i class="fas fa-hourglass-half me-1"></i> Waiting for admin approval. It will appear in the marketplace once approved.</div>
+            <% } %>
+
+            <% if (product.approvalStatus === 'Rejected') { %>
+              <div class="reject-note">
+                <i class="fas fa-circle-exclamation me-1"></i>
+                Rejected<%= product.rejectionReason ? ': ' + product.rejectionReason : '.' %> Edit the product to send it for review again.
+              </div>
+            <% } %>
+          </div>
+
+          <div class="row-actions">
+            <a href="/products/edit/<%= product._id %>" class="btn-soft"><i class="fas fa-pen"></i> Edit</a>
+
+            <form action="/products/delete/<%= product._id %>" method="POST" onsubmit="return confirm('Delete this product? This cannot be undone.')">
+              <input type="hidden" name="redirect" value="<%= base %>/products">
+              <button type="submit" class="btn-soft danger"><i class="fas fa-trash"></i> Delete</button>
+            </form>
+          </div>
+        </article>
+      <% }) %>
+
+      <% if (paging.totalPages > 1) { %>
+        <div class="pager">
+          <a href="<%= pageUrl(paging.page - 1) %>" class="btn-soft <%= paging.hasPrev ? '' : 'disabled' %>">
+            <i class="fas fa-arrow-left"></i> Previous
+          </a>
+          <span>Page <%= paging.page %> of <%= paging.totalPages %></span>
+          <a href="<%= pageUrl(paging.page + 1) %>" class="btn-soft <%= paging.hasNext ? '' : 'disabled' %>">
+            Next <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      <% } %>
+
+    <% } %>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const navbar = document.querySelector('.navbar');
+
+  if (navbar) {
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 20);
+    });
+  }
+</script>
+</body>
+</html>

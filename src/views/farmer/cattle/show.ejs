@@ -250,7 +250,7 @@
 <main class="detail-page">
   <div class="container">
 
-    <a href="<%= owner ? '/farmer/cattle' : '/products' %>" class="back-link">
+    <a href="<%= owner ? '/farmer/cattle' : '/products?type=cattle' %>" class="back-link">
       <i class="fas fa-arrow-left"></i> <%= owner ? 'Back to my cattle' : 'Back to marketplace' %>
     </a>
 
@@ -325,6 +325,14 @@
               <form action="/farmer/cattle/<%= cattle._id %>/delete" method="POST" onsubmit="return confirm('Delete this cattle listing? This cannot be undone.')">
                 <input type="hidden" name="redirect" value="/farmer/cattle">
                 <button type="submit" class="btn-soft danger"><i class="fas fa-trash"></i> Delete</button>
+              </form>
+            </div>
+          <% } else if (!cattle.sold && cattle.isActive !== false && hasValue(cattle.price)) { %>
+            <div class="actions">
+              <form action="/cart/<%= cattle._id %>/add" method="POST">
+                <input type="hidden" name="itemType" value="cattle">
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="btn-fill"><i class="fas fa-cart-plus"></i> Add to cart</button>
               </form>
             </div>
           <% } %>

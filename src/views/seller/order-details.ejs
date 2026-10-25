@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= locals.title || 'Order Details' %> | BoviNetra</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #0F62AC;
+      --text-main: #1A2C3E;
+      --text-muted: #5A6E7F;
+      --border-light: rgba(15, 98, 172, 0.12);
+      --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.02);
+      --transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F4F9FE;
+      color: var(--text-main);
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, h5 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; }
+
+    .order-page { padding: 110px 0 70px; min-height: 100vh; }
+
+    .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--primary); text-decoration: none; font-size: 0.86rem; font-weight: 600; margin-bottom: 1rem; }
+
+    .page-head { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 1.5rem; }
+    .page-head h2 { font-size: 1.6rem; margin: 0; word-break: break-all; }
+    .page-head p { color: var(--text-muted); font-size: 0.86rem; margin: 2px 0 0; }
+
+    .badges { display: flex; gap: 8px; flex-wrap: wrap; }
+    .badge-status { font-weight: 600; padding: 0.4rem 1rem; border-radius: 40px; font-size: 0.75rem; }
+
+    .panel { background: #fff; border-radius: 24px; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm); padding: 1.5rem 1.7rem; margin-bottom: 1.4rem; }
+    .panel-title { font-size: 1rem; margin-bottom: 1.1rem; display: flex; align-items: center; gap: 10px; }
+    .panel-title i { width: 34px; height: 34px; border-radius: 11px; background: rgba(15, 98, 172, 0.08); color: var(--primary); display: inline-flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+
+    .line-item { display: flex; gap: 14px; align-items: center; padding: 0.8rem 0; border-bottom: 1px solid #EEF4FA; }
+    .line-item:first-of-type { padding-top: 0; }
+    .line-item:last-of-type { border-bottom: none; padding-bottom: 0; }
+    .line-image { width: 64px; height: 64px; border-radius: 16px; background: #EAF3FB; overflow: hidden; display: flex; align-items: center; justify-content: center; color: #94A3B8; flex-shrink: 0; }
+    .line-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .line-info { flex: 1; min-width: 0; }
+    .line-info a, .line-info strong { display: block; font-size: 0.93rem; font-weight: 700; color: var(--text-main); text-decoration: none; word-break: break-word; }
+    .line-info a:hover { color: var(--primary); }
+    .line-info span { font-size: 0.8rem; color: var(--text-muted); }
+    .line-total { font-weight: 800; font-size: 0.95rem; white-space: nowrap; }
+
+    .timeline { list-style: none; margin: 0; padding: 0; }
+    .timeline li { display: flex; gap: 14px; position: relative; padding-bottom: 1.3rem; }
+    .timeline li:last-child { padding-bottom: 0; }
+    .timeline li:not(:last-child)::before { content: ''; position: absolute; left: 15px; top: 32px; bottom: 0; width: 2px; background: #E2EDF7; }
+    .timeline li.done:not(:last-child)::before { background: var(--primary); }
+    .timeline .dot { width: 32px; height: 32px; border-radius: 50%; background: #E2EDF7; color: #94A3B8; font-size: 0.78rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .timeline li.done .dot { background: var(--primary); color: #fff; }
+    .timeline li.cancelled .dot { background: #B91C1C; color: #fff; }
+    .timeline strong { display: block; font-size: 0.9rem; }
+    .timeline small { color: var(--text-muted); font-size: 0.78rem; }
+    .timeline li:not(.done):not(.cancelled) strong { color: var(--text-muted); font-weight: 600; }
+
+    .detail-row { display: flex; justify-content: space-between; gap: 1rem; padding: 0.5rem 0; font-size: 0.88rem; }
+    .detail-row dt { color: var(--text-muted); font-weight: 500; }
+    .detail-row dd { margin: 0; font-weight: 600; text-align: right; word-break: break-word; }
+
+    .total-row { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #EEF4FA; margin-top: 0.6rem; padding-top: 0.9rem; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 1.1rem; }
+
+    .address { font-size: 0.9rem; line-height: 1.7; }
+    .address strong { font-size: 0.95rem; }
+
+    .note { display: flex; gap: 8px; align-items: flex-start; border-radius: 14px; padding: 10px 14px; font-size: 0.84rem; margin-bottom: 1.2rem; background: #F1F5F9; color: #475569; }
+    .note.refund { background: #E0F2FE; color: #075985; }
+    .note.warn { background: #FEF3C7; color: #92400E; }
+    .note.error { background: #FEE2E2; color: #B91C1C; }
+
+    .btn-main, .btn-soft { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 20px; border-radius: 40px; font-weight: 600; font-size: 0.86rem; text-decoration: none; cursor: pointer; transition: var(--transition); width: 100%; }
+    .btn-main { border: none; background: var(--primary); color: #fff; }
+    .btn-main:hover { background: #0B4F8C; color: #fff; }
+    .btn-main.success { background: #15803D; }
+    .btn-main.success:hover { background: #166534; }
+    .btn-soft { border: 1.5px solid #E2EDF7; background: #fff; color: var(--text-main); }
+    .btn-soft:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-soft.danger { color: #B91C1C; }
+    .btn-soft.danger:hover { border-color: #B91C1C; color: #B91C1C; }
+
+    .reason-input { width: 100%; border: 1.5px solid #E2EDF7; border-radius: 14px; padding: 10px 14px; font-size: 0.88rem; resize: vertical; margin-bottom: 0.8rem; }
+    .reason-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(15, 98, 172, 0.12); }
+
+    .alert-modern { display: flex; align-items: flex-start; gap: 10px; border-radius: 16px; padding: 12px 16px; font-size: 0.88rem; font-weight: 500; margin-bottom: 1.2rem; }
+    .alert-error { background: #FEE2E2; color: #B91C1C; }
+    .alert-success { background: #DCFCE7; color: #166534; }
+
+    @media (max-width: 575px) {
+      .order-page { padding: 95px 0 50px; }
+      .panel { padding: 1.2rem; }
+      .line-item { flex-wrap: wrap; }
+      .line-total { margin-left: 78px; }
+    }
+
+    @media print {
+      .navbar, footer, .no-print { display: none !important; }
+      body { background: #fff; }
+      .order-page { padding: 0; }
+      .panel { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+<%- include('../partials/header') %>
+
+<%
+  const inr = (value) =>
+    Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
+  const formatDate = (value) =>
+    value
+      ? new Date(value).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+      : '';
+
+  const orderClass = { Pending: 'bg-warning text-dark', Placed: 'bg-info text-dark', Shipped: 'bg-primary', Delivered: 'bg-success', Cancelled: 'bg-secondary' };
+  const paymentClass = { Paid: 'bg-success', Pending: 'bg-warning text-dark', Initiated: 'bg-warning text-dark', Failed: 'bg-danger', Refunded: 'bg-info text-dark' };
+  const methodLabel = { COD: 'Cash on Delivery', RAZORPAY: 'Online (Razorpay)' };
+
+  /* Seller pages live under /farmer or /doctor, depending on who is logged in. */
+  const base = '/' + (locals.user && locals.user.role === 'doctor' ? 'doctor' : 'farmer');
+
+  const items = order.items || [];
+  const address = order.shippingAddress || {};
+  const buyer = order.user || {};
+
+  const status = order.orderStatus;
+  const cancelled = status === 'Cancelled';
+  const awaitingPayment = status === 'Pending';
+  const canShip = status === 'Placed';
+  const canDeliver = status === 'Shipped';
+  const canCancel = status === 'Placed' || awaitingPayment;
+  const isCod = order.paymentMethod === 'COD';
+  const unitCount = items.reduce((sum, item) => sum + (item.quantity || 0), 0);
+
+  const flow = [
+    ['Order placed', 'fa-check', order.placedAt || order.createdAt, !awaitingPayment],
+    ['Shipped', 'fa-truck', order.shippedAt, Boolean(order.shippedAt)],
+    ['Delivered', 'fa-box-open', order.deliveredAt, Boolean(order.deliveredAt)]
+  ];
+
+  const timeline = cancelled
+    ? [...flow.filter((step) => step[3]), ['Cancelled', 'fa-ban', order.cancelledAt, true, true]]
+    : flow;
+
+  const cancelledBy = { buyer: 'the buyer', seller: 'you', system: 'the system' }[order.cancelledBy] || '';
+
+  const cancelMessage = order.paymentStatus === 'Paid'
+    ? 'Cancel this order? The buyer will be refunded.'
+    : 'Cancel this order?';
+%>
+
+<main class="order-page">
+  <div class="container">
+
+    <a href="<%= base %>/orders" class="back-link no-print"><i class="fas fa-arrow-left"></i> Back to Orders</a>
+
+    <div class="page-head">
+      <div>
+        <h2><%= order.orderNumber %></h2>
+        <p>Placed on <%= formatDate(order.placedAt || order.createdAt) %> &middot; <%= unitCount %> unit<%= unitCount === 1 ? '' : 's' %></p>
+      </div>
+      <div class="badges">
+        <span class="badge <%= orderClass[status] || 'bg-secondary' %> badge-status"><%= status %></span>
+        <span class="badge <%= paymentClass[order.paymentStatus] || 'bg-secondary' %> badge-status"><%= order.paymentStatus %></span>
+      </div>
+    </div>
+
+    <% if (locals.success) { %>
+      <div class="alert-modern alert-success" role="status"><i class="fas fa-circle-check mt-1"></i><span><%= success %></span></div>
+    <% } %>
+
+    <% if (locals.error) { %>
+      <div class="alert-modern alert-error" role="alert"><i class="fas fa-circle-exclamation mt-1"></i><span><%= error %></span></div>
+    <% } %>
+
+    <% if (awaitingPayment) { %>
+      <div class="note warn">
+        <i class="fas fa-hourglass-half mt-1"></i>
+        <span>The buyer has not completed the payment yet. Do not ship this order until it shows as Placed.</span>
+      </div>
+    <% } %>
+
+    <% if (order.paymentStatus === 'Failed' && order.paymentFailureReason) { %>
+      <div class="note error"><i class="fas fa-circle-exclamation mt-1"></i><span>Payment failed: <%= order.paymentFailureReason %></span></div>
+    <% } %>
+
+    <% if (order.paymentStatus === 'Refunded') { %>
+      <div class="note refund">
+        <i class="fas fa-rotate-left mt-1"></i>
+        <span>A refund of ₹ <%= inr(order.refund && order.refund.amount ? order.refund.amount : order.totalAmount) %> has been initiated to the buyer.</span>
+      </div>
+    <% } %>
+
+    <% if (isCod && !cancelled && order.paymentStatus === 'Pending') { %>
+      <div class="note">
+        <i class="fas fa-hand-holding-dollar mt-1"></i>
+        <span>Cash on Delivery: collect ₹ <%= inr(order.totalAmount) %> from the buyer. Marking the order as delivered will also mark the payment as paid.</span>
+      </div>
+    <% } %>
+
+    <div class="row g-4">
+      <div class="col-lg-8">
+
+        <section class="panel">
+          <h4 class="panel-title"><i class="fas fa-box-open"></i> Items</h4>
+
+          <% items.forEach(item => { %>
+            <div class="line-item">
+              <div class="line-image">
+                <% if (item.image) { %>
+                  <img src="<%= item.image %>" alt="<%= item.name %>" loading="lazy">
+                <% } else { %>
+                  <i class="fas fa-box-open"></i>
+                <% } %>
+              </div>
+
+              <div class="line-info">
+                <a href="/products/view/<%= item.product %>"><%= item.name %></a>
+                <span><%= item.quantity %> × ₹ <%= inr(item.price) %><%= item.unit ? ' / ' + item.unit : '' %></span>
+              </div>
+
+              <div class="line-total">₹ <%= inr(item.lineTotal) %></div>
+            </div>
+          <% }) %>
+        </section>
+
+        <section class="panel">
+          <h4 class="panel-title"><i class="fas fa-timeline"></i> Order Status</h4>
+
+          <ul class="timeline">
+            <% timeline.forEach(([label, icon, date, reached, isCancel]) => { %>
+              <li class="<%= isCancel ? 'cancelled' : (reached ? 'done' : '') %>">
+                <span class="dot"><i class="fas <%= icon %>"></i></span>
+                <div>
+                  <strong><%= label %></strong>
+                  <% if (reached && date) { %><small><%= formatDate(date) %></small><% } %>
+                  <% if (isCancel) { %>
+                    <small>
+                      <%= cancelledBy ? 'Cancelled by ' + cancelledBy + '.' : '' %>
+                      <%= order.cancellationReason ? ' Reason: ' + order.cancellationReason : '' %>
+                    </small>
+                  <% } %>
+                </div>
+              </li>
+            <% }) %>
+          </ul>
+        </section>
+      </div>
+
+      <div class="col-lg-4">
+
+        <section class="panel no-print">
+          <h4 class="panel-title"><i class="fas fa-sliders"></i> Actions</h4>
+
+          <div class="d-grid gap-2">
+            <% if (canShip) { %>
+              <form action="<%= base %>/orders/<%= order._id %>/ship" method="POST" onsubmit="return confirm('Mark this order as shipped?')">
+                <button type="submit" class="btn-main"><i class="fas fa-truck"></i> Mark as Shipped</button>
+              </form>
+            <% } %>
+
+            <% if (canDeliver) { %>
+              <form action="<%= base %>/orders/<%= order._id %>/deliver" method="POST" onsubmit="return confirm('Mark this order as delivered?')">
+                <button type="submit" class="btn-main success"><i class="fas fa-circle-check"></i> Mark as Delivered</button>
+              </form>
+            <% } %>
+
+            <button type="button" class="btn-soft" onclick="window.print()"><i class="fas fa-print"></i> Print Packing Slip</button>
+
+            <% if (buyer._id) { %>
+              <a href="/chat?with=<%= buyer._id %>" class="btn-soft"><i class="fas fa-comments"></i> Message Buyer</a>
+            <% } %>
+          </div>
+
+          <% if (canCancel) { %>
+            <form action="<%= base %>/orders/<%= order._id %>/cancel" method="POST" class="mt-3" onsubmit="return confirm('<%= cancelMessage %>')">
+              <textarea name="reason" class="reason-input" rows="2" maxlength="300" placeholder="Reason for cancelling (optional)"></textarea>
+              <button type="submit" class="btn-soft danger"><i class="fas fa-ban"></i> Cancel Order</button>
+            </form>
+          <% } %>
+
+          <% if (!canShip && !canDeliver && !canCancel) { %>
+            <p class="text-muted mt-3 mb-0" style="font-size: 0.84rem;">No further actions are available for this order.</p>
+          <% } %>
+        </section>
+
+        <section class="panel">
+          <h4 class="panel-title"><i class="fas fa-user"></i> Buyer</h4>
+          <p class="mb-0" style="font-size: 0.9rem;">
+            <strong><%= buyer.fullName || address.fullName || 'Buyer' %></strong>
+            <% if (buyer.username) { %><span class="text-muted">&middot; @<%= buyer.username %></span><% } %>
+          </p>
+        </section>
+
+        <section class="panel">
+          <h4 class="panel-title"><i class="fas fa-location-dot"></i> Ship To</h4>
+
+          <div class="address">
+            <strong><%= address.fullName %></strong><br>
+            <%= address.line1 %><br>
+            <% if (address.line2) { %><%= address.line2 %><br><% } %>
+            <% if (address.landmark) { %>Near <%= address.landmark %><br><% } %>
+            <%= address.city %>, <%= address.state %> - <%= address.pincode %><br>
+            <i class="fas fa-phone me-1 text-muted"></i><%= address.phone %>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h4 class="panel-title"><i class="fas fa-receipt"></i> Payment Summary</h4>
+
+          <dl class="mb-0">
+            <div class="detail-row"><dt>Subtotal</dt><dd>₹ <%= inr(order.subtotal) %></dd></div>
+            <div class="detail-row"><dt>Shipping</dt><dd><%= order.shippingTotal > 0 ? '₹ ' + inr(order.shippingTotal) : 'Free' %></dd></div>
+          </dl>
+
+          <div class="total-row"><span>Total</span><span>₹ <%= inr(order.totalAmount) %></span></div>
+
+          <dl class="mt-3 mb-0">
+            <div class="detail-row"><dt>Method</dt><dd><%= methodLabel[order.paymentMethod] || order.paymentMethod %></dd></div>
+            <div class="detail-row"><dt>Status</dt><dd><%= order.paymentStatus %></dd></div>
+            <% if (order.paidAt) { %>
+              <div class="detail-row"><dt>Paid on</dt><dd><%= formatDate(order.paidAt) %></dd></div>
+            <% } %>
+            <% if (order.razorpayPaymentId) { %>
+              <div class="detail-row"><dt>Payment ID</dt><dd style="font-size: 0.78rem;"><%= order.razorpayPaymentId %></dd></div>
+            <% } %>
+          </dl>
+        </section>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const navbar = document.querySelector('.navbar');
+
+  if (navbar) {
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 20);
+    });
+  }
+</script>
+</body>
+</html>

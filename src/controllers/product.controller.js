@@ -6,6 +6,9 @@ import {
     MAX_GALLERY_IMAGES
 } from "../models/product.model.js";
 
+import { Cattle, CATTLE_CATEGORIES } from "../models/cattle.model.js";
+import { runListing as runCattleListing } from "./cattle.controller.js";
+
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -688,7 +691,31 @@ const addProduct = asyncHandler(async (req, res) => {
     });
 });
 
+/* $ne also matches documents inserted by hand that lack these fields. */
+const CATTLE_FOR_SALE = Object.freeze([{ isActive: { $ne: false }, sold: { $ne: true } }]);
+
 const getAllProducts = asyncHandler(async (req, res) => {
+    const cattleCount = await Cattle.countDocuments({ $and: CATTLE_FOR_SALE });
+
+    if (req.query.type === "cattle") {
+        const listing = await runCattleListing({
+            baseConditions: CATTLE_FOR_SALE,
+            query: { ...req.query, sold: undefined }
+        });
+
+        return res.render("products/marketplace", {
+            title: "Marketplace",
+            user: req.user,
+            type: "cattle",
+            cattles: listing.cattle,
+            totalCattle: listing.total,
+            cattleCategories: CATTLE_CATEGORIES,
+            pagination: listing.pagination,
+            filters: listing.filters,
+            counts: { cattle: cattleCount }
+        });
+    }
+
     const listing = await runListing({
         baseConditions: publicConditions(),
         query: req.query,
@@ -702,7 +729,8 @@ const getAllProducts = asyncHandler(async (req, res) => {
         products: listing.products,
         pagination: listing.pagination,
         filters: listing.filters,
-        categories: PRODUCT_CATEGORIES
+        categories: PRODUCT_CATEGORIES,
+        counts: { products: listing.total, cattle: cattleCount }
     });
 });
 
@@ -725,6 +753,20 @@ const getMyProducts = asyncHandler(async (req, res) => {
         query: req.query,
         projection: { reviews: 0 }
     });
+
+    if (!wantsJson(req)) {
+        return res.status(200).render("seller/products", {
+            title: "My Products",
+            user: req.user,
+            products: listing.products,
+            totalProducts: listing.total,
+            pagination: listing.pagination,
+            filters: listing.filters,
+            status: approval || "",
+            success: queryString(req.query.success) || null,
+            error: queryString(req.query.error) || null
+        });
+    }
 
     return res.status(200).json(
         new ApiResponse(

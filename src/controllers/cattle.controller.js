@@ -674,5 +674,6 @@ export {
     getCattleById,
     updateCattle,
     deleteCattle,
-    getAllCattle
+    getAllCattle,
+    runListing
 };

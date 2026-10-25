@@ -9,12 +9,14 @@ import cattleRoutes from "./cattle.routes.js";
 import cartRoutes from "./cart.routes.js";
 import orderRoutes from "./order.routes.js";
 import healthcheckRoutes from "./healthcheck.routes.js";
-
+import contactRoutes from "./contact.routes.js";
+import chatRoutes from "./chat.routes.js";
 const router = Router();
 
 router.use("/healthz", healthcheckRoutes);
 
 router.use("/", userRoutes);
+router.use("/", contactRoutes);
 router.use("/", dashboardRoutes);
 router.use("/admin", adminRoutes);
 router.use("/farmer", farmerRouter);
@@ -23,5 +25,6 @@ router.use("/products", productRoutes);
 router.use("/cattle", cattleRoutes);
 router.use("/cart", cartRoutes);
 router.use("/orders", orderRoutes);
+router.use("/chat", chatRoutes);
 
 export default router;
