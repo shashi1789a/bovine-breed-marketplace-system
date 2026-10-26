@@ -101,6 +101,15 @@ export const uploadAttachment = asyncHandler(async (req, res) => {
         /* Check the chat belongs to this person before anything is uploaded. */
         await getConversationFor(req.params.id, req.user._id);
 
+        if (
+            !process.env.CLOUDINARY_CLOUD_NAME ||
+            !process.env.CLOUDINARY_API_KEY ||
+            !process.env.CLOUDINARY_API_SECRET
+        ) {
+            console.error("[chat] file sharing is off: CLOUDINARY_* environment variables are missing");
+            throw new ApiError(503, "File sharing is not set up on the server yet");
+        }
+
         const head = await readFileHead(file.path);
 
         if (!contentMatchesType(file.mimetype, head)) {

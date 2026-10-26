@@ -539,6 +539,27 @@
         }
     };
 
+    /*
+     * Messages never change once they are sent, so keep the DOM node and reuse it.
+     * Without this every new message rebuilt every bubble (and re-created every image).
+     */
+    const nodeCache = new Map();
+    const NODE_CACHE_LIMIT = 400;
+
+    const nodeFor = (message) => {
+        const key = `${message.id}|${message.pending ? 1 : 0}|${message.failed ? 1 : 0}`;
+        const cached = nodeCache.get(message.id);
+
+        if (cached && cached.key === key) return cached.node;
+
+        const node = renderMessage(message);
+
+        if (nodeCache.size >= NODE_CACHE_LIMIT) nodeCache.delete(nodeCache.keys().next().value);
+        nodeCache.set(message.id, { key, node });
+
+        return node;
+    };
+
     const renderMessages = (scrollToEnd) => {
         const thread = threads.get(state.activeId);
         if (!thread) return;
@@ -555,7 +576,7 @@
             frag.append(more);
         }
 
-        for (const message of thread.items) frag.append(renderMessage(message));
+        for (const message of thread.items) frag.append(nodeFor(message));
 
         box.replaceChildren(frag);
         box.scrollTop = scrollToEnd ? box.scrollHeight : previousTop + (box.scrollHeight - previousHeight);
