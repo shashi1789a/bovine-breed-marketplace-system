@@ -7,7 +7,7 @@ export const makePairKey = (firstId, secondId) =>
 const lastMessageSchema = new Schema(
     {
         text: { type: String, default: "" },
-        type: { type: String, enum: ["text", "call"], default: "text" },
+        type: { type: String, enum: ["text", "call", "file"], default: "text" },
         sender: { type: Schema.Types.ObjectId, ref: "User" },
         at: Date
     },

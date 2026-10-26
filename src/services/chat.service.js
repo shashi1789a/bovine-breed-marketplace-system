@@ -32,6 +32,29 @@ export const toPublicUser = (user) =>
         role: user.role
     };
 
+const toPublicReply = (reply) =>
+    reply?.messageId
+        ? {
+              messageId: String(reply.messageId),
+              senderId: String(reply.senderId),
+              type: reply.type || "text",
+              text: reply.text || "",
+              attachmentName: reply.attachmentName || "",
+              attachmentKind: reply.attachmentKind || ""
+          }
+        : null;
+
+const toPublicAttachment = (attachment) =>
+    attachment?.url
+        ? {
+              url: attachment.url,
+              name: attachment.name,
+              mimeType: attachment.mimeType,
+              size: attachment.size || 0,
+              kind: attachment.kind || "file"
+          }
+        : null;
+
 export const toPublicMessage = (message) => ({
     id: String(message._id),
     conversationId: String(message.conversation),
@@ -42,6 +65,9 @@ export const toPublicMessage = (message) => ({
         message.type === "call"
             ? { outcome: message.call?.outcome, durationSec: message.call?.durationSec || 0 }
             : null,
+    attachment: toPublicAttachment(message.attachment),
+    replyTo: toPublicReply(message.replyTo),
+    forwarded: Boolean(message.forwarded),
     createdAt: message.createdAt
 });
 
@@ -187,16 +213,89 @@ export const listMessages = async ({ conversationId, userId, before, limit }) =>
     };
 };
 
-export const sendMessage = async ({ conversationId, senderId, text }) => {
+const PREVIEW_LENGTH = 120;
+
+/* What the conversation list shows under a person's name. */
+const previewOf = ({ type, text, attachment }) => {
+    if (type === "file") {
+        const label = attachment?.kind === "image" ? "Photo" : attachment?.name || "File";
+        return text ? `${label}: ${text}`.slice(0, PREVIEW_LENGTH) : label;
+    }
+
+    return String(text || "").slice(0, PREVIEW_LENGTH);
+};
+
+/* Saves a message and updates the conversation's last message and unread count. */
+const saveMessage = async ({ conversation, senderId, recipientId, fields }) => {
+    const message = await Message.create({
+        conversation: conversation._id,
+        sender: senderId,
+        ...fields
+    });
+
+    await Conversation.updateOne(
+        { _id: conversation._id },
+        {
+            $set: {
+                lastMessage: {
+                    text: previewOf(message),
+                    type: message.type,
+                    sender: senderId,
+                    at: message.createdAt
+                }
+            },
+            $inc: { [`unread.${recipientId}`]: 1 }
+        }
+    );
+
+    return message;
+};
+
+/*
+ * The quote shown above a reply. Only messages of the same conversation can be
+ * answered, so a made-up id can never pull in someone else's text.
+ */
+const buildReply = async (conversation, replyToId) => {
+    if (replyToId === undefined || replyToId === null || replyToId === "") return undefined;
+
+    const original = await Message.findOne({
+        _id: toId(replyToId),
+        conversation: conversation._id,
+        type: { $in: ["text", "file"] }
+    }).lean();
+
+    if (!original) throw new ApiError(404, "The message you are replying to was not found");
+
+    return {
+        messageId: original._id,
+        senderId: original.sender,
+        type: original.type,
+        text: String(original.text || "").slice(0, 200),
+        attachmentName: original.attachment?.name || "",
+        attachmentKind: original.attachment?.kind || ""
+    };
+};
+
+const cleanCaption = (text) => {
+    if (text === undefined || text === null || text === "") return "";
+
     if (typeof text !== "string") throw new ApiError(400, "Message must be text");
 
     const body = text.trim();
 
-    if (!body) throw new ApiError(400, "Message cannot be empty");
-
     if (body.length > MAX_MESSAGE_LENGTH) {
         throw new ApiError(400, `Message cannot exceed ${MAX_MESSAGE_LENGTH} characters`);
     }
+
+    return body;
+};
+
+export const sendMessage = async ({ conversationId, senderId, text, replyToId }) => {
+    if (typeof text !== "string") throw new ApiError(400, "Message must be text");
+
+    const body = cleanCaption(text);
+
+    if (!body) throw new ApiError(400, "Message cannot be empty");
 
     const sender = toId(senderId);
     const conversation = await getConversationFor(conversationId, sender);
@@ -204,24 +303,94 @@ export const sendMessage = async ({ conversationId, senderId, text }) => {
 
     await assertUsersActive(sender, recipientId);
 
-    const message = await Message.create({
-        conversation: conversation._id,
-        sender,
-        type: "text",
-        text: body
+    const replyTo = await buildReply(conversation, replyToId);
+
+    const message = await saveMessage({
+        conversation,
+        senderId: sender,
+        recipientId,
+        fields: { type: "text", text: body, replyTo }
     });
 
-    await Conversation.updateOne(
-        { _id: conversation._id },
-        {
-            $set: {
-                lastMessage: { text: body.slice(0, 120), type: "text", sender, at: message.createdAt }
-            },
-            $inc: { [`unread.${recipientId}`]: 1 }
-        }
-    );
+    return { message: toPublicMessage(message), recipientId };
+};
+
+/*
+ * Called by the upload route only, after the file is stored. The attachment is
+ * built on the server, so a client can never post a link of its own.
+ */
+export const sendAttachment = async ({ conversationId, senderId, attachment, caption, replyToId }) => {
+    const sender = toId(senderId);
+    const conversation = await getConversationFor(conversationId, sender);
+    const recipientId = otherParticipant(conversation, sender);
+
+    await assertUsersActive(sender, recipientId);
+
+    const replyTo = await buildReply(conversation, replyToId);
+
+    const message = await saveMessage({
+        conversation,
+        senderId: sender,
+        recipientId,
+        fields: { type: "file", text: cleanCaption(caption), attachment, replyTo }
+    });
 
     return { message: toPublicMessage(message), recipientId };
+};
+
+export const MAX_FORWARD_TARGETS = 5;
+
+/* Copies one message into up to five other conversations of the same user. */
+export const forwardMessage = async ({ messageId, userId, conversationIds }) => {
+    const me = toId(userId);
+
+    if (!Array.isArray(conversationIds) || !conversationIds.length) {
+        throw new ApiError(400, "Pick at least one chat to forward to");
+    }
+
+    const targets = [...new Set(conversationIds.map(toId))];
+
+    if (targets.length > MAX_FORWARD_TARGETS) {
+        throw new ApiError(400, `You can forward to at most ${MAX_FORWARD_TARGETS} chats at once`);
+    }
+
+    const original = await Message.findOne({
+        _id: toId(messageId),
+        type: { $in: ["text", "file"] }
+    }).lean();
+
+    /* Only someone who is in the original conversation may forward from it. */
+    if (!original) throw new ApiError(404, "Message not found");
+
+    await getConversationFor(original.conversation, me);
+
+    const results = [];
+
+    for (const targetId of targets) {
+        const conversation = await getConversationFor(targetId, me);
+        const recipientId = otherParticipant(conversation, me);
+
+        await assertUsersActive(me, recipientId);
+
+        const fields = {
+            type: original.type,
+            text: original.text || "",
+            forwarded: true
+        };
+
+        if (original.type === "file") fields.attachment = original.attachment;
+
+        const message = await saveMessage({
+            conversation,
+            senderId: me,
+            recipientId,
+            fields
+        });
+
+        results.push({ message: toPublicMessage(message), recipientId });
+    }
+
+    return results;
 };
 
 export const markRead = async ({ conversationId, userId }) => {

@@ -2,6 +2,7 @@ import { Server } from "socket.io";
 
 import { ApiError } from "../utils/ApiError.js";
 import {
+    forwardMessage,
     getConversationFor,
     logCall,
     markRead,
@@ -60,6 +61,7 @@ export const initSocket = (httpServer, options = {}) => {
     });
 
     const messageLimiter = createRateLimiter({ limit: 20, windowMs: 10000 });
+    const forwardLimiter = createRateLimiter({ limit: 10, windowMs: 60000 });
     const typingLimiter = createRateLimiter({ limit: 15, windowMs: 5000 });
     const signalLimiter = createRateLimiter({ limit: 300, windowMs: 10000 });
     const inviteLimiter = createRateLimiter({ limit: options.inviteLimit ?? 5, windowMs: 60000 });
@@ -121,7 +123,7 @@ export const initSocket = (httpServer, options = {}) => {
 
         /* ---------------- chat ---------------- */
 
-        on("chat:send", async ({ conversationId, text, clientId }, ack) => {
+        on("chat:send", async ({ conversationId, text, clientId, replyToId }, ack) => {
             if (!messageLimiter.allow(me.id)) {
                 throw new ApiError(429, "You are sending messages too fast. Please slow down.");
             }
@@ -129,7 +131,8 @@ export const initSocket = (httpServer, options = {}) => {
             const { message, recipientId } = await sendMessage({
                 conversationId,
                 senderId: me.id,
-                text
+                text,
+                replyToId
             });
 
             const payload = {
@@ -141,6 +144,22 @@ export const initSocket = (httpServer, options = {}) => {
             socket.to(userRoom(me.id)).emit("chat:message", payload);
 
             reply(ack, { ok: true, message: payload });
+        });
+
+        /* Forward one message to a few other chats. */
+        on("chat:forward", async ({ messageId, conversationIds }, ack) => {
+            if (!forwardLimiter.allow(me.id)) {
+                throw new ApiError(429, "You are forwarding too fast. Please wait a minute.");
+            }
+
+            const sent = await forwardMessage({ messageId, userId: me.id, conversationIds });
+
+            for (const { message, recipientId } of sent) {
+                io.to(userRoom(recipientId)).emit("chat:message", message);
+                socket.to(userRoom(me.id)).emit("chat:message", message);
+            }
+
+            reply(ack, { ok: true, messages: sent.map((item) => item.message) });
         });
 
         on("chat:typing", async ({ conversationId, isTyping }) => {
