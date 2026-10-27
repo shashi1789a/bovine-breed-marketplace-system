@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title><%= locals.title || 'Cattle Reels | BoviNetra' %></title>
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="/assets/images/fav.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="/assets/css/reels.css?v=<%= locals.reelsCssVersion || '' %>" rel="stylesheet">
+</head>
+<body>
+  <header class="top">
+    <a href="/" class="brand" aria-label="BoviNetra home"><i class="bi bi-arrow-left" aria-hidden="true"></i> Reels</a>
+    <a href="/products?type=cattle" class="pill"><i class="bi bi-shop" aria-hidden="true"></i> Marketplace</a>
+    <% if (locals.canUpload) { %>
+      <a href="/reels/new" class="pill solid"><i class="bi bi-plus-circle-fill" aria-hidden="true"></i> Upload</a>
+    <% } else if (!locals.user) { %>
+      <a href="/login?next=<%= encodeURIComponent('/reels') %>" class="pill solid">Login</a>
+    <% } %>
+  </header>
+
+  <main id="reels"
+        data-me="<%= locals.user ? String(user._id) : '' %>"
+        data-can-upload="<%= locals.canUpload ? '1' : '0' %>"
+        data-farmer="<%= locals.filter ? filter.farmer : '' %>"
+        data-cattle="<%= locals.filter ? filter.cattle : '' %>"
+        data-start="<%= locals.filter ? filter.start : '' %>">
+    <div class="feed" id="feed" tabindex="-1">
+      <div class="state"><div class="loader" style="position:static;opacity:1"></div><p>Loading reels…</p></div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <noscript><div class="state"><p>Reels need JavaScript. Please turn it on and reload.</p></div></noscript>
+  <script src="/assets/js/reels.js?v=<%= locals.reelsClientVersion || '' %>"></script>
+</body>
+</html>

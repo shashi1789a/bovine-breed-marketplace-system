@@ -9,6 +9,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { removeReelsForCattle } from "./reel.controller.js";
+import { Reel } from "../models/reel.model.js";
 
 const ADMIN_ROLE = "admin";
 const CATTLE_HOME = "/farmer/cattle";
@@ -556,11 +558,14 @@ const getCattleById = asyncHandler(async (req, res) => {
             .json(new ApiResponse(200, cattle, "Cattle fetched successfully"));
     }
 
+    const reelCount = await Reel.countDocuments({ cattle: cattle._id, isActive: true });
+
     return res.status(200).render("farmer/cattle/show", {
         title: cattle.name || cattle.breedName,
         user: req.user,
         cattle,
         isOwner,
+        reelCount,
         success: readFlash(req.query.success),
         error: readFlash(req.query.error)
     });
@@ -637,6 +642,11 @@ const deleteCattle = asyncHandler(async (req, res) => {
                 deletedAt: new Date()
             }
         }
+    );
+
+    /* The videos go with the listing. A failure here must not undo the delete. */
+    await removeReelsForCattle(cattle._id).catch((error) =>
+        console.error("[reel] cleanup failed:", error.message)
     );
 
     return respond(req, res, {

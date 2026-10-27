@@ -322,6 +322,7 @@
           <% if (owner) { %>
             <div class="actions">
               <a href="/farmer/cattle/<%= cattle._id %>/edit" class="btn-fill"><i class="fas fa-pen"></i> Edit details</a>
+              <a href="/reels/new?cattle=<%= cattle._id %>" class="btn-soft"><i class="fas fa-video"></i> Add reel</a>
               <form action="/farmer/cattle/<%= cattle._id %>/delete" method="POST" onsubmit="return confirm('Delete this cattle listing? This cannot be undone.')">
                 <input type="hidden" name="redirect" value="/farmer/cattle">
                 <button type="submit" class="btn-soft danger"><i class="fas fa-trash"></i> Delete</button>
@@ -329,11 +330,15 @@
             </div>
           <% } else if (!cattle.sold && cattle.isActive !== false && hasValue(cattle.price)) { %>
             <div class="actions">
+              <% if (!locals.user) { %>
+              <a href="/login?next=<%= encodeURIComponent('/cattle/' + cattle._id) %>" class="btn-fill" style="text-decoration:none;"><i class="fas fa-right-to-bracket"></i> Login to add to cart</a>
+              <% } else { %>
               <form action="/cart/<%= cattle._id %>/add" method="POST">
                 <input type="hidden" name="itemType" value="cattle">
                 <input type="hidden" name="quantity" value="1">
                 <button type="submit" class="btn-fill"><i class="fas fa-cart-plus"></i> Add to cart</button>
               </form>
+              <% } %>
             </div>
           <% } %>
         </section>
@@ -373,12 +378,21 @@
                 <span class="avatar-fallback"><i class="fas fa-user"></i></span>
               <% } %>
               <div>
-                <strong><%= seller.fullName %></strong>
+                <strong><a href="/farmers/<%= encodeURIComponent(seller.username) %>" style="color:inherit;"><%= seller.fullName %></a></strong>
                 <span>@<%= seller.username %><%= seller.role ? ' · ' + seller.role : '' %></span>
                 <% if (seller.farmerDetails && (seller.farmerDetails.farmName || seller.farmerDetails.location)) { %>
                   <br><span><%= [seller.farmerDetails.farmName, seller.farmerDetails.location].filter(Boolean).join(', ') %></span>
                 <% } %>
               </div>
+            </div>
+            <div class="actions" style="margin-top:1rem;">
+              <a href="/farmers/<%= encodeURIComponent(seller.username) %>" class="btn-soft"><i class="fas fa-user"></i> View profile</a>
+              <% if (!owner) { %>
+                <a href="<%= locals.user ? '/chat?with=' + seller._id : '/login?next=' + encodeURIComponent('/chat?with=' + seller._id) %>" class="btn-fill"><i class="fas fa-comments"></i> Message seller</a>
+              <% } %>
+              <% if ((locals.reelCount || 0) > 0) { %>
+                <a href="/reels?cattle=<%= cattle._id %>" class="btn-soft"><i class="fas fa-video"></i> Watch video</a>
+              <% } %>
             </div>
           </section>
         </div>

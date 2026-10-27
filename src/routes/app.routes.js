@@ -11,6 +11,8 @@ import orderRoutes from "./order.routes.js";
 import healthcheckRoutes from "./healthcheck.routes.js";
 import contactRoutes from "./contact.routes.js";
 import chatRoutes from "./chat.routes.js";
+import reelRoutes from "./reel.routes.js";
+import farmerProfileRoutes from "./farmerProfile.routes.js";
 const router = Router();
 
 router.use("/healthz", healthcheckRoutes);
@@ -26,5 +28,7 @@ router.use("/cattle", cattleRoutes);
 router.use("/cart", cartRoutes);
 router.use("/orders", orderRoutes);
 router.use("/chat", chatRoutes);
+router.use("/reels", reelRoutes);
+router.use("/farmers", farmerProfileRoutes);
 
 export default router;

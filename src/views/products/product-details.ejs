@@ -293,7 +293,13 @@
         <p class="pv-short-desc"><%= product.shortDescription %></p>
       <% } %>
 
-      <% if (canBuy) { %>
+      <% if (canBuy && !locals.user) { %>
+        <div class="pv-cart-form">
+          <a href="/login?next=<%= encodeURIComponent('/products/view/' + product._id) %>" class="pv-add-btn" style="text-decoration:none;text-align:center;">
+            <i class="fas fa-right-to-bracket"></i> Login to add to cart
+          </a>
+        </div>
+      <% } else if (canBuy) { %>
         <form action="/cart/<%= product._id %>/add" method="POST" class="pv-cart-form">
           <input type="number" name="quantity" value="1" min="1" max="<%= maxQty %>" class="pv-qty-input" aria-label="Quantity" inputmode="numeric">
           <button type="submit" class="pv-add-btn"><i class="fas fa-cart-plus"></i> Add to cart</button>

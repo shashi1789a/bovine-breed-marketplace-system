@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= locals.title || 'Farmer | BoviNetra' %></title>
+  <link rel="icon" href="/assets/images/fav.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    :root { --primary:#0F62AC; --green:#176b45; --text:#1A2C3E; --muted:#5A6E7F; --line:rgba(15,98,172,.14); }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:'Inter',sans-serif; background:#F4F9FE; color:var(--text); line-height:1.5; }
+    h1,h2 { font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; }
+    a { color:inherit; text-decoration:none; }
+    .wrap { max-width:1000px; margin:0 auto; padding:24px 16px 60px; }
+    .back { display:inline-flex; gap:6px; align-items:center; color:var(--primary); font-weight:600; font-size:.88rem; margin-bottom:14px; }
+    .head { background:#fff; border:1px solid var(--line); border-radius:22px; padding:22px; display:flex; gap:18px; align-items:center; flex-wrap:wrap; box-shadow:0 8px 20px rgba(0,0,0,.04); }
+    .av { width:84px; height:84px; border-radius:50%; background:var(--green); color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.8rem; font-weight:800; overflow:hidden; flex-shrink:0; }
+    .av img { width:100%; height:100%; object-fit:cover; }
+    .who { flex:1; min-width:200px; }
+    .who h1 { font-size:1.5rem; word-break:break-word; }
+    .who p { color:var(--muted); font-size:.88rem; }
+    .btns { display:flex; gap:10px; flex-wrap:wrap; }
+    .btn { display:inline-flex; gap:7px; align-items:center; border-radius:40px; padding:10px 20px; font-weight:700; font-size:.88rem; border:1.5px solid #D6E4F2; background:#fff; }
+    .btn.main { background:var(--green); border-color:var(--green); color:#fff; }
+    h2 { font-size:1.15rem; margin:26px 0 12px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:16px; }
+    .item { background:#fff; border:1px solid var(--line); border-radius:18px; overflow:hidden; display:block; transition:transform .2s; }
+    .item:hover { transform:translateY(-3px); }
+    .item .pic { height:150px; background:#EAF3FB; display:flex; align-items:center; justify-content:center; color:#94A3B8; font-size:2.4rem; }
+    .item .pic img { width:100%; height:100%; object-fit:cover; }
+    .item .body { padding:12px 14px; }
+    .item strong { display:block; font-size:.95rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .item span { color:var(--muted); font-size:.8rem; }
+    .item .price { display:block; color:var(--text); font-weight:800; margin-top:4px; font-family:'Plus Jakarta Sans',sans-serif; }
+    .none { background:#fff; border:1px solid var(--line); border-radius:18px; padding:26px; color:var(--muted); text-align:center; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <a href="/products?type=cattle" class="back"><i class="bi bi-arrow-left" aria-hidden="true"></i> Marketplace</a>
+
+  <%
+    const initials = String(farmer.fullName || '?').split(/\s+/).slice(0, 2).map(p => p[0]).join('').toUpperCase();
+    const place = [farmer.farmerDetails && farmer.farmerDetails.farmName, farmer.farmerDetails && farmer.farmerDetails.location].filter(Boolean).join(' · ');
+    const chatHref = locals.user ? '/chat?with=' + farmer._id : '/login?next=' + encodeURIComponent('/chat?with=' + farmer._id);
+  %>
+
+  <section class="head">
+    <div class="av">
+      <% if (farmer.avatar && /^https:\/\//.test(farmer.avatar)) { %><img src="<%= farmer.avatar %>" alt=""><% } else { %><%= initials %><% } %>
+    </div>
+    <div class="who">
+      <h1><%= farmer.fullName %></h1>
+      <p>@<%= farmer.username %><%= place ? ' · ' + place : '' %></p>
+      <p><%= cattle.length %> for sale · <%= reelCount %> reel<%= reelCount === 1 ? '' : 's' %></p>
+    </div>
+    <div class="btns">
+      <% if (!isMe) { %><a class="btn main" href="<%= chatHref %>"><i class="bi bi-chat-dots-fill" aria-hidden="true"></i> Message</a><% } %>
+      <% if (reelCount > 0) { %><a class="btn" href="/reels?farmer=<%= farmer._id %>"><i class="bi bi-camera-reels" aria-hidden="true"></i> Watch reels</a><% } %>
+    </div>
+  </section>
+
+  <h2>Cattle for sale</h2>
+  <% if (!cattle.length) { %>
+    <div class="none">No cattle are listed for sale right now.</div>
+  <% } else { %>
+    <div class="grid">
+      <% cattle.forEach(c => {
+           const pic = c.imageUrl || (c.images && c.images[0]) || '';
+           const details = [c.category, c.gender, typeof c.age === 'number' ? c.age + ' mo' : ''].filter(Boolean).join(' · ');
+      %>
+        <a class="item" href="/cattle/<%= c._id %>">
+          <div class="pic"><% if (pic) { %><img src="<%= pic %>" alt="" loading="lazy"><% } else { %><i class="bi bi-image" aria-hidden="true"></i><% } %></div>
+          <div class="body">
+            <strong><%= c.name || c.breedName %></strong>
+            <span><%= details %></span>
+            <span class="price"><%= typeof c.price === 'number' ? '₹ ' + c.price.toLocaleString('en-IN') : 'Price on request' %></span>
+          </div>
+        </a>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+</body>
+</html>

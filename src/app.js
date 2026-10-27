@@ -23,6 +23,8 @@ const __dirname = path.dirname(__filename);
 app.set("trust proxy", 1);
 app.disable("x-powered-by");
 
+/* A short fingerprint of the chat script. It changes whenever the file does, so a phone or
+   browser can never keep running an old copy after a deploy. */
 const fingerprint = (file) => {
     try {
         return crypto
@@ -36,8 +38,10 @@ const fingerprint = (file) => {
 };
 
 app.locals.chatClientVersion = fingerprint("assets/js/chat-client.js");
+app.locals.reelsClientVersion = fingerprint("assets/js/reels.js");
+app.locals.reelsCssVersion = fingerprint("assets/css/reels.css");
 
-
+/* Gzip text responses when the optional "compression" package is installed. */
 try {
     const { default: compression } = await import("compression");
     app.use(compression());
@@ -45,7 +49,7 @@ try {
     console.warn("[app] 'compression' is not installed, responses are sent uncompressed");
 }
 
-
+/* Basic hardening headers. No CSP on purpose: the pages use inline scripts and CDNs. */
 app.use((req, res, next) => {
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("X-Frame-Options", "SAMEORIGIN");
@@ -59,7 +63,7 @@ app.use((req, res, next) => {
     next();
 });
 
-
+/* Only the sites listed in CORS_ORIGIN may call the API from a browser. Same-site pages need no CORS. */
 const allowedOrigins = readAllowedOrigins();
 
 app.use(
@@ -69,7 +73,7 @@ app.use(
     })
 );
 
-
+/* Razorpay signs the raw request body, so this must run before express.json() reads it. */
 app.use("/payments", paymentRoutes);
 
 
@@ -80,7 +84,7 @@ app.use(cookieParser());
 app.use(
     express.static(path.join(__dirname, "../public"), {
         setHeaders: (res, filePath) => {
-           
+            /* Pictures and fonts rarely change. Scripts and styles are re-checked with an ETag. */
             if (/\.(png|jpe?g|webp|gif|svg|ico|woff2?)$/i.test(filePath)) {
                 res.setHeader("Cache-Control", "public, max-age=604800");
             } else {

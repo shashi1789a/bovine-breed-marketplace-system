@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= locals.title || 'Upload a Reel | BoviNetra' %></title>
+  <link rel="icon" href="/assets/images/fav.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    :root { --primary:#0F62AC; --green:#176b45; --text:#1A2C3E; --muted:#5A6E7F; --line:rgba(15,98,172,.14); }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:'Inter',sans-serif; background:#F4F9FE; color:var(--text); line-height:1.5; }
+    h1 { font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:1.5rem; }
+    a { color:var(--primary); text-decoration:none; }
+    .wrap { max-width:620px; margin:0 auto; padding:24px 16px 60px; }
+    .back { display:inline-flex; gap:6px; align-items:center; font-weight:600; font-size:.88rem; margin-bottom:14px; }
+    .card { background:#fff; border:1px solid var(--line); border-radius:22px; padding:22px; box-shadow:0 8px 20px rgba(0,0,0,.04); }
+    .lead { color:var(--muted); font-size:.9rem; margin:4px 0 18px; }
+    label { display:block; font-weight:600; font-size:.86rem; margin:14px 0 6px; }
+    select, textarea { width:100%; padding:11px 12px; border:1.5px solid #D6E4F2; border-radius:12px; font:inherit; background:#fff; color:inherit; }
+    select:focus, textarea:focus { outline:3px solid rgba(15,98,172,.2); border-color:var(--primary); }
+    textarea { resize:vertical; min-height:70px; }
+    .count { text-align:right; color:var(--muted); font-size:.75rem; margin-top:2px; }
+    .drop { border:2px dashed #B9D2EA; border-radius:16px; padding:22px; text-align:center; color:var(--muted); cursor:pointer; background:#F8FBFF; }
+    .drop:hover, .drop:focus-visible { border-color:var(--primary); outline:none; }
+    .drop i { font-size:2rem; color:var(--primary); display:block; }
+    .drop strong { color:var(--text); }
+    input[type=file] { position:absolute; width:1px; height:1px; opacity:0; }
+    .preview { display:none; margin-top:12px; }
+    .preview video { width:100%; max-height:380px; border-radius:14px; background:#000; }
+    .meta { color:var(--muted); font-size:.8rem; margin-top:6px; }
+    .error { background:#FEE2E2; color:#B91C1C; border-radius:12px; padding:10px 14px; font-size:.86rem; margin-top:14px; display:none; }
+    .bar { height:10px; background:#E2EDF7; border-radius:10px; overflow:hidden; margin-top:14px; display:none; }
+    .bar > span { display:block; height:100%; width:0; background:var(--green); transition:width .2s; }
+    .actions { display:flex; gap:10px; margin-top:18px; flex-wrap:wrap; }
+    .btn { border:0; border-radius:40px; padding:11px 22px; font-weight:700; font:inherit; font-weight:700; cursor:pointer; }
+    .btn.main { background:var(--green); color:#fff; }
+    .btn.main:disabled { opacity:.5; cursor:not-allowed; }
+    .btn.soft { background:#fff; border:1.5px solid #D6E4F2; color:var(--text); }
+    .empty { text-align:center; padding:10px 0; }
+    .empty p { color:var(--muted); margin:8px 0 16px; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <a href="/reels" class="back"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back to reels</a>
+
+  <div class="card">
+    <h1>Upload a reel</h1>
+    <p class="lead">Show your cattle in a video of up to <%= maxSeconds %> seconds. Buyers can watch it, open the full details and message you.</p>
+
+    <% if (!cattle.length) { %>
+      <div class="empty">
+        <i class="bi bi-info-circle" style="font-size:2rem;color:var(--primary)" aria-hidden="true"></i>
+        <p>You need a cattle listing that is still for sale before you can add a reel.</p>
+        <a class="btn main" href="/farmer/cattle/add" style="display:inline-block">Add cattle</a>
+      </div>
+    <% } else { %>
+      <form id="reelForm" novalidate>
+        <label for="cattleId">Which cattle is this video for?</label>
+        <select id="cattleId" name="cattleId" required>
+          <option value="">Choose cattle…</option>
+          <% cattle.forEach(c => { %>
+            <option value="<%= c._id %>" <%= String(c._id) === selected ? 'selected' : '' %>><%= c.name || c.breedName %> (<%= c.breedName %> · <%= c.category %>)</option>
+          <% }) %>
+        </select>
+
+        <label for="video">Video</label>
+        <label class="drop" for="video" id="drop" tabindex="0">
+          <i class="bi bi-camera-video" aria-hidden="true"></i>
+          <strong>Tap to record or choose a video</strong><br>
+          MP4, MOV or WEBM · up to <%= maxSeconds %> seconds · up to 80 MB
+        </label>
+        <input type="file" id="video" name="video" accept="video/mp4,video/quicktime,video/webm">
+
+        <div class="preview" id="preview">
+          <video id="previewVideo" controls playsinline muted></video>
+          <p class="meta" id="meta"></p>
+        </div>
+
+        <label for="caption">Caption <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+        <textarea id="caption" name="caption" maxlength="150" placeholder="e.g. Healthy Gir cow, gives 14 litres a day"></textarea>
+        <div class="count"><span id="captionCount">0</span>/150</div>
+
+        <div class="error" id="error" role="alert"></div>
+        <div class="bar" id="bar" aria-hidden="true"><span id="barFill"></span></div>
+
+        <div class="actions">
+          <button type="submit" class="btn main" id="submitBtn" disabled>Upload reel</button>
+          <a href="/reels" class="btn soft" style="display:inline-block">Cancel</a>
+        </div>
+      </form>
+    <% } %>
+  </div>
+</div>
+
+<% if (cattle.length) { %>
+<script>
+  (() => {
+    const MAX_SECONDS = <%= Number(maxSeconds) %>;
+    const MAX_BYTES = 80 * 1024 * 1024;
+    const $ = (id) => document.getElementById(id);
+    const form = $('reelForm'), fileInput = $('video'), submit = $('submitBtn'), errorBox = $('error');
+    const bar = $('bar'), fill = $('barFill'), preview = $('preview'), pv = $('previewVideo'), meta = $('meta');
+    let duration = 0, previewUrl = '';
+
+    const showError = (text) => { errorBox.textContent = text || ''; errorBox.style.display = text ? 'block' : 'none'; };
+    const ready = () => { submit.disabled = !(fileInput.files[0] && $('cattleId').value && duration > 0 && duration <= MAX_SECONDS + 0.5); };
+
+    $('caption').addEventListener('input', () => { $('captionCount').textContent = $('caption').value.length; });
+    $('cattleId').addEventListener('change', ready);
+    $('drop').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); } });
+
+    fileInput.addEventListener('change', () => {
+      showError(''); duration = 0; preview.style.display = 'none';
+      if (previewUrl) { URL.revokeObjectURL(previewUrl); previewUrl = ''; }
+      const file = fileInput.files[0];
+      if (!file) return ready();
+
+      if (file.size > MAX_BYTES) { fileInput.value = ''; showError('That video is too large. The limit is 80 MB.'); return ready(); }
+
+      previewUrl = URL.createObjectURL(file);
+      pv.src = previewUrl;
+      pv.onloadedmetadata = () => {
+        duration = pv.duration;
+        if (!isFinite(duration)) duration = 0;
+        if (duration > MAX_SECONDS + 0.5) {
+          fileInput.value = ''; duration = 0; preview.style.display = 'none';
+          showError('This video is ' + Math.round(pv.duration) + ' seconds long. Reels can be at most ' + MAX_SECONDS + ' seconds. Trim it and try again.');
+        } else {
+          preview.style.display = 'block';
+          meta.textContent = file.name + ' · ' + Math.round(duration) + ' sec · ' + (file.size / 1048576).toFixed(1) + ' MB';
+        }
+        ready();
+      };
+      pv.onerror = () => { fileInput.value = ''; duration = 0; showError('This browser cannot read that video. Try an MP4 file.'); ready(); };
+    });
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (submit.disabled) return;
+
+      const data = new FormData();
+      data.append('cattleId', $('cattleId').value);
+      data.append('caption', $('caption').value);
+      data.append('video', fileInput.files[0]);
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', '/reels');
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.withCredentials = true;
+      xhr.responseType = 'json';
+
+      submit.disabled = true; submit.textContent = 'Uploading…'; bar.style.display = 'block'; showError('');
+
+      xhr.upload.onprogress = (e) => { if (e.lengthComputable) fill.style.width = Math.round((e.loaded / e.total) * 100) + '%'; };
+      xhr.onload = () => {
+        const body = xhr.response || {};
+        if (xhr.status === 401) { location.href = '/login?next=' + encodeURIComponent('/reels/new'); return; }
+        if (xhr.status >= 200 && xhr.status < 300 && body.data && body.data.url) { location.href = body.data.url; return; }
+        showError(body.message || 'Upload failed. Please try again.');
+        submit.textContent = 'Upload reel'; bar.style.display = 'none'; ready();
+      };
+      xhr.onerror = () => { showError('Network error. Check your connection and try again.'); submit.textContent = 'Upload reel'; bar.style.display = 'none'; ready(); };
+      xhr.send(data);
+    });
+  })();
+</script>
+<% } %>
+</body>
+</html>
