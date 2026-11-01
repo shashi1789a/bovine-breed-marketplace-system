@@ -11,6 +11,7 @@ import {
     changePasswordApi
 } from "../controllers/apiAuth.controller.js";
 
+import { submitContactApi } from "../controllers/apiContact.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
@@ -48,6 +49,18 @@ router.post("/auth/login", authLimiter, loginApi);
 router.post("/auth/refresh", authLimiter, refreshApi);
 router.post("/auth/logout", verifyJWT, logoutApi);
 router.post("/auth/change-password", verifyJWT, authLimiter, changePasswordApi);
+
+router.post(
+    "/contact",
+    rateLimit({
+        windowMs: 15 * 60 * 1000,
+        limit: 10,
+        standardHeaders: true,
+        legacyHeaders: false,
+        message: { success: false, message: "Too many messages. Please try again later." }
+    }),
+    submitContactApi
+);
 
 router.get("/me", verifyJWT, getMeApi);
 router.patch("/me", verifyJWT, updateMeApi);
