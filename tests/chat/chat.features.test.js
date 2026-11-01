@@ -87,7 +87,7 @@ afterAll(async () => {
 describe("replying", () => {
     it("stores a short copy of the message being answered", async () => {
         const a = await createUser("farmer");
-        const b = await createUser("buyer");
+        const b = await createUser("seller");
         const conversationId = await chatOf(a, b);
 
         const { message: first } = await sendMessage({ conversationId, senderId: a.id, text: "Is the cow vaccinated?" });
@@ -109,7 +109,7 @@ describe("replying", () => {
 
     it("refuses to reply to a message from another conversation", async () => {
         const a = await createUser("farmer");
-        const b = await createUser("buyer");
+        const b = await createUser("seller");
         const c = await createUser("doctor");
         const mine = await chatOf(a, b);
         const other = await chatOf(a, c);
@@ -123,7 +123,7 @@ describe("replying", () => {
 
     it("works over the socket and reaches the other person", async () => {
         const a = await createUser("farmer");
-        const b = await createUser("buyer");
+        const b = await createUser("seller");
         const conversationId = await chatOf(a, b);
         const sender = await openSocket(a.cookie);
         const receiver = await openSocket(b.cookie);
@@ -142,7 +142,7 @@ describe("replying", () => {
 describe("forwarding", () => {
     it("copies a text message into other chats and marks it forwarded", async () => {
         const a = await createUser("farmer");
-        const b = await createUser("buyer");
+        const b = await createUser("seller");
         const c = await createUser("doctor");
         const source = await chatOf(a, b);
         const target = await chatOf(a, c);
@@ -162,7 +162,7 @@ describe("forwarding", () => {
 
     it("keeps the file when forwarding an attachment", async () => {
         const a = await createUser("farmer");
-        const b = await createUser("buyer");
+        const b = await createUser("seller");
         const c = await createUser("doctor");
         const source = await chatOf(a, b);
         const target = await chatOf(a, c);
@@ -182,7 +182,7 @@ describe("forwarding", () => {
 
     it("lets only people in the original chat forward from it", async () => {
         const a = await createUser("farmer");
-        const b = await createUser("buyer");
+        const b = await createUser("seller");
         const outsider = await createUser("user");
         const friend = await createUser("doctor");
         const source = await chatOf(a, b);
@@ -197,7 +197,7 @@ describe("forwarding", () => {
 
     it("refuses to forward into someone else's chat, and to too many chats", async () => {
         const a = await createUser("farmer");
-        const b = await createUser("buyer");
+        const b = await createUser("seller");
         const x = await createUser("user");
         const y = await createUser("doctor");
         const source = await chatOf(a, b);
@@ -218,7 +218,7 @@ describe("forwarding", () => {
 
     it("works over the socket and delivers to the new chat", async () => {
         const a = await createUser("farmer");
-        const b = await createUser("buyer");
+        const b = await createUser("seller");
         const c = await createUser("doctor");
         const source = await chatOf(a, b);
         const target = await chatOf(a, c);
@@ -241,7 +241,7 @@ describe("forwarding", () => {
 describe("file sharing", () => {
     it("saves an attachment as a file message with a caption", async () => {
         const a = await createUser("farmer");
-        const b = await createUser("buyer");
+        const b = await createUser("seller");
         const conversationId = await chatOf(a, b);
 
         const { message } = await sendAttachment({
@@ -260,7 +260,7 @@ describe("file sharing", () => {
 
     it("never accepts a file link from the socket", async () => {
         const a = await createUser("farmer");
-        const b = await createUser("buyer");
+        const b = await createUser("seller");
         const conversationId = await chatOf(a, b);
         const sender = await openSocket(a.cookie);
 
@@ -281,7 +281,7 @@ describe("file sharing", () => {
 
     it("rejects file types that are not allowed", async () => {
         const a = await createUser("farmer");
-        const b = await createUser("buyer");
+        const b = await createUser("seller");
         const conversationId = await chatOf(a, b);
 
         const res = await request(app)
@@ -295,7 +295,7 @@ describe("file sharing", () => {
 
     it("rejects a file whose content does not match its type", async () => {
         const a = await createUser("farmer");
-        const b = await createUser("buyer");
+        const b = await createUser("seller");
         const conversationId = await chatOf(a, b);
 
         const res = await request(app)
@@ -309,7 +309,7 @@ describe("file sharing", () => {
 
     it("hides other people's conversations from the upload route", async () => {
         const a = await createUser("farmer");
-        const b = await createUser("buyer");
+        const b = await createUser("seller");
         const outsider = await createUser("user");
         const conversationId = await chatOf(a, b);
 

@@ -65,6 +65,23 @@
     .key-fact small { display: block; font-size: 0.74rem; color: var(--text-muted); font-weight: 600; }
     .key-fact strong { font-size: 0.95rem; word-break: break-word; }
 
+    .vbadge { display: inline-flex; align-items: center; gap: 4px; background: #DCFCE7; color: #166534; font-size: 0.7rem; font-weight: 700; padding: 2px 9px; border-radius: 30px; margin-left: 6px; vertical-align: middle; }
+    .stars { color: #F59E0B; font-size: 0.82rem; font-weight: 700; }
+    .offer-box { margin-top: 1rem; background: #F4F9FE; border: 1px solid var(--border-light); border-radius: 18px; padding: 1rem 1.1rem; display: grid; gap: 8px; }
+    .offer-box h5 { font-size: 0.95rem; margin: 0; }
+    .offer-box input, .offer-box textarea { width: 100%; border: 1.5px solid #D6E4F2; border-radius: 12px; padding: 9px 12px; font: inherit; background: #fff; }
+    .offer-box small { color: var(--text-muted); }
+    .health-item { display: flex; gap: 12px; align-items: flex-start; padding: 0.8rem 0; border-bottom: 1px solid #EEF4FA; }
+    .health-item:last-child { border-bottom: 0; }
+    .health-kind { flex-shrink: 0; background: rgba(15, 98, 172, 0.08); color: var(--primary); font-size: 0.7rem; font-weight: 700; text-transform: capitalize; padding: 4px 11px; border-radius: 30px; }
+    .health-body { flex: 1; min-width: 0; }
+    .health-body strong { display: block; word-break: break-word; }
+    .health-body small { color: var(--text-muted); }
+    .health-body p { margin: 4px 0 0; font-size: 0.86rem; color: var(--text-muted); word-break: break-word; }
+    .health-file { display: inline-flex; gap: 6px; align-items: center; margin-top: 6px; font-size: 0.82rem; font-weight: 600; color: var(--primary); text-decoration: none; }
+    .health-form { display: grid; gap: 8px; margin-top: 1rem; }
+    .health-form input, .health-form select, .health-form textarea { width: 100%; border: 1.5px solid #D6E4F2; border-radius: 12px; padding: 9px 12px; font: inherit; background: #fff; }
+    details.add-health summary { cursor: pointer; font-weight: 700; color: var(--primary); margin-top: 0.8rem; }
     .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 1.3rem; }
     .actions form { margin: 0; }
 
@@ -328,22 +345,113 @@
                 <button type="submit" class="btn-soft danger"><i class="fas fa-trash"></i> Delete</button>
               </form>
             </div>
-          <% } else if (!cattle.sold && cattle.isActive !== false && hasValue(cattle.price)) { %>
+          <% } else if (!cattle.sold && cattle.isActive !== false) { %>
+            <% const loginNext = '/login?next=' + encodeURIComponent('/cattle/' + cattle._id); %>
             <div class="actions">
+              <% if (hasValue(cattle.price)) { %>
+                <% if (!locals.user) { %>
+                <a href="<%= loginNext %>" class="btn-fill" style="text-decoration:none;"><i class="fas fa-right-to-bracket"></i> Login to add to cart</a>
+                <% } else { %>
+                <form action="/cart/<%= cattle._id %>/add" method="POST">
+                  <input type="hidden" name="itemType" value="cattle">
+                  <input type="hidden" name="quantity" value="1">
+                  <button type="submit" class="btn-fill"><i class="fas fa-cart-plus"></i> Add to cart</button>
+                </form>
+                <% } %>
+              <% } %>
+
               <% if (!locals.user) { %>
-              <a href="/login?next=<%= encodeURIComponent('/cattle/' + cattle._id) %>" class="btn-fill" style="text-decoration:none;"><i class="fas fa-right-to-bracket"></i> Login to add to cart</a>
+                <a href="<%= loginNext %>" class="btn-soft" style="text-decoration:none;"><i class="far fa-heart"></i> Save</a>
               <% } else { %>
-              <form action="/cart/<%= cattle._id %>/add" method="POST">
-                <input type="hidden" name="itemType" value="cattle">
-                <input type="hidden" name="quantity" value="1">
-                <button type="submit" class="btn-fill"><i class="fas fa-cart-plus"></i> Add to cart</button>
-              </form>
+                <form action="/wishlist/toggle" method="POST">
+                  <input type="hidden" name="cattleId" value="<%= cattle._id %>">
+                  <input type="hidden" name="redirect" value="/cattle/<%= cattle._id %>">
+                  <button type="submit" class="btn-soft"><i class="<%= locals.isSaved ? 'fas' : 'far' %> fa-heart" style="<%= locals.isSaved ? 'color:#DC2626;' : '' %>"></i> <%= locals.isSaved ? 'Saved' : 'Save' %></button>
+                </form>
               <% } %>
             </div>
+
+            <% if (hasValue(cattle.price)) { %>
+              <% if (locals.openOffer) { %>
+                <div class="offer-box">
+                  <h5><i class="fas fa-handshake"></i> Your offer is with the seller</h5>
+                  <span>₹ <%= inr(openOffer.amount) %> &middot; <a href="/offers?tab=sent">View offer</a></span>
+                </div>
+              <% } else if (!locals.user) { %>
+                <div class="offer-box">
+                  <h5><i class="fas fa-handshake"></i> Make an offer</h5>
+                  <a href="<%= loginNext %>">Login to send the seller your price</a>
+                </div>
+              <% } else { %>
+                <form action="/offers" method="POST" class="offer-box">
+                  <h5><i class="fas fa-handshake"></i> Make an offer</h5>
+                  <input type="hidden" name="cattleId" value="<%= cattle._id %>">
+                  <input type="number" name="amount" min="1" max="<%= cattle.price %>" step="1" inputmode="numeric" placeholder="Your price in ₹ (listed ₹ <%= inr(cattle.price) %>)" required aria-label="Your offer in rupees">
+                  <textarea name="message" rows="2" maxlength="300" placeholder="Message to the seller (optional)" aria-label="Message to the seller"></textarea>
+                  <button type="submit" class="btn-fill" style="justify-self:start;"><i class="fas fa-paper-plane"></i> Send offer</button>
+                  <small>The seller can accept or decline. Offers stay open for 7 days.</small>
+                </form>
+              <% } %>
+            <% } %>
           <% } %>
         </section>
       </div>
     </div>
+
+    <%
+      const healthRecords = (cattle.healthRecords || []).slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+      const todayIso = new Date().toISOString().slice(0, 10);
+    %>
+    <% if (healthRecords.length || owner) { %>
+      <section class="panel" id="health">
+        <h4 class="panel-title"><i class="fas fa-notes-medical"></i> Health history</h4>
+
+        <% if (!healthRecords.length) { %>
+          <p class="mb-0 text-muted">No records yet. Add vaccinations and doctor reports so buyers can trust this listing.</p>
+        <% } %>
+
+        <% healthRecords.forEach((record) => { %>
+          <div class="health-item">
+            <span class="health-kind"><%= record.kind %></span>
+            <div class="health-body">
+              <strong><%= record.title %></strong>
+              <small><%= formatDate(record.date) %></small>
+              <% if (record.notes) { %><p><%= record.notes %></p><% } %>
+              <% if (record.fileUrl && /^https:\/\//.test(record.fileUrl)) { %>
+                <a class="health-file" href="<%= record.fileUrl %>" target="_blank" rel="noopener noreferrer">
+                  <i class="fas <%= record.fileKind === 'pdf' ? 'fa-file-pdf' : 'fa-image' %>"></i> <%= record.fileName || 'View file' %>
+                </a>
+              <% } %>
+            </div>
+            <% if (owner) { %>
+              <form action="/farmer/cattle/<%= cattle._id %>/health/<%= record._id %>/delete" method="POST" onsubmit="return confirm('Delete this record?');">
+                <button type="submit" class="btn-soft danger" aria-label="Delete record"><i class="fas fa-trash"></i></button>
+              </form>
+            <% } %>
+          </div>
+        <% }) %>
+
+        <% if (owner) { %>
+          <details class="add-health">
+            <summary><i class="fas fa-plus"></i> Add a record</summary>
+            <form action="/farmer/cattle/<%= cattle._id %>/health" method="POST" enctype="multipart/form-data" class="health-form">
+              <select name="kind" aria-label="Type of record">
+                <option value="vaccination">Vaccination</option>
+                <option value="checkup">Check-up</option>
+                <option value="treatment">Treatment</option>
+                <option value="report">Doctor's report</option>
+                <option value="other">Other</option>
+              </select>
+              <input type="text" name="title" maxlength="100" required placeholder="e.g. FMD vaccine, 2nd dose" aria-label="Title">
+              <input type="date" name="date" max="<%= todayIso %>" required aria-label="Date">
+              <textarea name="notes" rows="2" maxlength="500" placeholder="Notes (optional)" aria-label="Notes"></textarea>
+              <input type="file" name="file" accept="application/pdf,image/jpeg,image/png,image/webp" aria-label="Report or certificate (PDF or image, up to 10 MB)">
+              <button type="submit" class="btn-fill" style="justify-self:start;">Save record</button>
+            </form>
+          </details>
+        <% } %>
+      </section>
+    <% } %>
 
     <% if (cattle.description) { %>
       <section class="panel">
@@ -378,7 +486,8 @@
                 <span class="avatar-fallback"><i class="fas fa-user"></i></span>
               <% } %>
               <div>
-                <strong><a href="/farmers/<%= encodeURIComponent(seller.username) %>" style="color:inherit;"><%= seller.fullName %></a></strong>
+                <strong><a href="/farmers/<%= encodeURIComponent(seller.username) %>" style="color:inherit;"><%= seller.fullName %></a><% if (seller.verification && seller.verification.status === 'verified') { %><span class="vbadge"><i class="fas fa-circle-check"></i> Verified</span><% } %></strong>
+                <% if (seller.sellerRating && seller.sellerRating.count > 0) { %><span class="stars">★ <%= seller.sellerRating.avg.toFixed(1) %> <span style="color:var(--text-muted);font-weight:500;">(<%= seller.sellerRating.count %>)</span></span><br><% } %>
                 <span>@<%= seller.username %><%= seller.role ? ' · ' + seller.role : '' %></span>
                 <% if (seller.farmerDetails && (seller.farmerDetails.farmName || seller.farmerDetails.location)) { %>
                   <br><span><%= [seller.farmerDetails.farmName, seller.farmerDetails.location].filter(Boolean).join(', ') %></span>

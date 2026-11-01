@@ -12,14 +12,19 @@
 </head>
 <body>
   <header class="top">
-    <a href="/" class="brand" aria-label="BoviNetra home"><i class="bi bi-arrow-left" aria-hidden="true"></i> Reels</a>
-    <a href="/products?type=cattle" class="pill"><i class="bi bi-shop" aria-hidden="true"></i> Marketplace</a>
+    <a href="/" class="brand" aria-label="BoviNetra home"><i class="bi bi-arrow-left" aria-hidden="true"></i> <%= t("Reels") %></a>
+    <a href="/products?type=cattle" class="pill"><i class="bi bi-shop" aria-hidden="true"></i> <%= t("Marketplace") %></a>
     <% if (locals.canUpload) { %>
-      <a href="/reels/new" class="pill solid"><i class="bi bi-plus-circle-fill" aria-hidden="true"></i> Upload</a>
+      <a href="/reels/new" class="pill solid"><i class="bi bi-plus-circle-fill" aria-hidden="true"></i> <%= t("Upload") %></a>
     <% } else if (!locals.user) { %>
-      <a href="/login?next=<%= encodeURIComponent('/reels') %>" class="pill solid">Login</a>
+      <a href="/login?next=<%= encodeURIComponent('/reels') %>" class="pill solid"><%= t("Login") %></a>
     <% } %>
   </header>
+
+  <nav class="tabs" id="tabs" aria-label="Reels feed">
+    <button type="button" data-feed="all" class="on" aria-pressed="true"><%= t("For you") %></button>
+    <button type="button" data-feed="following" aria-pressed="false"><%= t("Following") %></button>
+  </nav>
 
   <main id="reels"
         data-me="<%= locals.user ? String(user._id) : '' %>"
@@ -28,13 +33,30 @@
         data-cattle="<%= locals.filter ? filter.cattle : '' %>"
         data-start="<%= locals.filter ? filter.start : '' %>">
     <div class="feed" id="feed" tabindex="-1">
-      <div class="state"><div class="loader" style="position:static;opacity:1"></div><p>Loading reels…</p></div>
+      <div class="state"><div class="loader" style="position:static;opacity:1"></div><p><%= t("Loading reels…") %></p></div>
     </div>
   </main>
 
+  <div class="sheet" id="sheet" hidden>
+    <div class="sheet-backdrop" id="sheetBackdrop"></div>
+    <section class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+      <header>
+        <h2 id="sheetTitle"><%= t("Comments") %></h2>
+        <button type="button" id="sheetClose" aria-label="Close comments"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+      </header>
+      <ul id="sheetList" class="comments"></ul>
+      <button type="button" id="sheetMore" class="more" hidden><%= t("Load more") %></button>
+      <form id="sheetForm" autocomplete="off" hidden>
+        <input id="sheetInput" type="text" maxlength="300" placeholder="Add a comment or ask about this cattle" aria-label="Comment">
+        <button type="submit" aria-label="Post comment"><i class="bi bi-send-fill" aria-hidden="true"></i></button>
+      </form>
+      <a id="sheetLogin" class="login" href="/login" hidden><%= t("Log in to comment") %></a>
+    </section>
+  </div>
+
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
-  <noscript><div class="state"><p>Reels need JavaScript. Please turn it on and reload.</p></div></noscript>
+  <noscript><div class="state"><p><%= t("Reels need JavaScript. Please turn it on and reload.") %></p></div></noscript>
   <script src="/assets/js/reels.js?v=<%= locals.reelsClientVersion || '' %>"></script>
 </body>
 </html>

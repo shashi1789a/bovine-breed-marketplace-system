@@ -1,6 +1,9 @@
 import { Server } from "socket.io";
 
 import { ApiError } from "../utils/ApiError.js";
+import { Conversation } from "../models/conversation.model.js";
+import { User } from "../models/user.model.js";
+import { notifyNewMessage } from "../services/chatNotify.service.js";
 import {
     forwardMessage,
     getConversationFor,
@@ -26,7 +29,6 @@ const reply = (ack, payload) => {
     if (typeof ack === "function") ack(payload);
 };
 
-/* Forward only the fields WebRTC needs, never whatever the client sent. */
 const cleanSignal = (data) => {
     if (!data || typeof data !== "object" || !SIGNAL_TYPES.has(data.type)) return null;
 
@@ -68,6 +70,42 @@ export const initSocket = (httpServer, options = {}) => {
 
     const hasSocket = (userId) => (io.sockets.adapter.rooms.get(userRoom(userId))?.size || 0) > 0;
 
+    const offlineTimers = new Map();
+
+    const partnersOf = async (userId) => {
+        const rows = await Conversation.find({ participants: userId })
+            .select("participants")
+            .limit(300)
+            .lean();
+
+        return rows
+            .map((row) => row.participants.find((id) => String(id) !== String(userId)))
+            .filter(Boolean)
+            .map(String);
+    };
+
+    const announcePresence = async (userId, online, lastSeenAt) => {
+        const user = await User.findById(userId).select("privacy.showPresence").lean();
+
+        if (!user || user.privacy?.showPresence === false) return;
+
+        const partners = await partnersOf(userId);
+
+        if (!partners.length) return;
+
+        let target = io;
+
+        for (const partner of partners) target = target.to(userRoom(partner));
+
+        target.emit("presence:update", { userId: String(userId), online, lastSeenAt });
+    };
+
+    const alertIfOffline = (recipientId, message, sender) => {
+        if (hasSocket(recipientId)) return;
+
+        notifyNewMessage({ recipientId, sender, message }).catch(() => {});
+    };
+
     const emitToBoth = (call, event, payload) =>
         io.to(userRoom(call.callerId)).to(userRoom(call.calleeId)).emit(event, payload);
 
@@ -105,7 +143,13 @@ export const initSocket = (httpServer, options = {}) => {
 
         socket.join(userRoom(me.id));
 
-        /* Wraps a handler so errors become a clean { ok:false, error } ack. */
+        if (offlineTimers.has(me.id)) {
+            clearTimeout(offlineTimers.get(me.id));
+            offlineTimers.delete(me.id);
+        } else if (io.sockets.adapter.rooms.get(userRoom(me.id))?.size === 1) {
+            announcePresence(me.id, true, null).catch(() => {});
+        }
+
         const on = (event, handler) =>
             socket.on(event, async (payload, ack) => {
                 try {
@@ -121,7 +165,6 @@ export const initSocket = (httpServer, options = {}) => {
                 }
             });
 
-        /* ---------------- chat ---------------- */
 
         on("chat:send", async ({ conversationId, text, clientId, replyToId }, ack) => {
             if (!messageLimiter.allow(me.id)) {
@@ -142,11 +185,11 @@ export const initSocket = (httpServer, options = {}) => {
 
             io.to(userRoom(recipientId)).emit("chat:message", payload);
             socket.to(userRoom(me.id)).emit("chat:message", payload);
+            alertIfOffline(recipientId, payload, me);
 
             reply(ack, { ok: true, message: payload });
         });
 
-        /* Forward one message to a few other chats. */
         on("chat:forward", async ({ messageId, conversationIds }, ack) => {
             if (!forwardLimiter.allow(me.id)) {
                 throw new ApiError(429, "You are forwarding too fast. Please wait a minute.");
@@ -157,6 +200,7 @@ export const initSocket = (httpServer, options = {}) => {
             for (const { message, recipientId } of sent) {
                 io.to(userRoom(recipientId)).emit("chat:message", message);
                 socket.to(userRoom(me.id)).emit("chat:message", message);
+                alertIfOffline(recipientId, message, me);
             }
 
             reply(ack, { ok: true, messages: sent.map((item) => item.message) });
@@ -179,20 +223,19 @@ export const initSocket = (httpServer, options = {}) => {
 
             io.to(userRoom(result.otherId)).emit("chat:read", {
                 conversationId: result.conversationId,
-                readerId: me.id
+                readerId: me.id,
+                readAt: result.readAt
             });
 
             reply(ack, { ok: true });
         });
 
-        /* ---------------- video calls ---------------- */
 
         on("call:invite", async ({ conversationId }, ack) => {
             if (!inviteLimiter.allow(me.id)) {
                 throw new ApiError(429, "Too many call attempts. Please wait a minute.");
             }
 
-            /* The callee comes from the conversation, never from the client. */
             const conversation = await getConversationFor(conversationId, me.id);
             const calleeId = otherParticipant(conversation, me.id);
 
@@ -240,7 +283,6 @@ export const initSocket = (httpServer, options = {}) => {
             reply(ack, { ok: true });
         });
 
-        /* Hang up, cancel before it is answered, or decline: all one event. */
         on("call:end", async ({ callId }, ack) => {
             const result = calls.end({ callId, userId: me.id });
 
@@ -268,6 +310,26 @@ export const initSocket = (httpServer, options = {}) => {
             });
 
             if (result) finalizeCall(result).catch(() => {});
+
+            if (!hasSocket(me.id) && !offlineTimers.has(me.id)) {
+                const timer = setTimeout(async () => {
+                    offlineTimers.delete(me.id);
+
+                    if (hasSocket(me.id)) return;
+
+                    const seenAt = new Date();
+
+                    try {
+                        await User.updateOne({ _id: me.id }, { $set: { lastSeenAt: seenAt } });
+                        await announcePresence(me.id, false, seenAt);
+                    } catch (error) {
+                        console.error("[presence] could not update:", error.message);
+                    }
+                }, 5000);
+
+                timer.unref?.();
+                offlineTimers.set(me.id, timer);
+            }
         });
     });
 

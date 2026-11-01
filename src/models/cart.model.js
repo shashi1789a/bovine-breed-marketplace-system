@@ -21,7 +21,7 @@ const cartItemSchema = new Schema(
 
         sellerRole: {
             type: String,
-            enum: ["farmer", "doctor", "admin"],
+            enum: ["farmer", "doctor", "seller", "admin"],
             required: true
         },
 

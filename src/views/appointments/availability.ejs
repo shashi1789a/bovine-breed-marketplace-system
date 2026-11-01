@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= locals.title || "BoviNetra" %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="/assets/css/tools.css" rel="stylesheet">
+</head>
+<body>
+<%- include("../partials/header") %>
+
+<%
+  const names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+%>
+<main class="page">
+  <div class="wrap" style="max-width:640px">
+    <div class="page-head">
+      <div>
+        <h2><%= t("My availability") %></h2>
+        <p class="muted"><%= t("Farmers can book video consultations in these hours (India time).") %></p>
+      </div>
+      <a class="btn-soft" href="/appointments"><i class="fas fa-calendar-check"></i> <%= t("Appointments") %></a>
+    </div>
+
+    <% if (locals.success) { %><div class="alert-modern alert-success" role="status"><%= success %></div><% } %>
+    <% if (locals.error) { %><div class="alert-modern alert-error" role="alert"><%= error %></div><% } %>
+
+    <form method="post" action="/doctor/availability" class="card-x">
+      <label class="check" style="margin-bottom:14px"><input type="checkbox" name="acceptingBookings" <%= settings.accepting ? 'checked' : '' %>> <strong><%= t("Accept new bookings") %></strong></label>
+      <div class="form-grid">
+        <div style="grid-column:1/-1"><label for="specialization"><%= t("Specialization") %></label><input class="field" id="specialization" name="specialization" maxlength="150" value="<%= specialization %>" placeholder="e.g. Cattle reproduction"></div>
+        <div><label for="availableFrom"><%= t("From") %></label><input class="field" id="availableFrom" type="time" name="availableFrom" value="<%= settings.from %>" required></div>
+        <div><label for="availableTo"><%= t("To") %></label><input class="field" id="availableTo" type="time" name="availableTo" value="<%= settings.to %>" required></div>
+        <div><label for="slotMinutes"><%= t("Slot (minutes)") %></label><input class="field" id="slotMinutes" type="number" name="slotMinutes" min="10" max="60" step="5" value="<%= settings.slotMinutes %>" required></div>
+        <div><label for="consultationFee"><%= t("Fee (₹)") %></label><input class="field" id="consultationFee" type="number" name="consultationFee" min="0" max="100000" value="<%= settings.fee %>"></div>
+      </div>
+      <p class="muted" style="margin:14px 0 6px"><%= t("Working days") %></p>
+      <div class="actions-x" style="margin-bottom:16px">
+        <% names.forEach((name, day) => { %>
+          <label class="check"><input type="checkbox" name="workDays" value="<%= day %>" <%= settings.workDays.includes(day) ? 'checked' : '' %>> <%= name %></label>
+        <% }) %>
+      </div>
+      <button class="btn-main" type="submit"><i class="fas fa-check"></i> <%= t("Save") %></button>
+    </form>
+  </div>
+</main>
+
+<%- include("../partials/footer") %>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

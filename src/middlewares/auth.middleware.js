@@ -110,4 +110,4 @@ export const authorizeRoles = (...allowedRoles) => {
 export const isAdmin = authorizeRoles("admin");
 export const isFarmer = authorizeRoles("farmer");
 export const isDoctor = authorizeRoles("doctor");
-export const isBuyer = authorizeRoles("buyer");
+export const isSeller = authorizeRoles("seller");

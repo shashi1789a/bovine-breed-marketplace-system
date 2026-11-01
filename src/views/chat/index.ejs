@@ -40,6 +40,10 @@
     .role{padding:1px 6px;border-radius:6px;background:var(--green-100);color:var(--green-700);font-size:12px;text-transform:capitalize}
     .avatar{display:grid;place-items:center;flex:none;width:42px;height:42px;overflow:hidden;border-radius:50%;background:var(--green-700);color:#fff;font-weight:600}
     .avatar img{width:100%;height:100%;object-fit:cover}
+    .avatar.online{box-shadow:0 0 0 2px #fff,0 0 0 4px #22c55e}
+    #threadStatus.is-online{color:#16a34a;font-weight:600}
+    .msg time .tick{margin-left:4px;font-size:14px;vertical-align:-2px}
+    .msg time .tick.read{color:#7dd3fc;opacity:1}
     .empty{padding:24px 16px;text-align:center;color:var(--muted)}
 
     .thread-pane{display:flex;flex-direction:column;min-width:0;min-height:0}

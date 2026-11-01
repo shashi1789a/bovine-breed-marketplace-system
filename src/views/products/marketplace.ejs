@@ -54,6 +54,13 @@
       q: currentFilters.q,
       category: currentFilters.category,
       breedType: isCattle ? currentFilters.breedType : '',
+      state: isCattle ? currentFilters.state : '',
+      district: isCattle ? currentFilters.district : '',
+      minMilk: isCattle ? currentFilters.minMilk : '',
+      maxMilk: isCattle ? currentFilters.maxMilk : '',
+      lat: isCattle ? currentFilters.lat : '',
+      lng: isCattle ? currentFilters.lng : '',
+      radius: isCattle && currentFilters.lat !== '' && currentFilters.lat !== undefined ? currentFilters.radius : '',
       minPrice: currentFilters.minPrice,
       maxPrice: currentFilters.maxPrice,
       sort: currentFilters.sort
@@ -803,7 +810,7 @@
 <main class="marketplace-page container">
 
   <h1 class="mp-page-title">
-    <i class="fas fa-store"></i> Marketplace
+    <i class="fas fa-store"></i> <%= t("Marketplace") %>
   </h1>
 
   <nav class="mp-tabs" aria-label="Marketplace sections">
@@ -823,7 +830,7 @@
     <aside class="col-12 col-lg-3">
       <form action="/products" method="GET" class="filter-form" id="marketplaceFilters" autocomplete="off">
 
-        <h2 class="filter-title"><i class="fas fa-sliders"></i> Filters</h2>
+        <h2 class="filter-title"><i class="fas fa-sliders"></i> <%= t("Filters") %></h2>
 
         <% if (isCattle) { %><input type="hidden" name="type" value="cattle"><% } %>
 
@@ -841,9 +848,9 @@
         </div>
 
         <div class="filter-group">
-          <label class="form-label" for="filterCategory">Category</label>
+          <label class="form-label" for="filterCategory"><%= t("Category") %></label>
           <select id="filterCategory" class="form-select" name="category">
-            <option value="">All categories</option>
+            <option value=""><%= t("All categories") %></option>
             <% categoryList.forEach(function (cat) { %>
               <option value="<%= cat %>" <%= currentFilters.category === cat ? 'selected' : '' %>><%= cat %></option>
             <% }) %>
@@ -852,18 +859,57 @@
 
         <% if (isCattle) { %>
         <div class="filter-group">
-          <label class="form-label" for="filterBreedType">Breed type</label>
+          <label class="form-label" for="filterBreedType"><%= t("Breed type") %></label>
           <select id="filterBreedType" class="form-select" name="breedType">
-            <option value="">All types</option>
+            <option value=""><%= t("All types") %></option>
             <% breedTypes.forEach(function (t) { %>
               <option value="<%= t %>" <%= currentFilters.breedType === t ? 'selected' : '' %>><%= t %></option>
             <% }) %>
           </select>
         </div>
+        <div class="filter-group">
+          <label class="form-label" for="filterState"><%= t('State') %></label>
+          <select id="filterState" class="form-select" name="state">
+            <option value=""><%= t('All states') %></option>
+            <% (locals.states || []).forEach(function (st) { %>
+              <option value="<%= st %>" <%= currentFilters.state === st ? 'selected' : '' %>><%= st %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="form-label" for="filterDistrict"><%= t('District') %></label>
+          <input id="filterDistrict" type="text" class="form-control" name="district" maxlength="80" placeholder="<%= t('e.g. Karnal') %>" value="<%= currentFilters.district || '' %>">
+        </div>
+
+        <div class="filter-group">
+          <label class="form-label" for="filterMinMilk"><%= t('Milk per day (litres)') %></label>
+          <div class="d-flex gap-2">
+            <input id="filterMinMilk" type="number" class="form-control" name="minMilk" min="0" step="0.5" placeholder="<%= t('Min') %>" value="<%= currentFilters.minMilk ?? '' %>" aria-label="<%= t('Minimum milk per day') %>">
+            <input id="filterMaxMilk" type="number" class="form-control" name="maxMilk" min="0" step="0.5" placeholder="<%= t('Max') %>" value="<%= currentFilters.maxMilk ?? '' %>" aria-label="<%= t('Maximum milk per day') %>">
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label class="form-label" for="filterRadius"><%= t('Near me') %></label>
+          <input type="hidden" name="lat" id="filterLat" value="<%= currentFilters.lat ?? '' %>">
+          <input type="hidden" name="lng" id="filterLng" value="<%= currentFilters.lng ?? '' %>">
+          <div class="d-flex gap-2">
+            <select id="filterRadius" class="form-select" name="radius" aria-label="<%= t('Distance') %>">
+              <% (locals.nearRadii || [10, 25, 50, 100, 250, 500]).forEach(function (km) { %>
+                <option value="<%= km %>" <%= Number(currentFilters.radius || 50) === km ? 'selected' : '' %>><%= km %> km</option>
+              <% }) %>
+            </select>
+            <button type="button" class="btn btn-outline-primary" id="nearMeButton"><i class="fas fa-location-crosshairs"></i></button>
+          </div>
+          <small id="nearMeNote" class="text-muted d-block mt-1">
+            <%= currentFilters.lat !== '' && currentFilters.lat !== undefined ? t('Showing cattle near your location') : t('Tap the button to find cattle close to you') %>
+          </small>
+        </div>
         <% } %>
 
         <div class="filter-group">
-          <label class="form-label" for="filterMinPrice">Min Price (₹)</label>
+          <label class="form-label" for="filterMinPrice"><%= t("Min Price (₹)") %></label>
           <input
             id="filterMinPrice"
             type="number"
@@ -877,7 +923,7 @@
         </div>
 
         <div class="filter-group">
-          <label class="form-label" for="filterMaxPrice">Max Price (₹)</label>
+          <label class="form-label" for="filterMaxPrice"><%= t("Max Price (₹)") %></label>
           <input
             id="filterMaxPrice"
             type="number"
@@ -891,7 +937,7 @@
         </div>
 
         <div class="filter-group">
-          <label class="form-label" for="filterSort">Sort by</label>
+          <label class="form-label" for="filterSort"><%= t("Sort by") %></label>
           <select id="filterSort" class="form-select" name="sort">
             <% Object.keys(sortLabels).forEach(function (key) { %>
               <option value="<%= key %>" <%= (currentFilters.sort || 'newest') === key ? 'selected' : '' %>><%= sortLabels[key] %></option>
@@ -900,7 +946,7 @@
         </div>
 
         <a href="<%= clearHref %>" class="btn-filter-clear" data-clear-filters>
-          <i class="fas fa-rotate-left me-1"></i> Clear Filters
+          <i class="fas fa-rotate-left me-1"></i> <%= t("Clear Filters") %>
         </a>
 
       </form>
@@ -914,6 +960,7 @@
           <i class="fas <%= isCattle ? 'fa-paw' : 'fa-box' %> me-2"></i>
           <%= totalItems %> <%= isCattle ? 'cattle' : 'product' + (totalItems === 1 ? '' : 's') %> found
         </div>
+        <% if (isCattle) { %><a class="mp-results-sort-label" href="/cattle/map"><i class="fas fa-map-location-dot me-1"></i> <%= t('View on map') %></a><% } %>
         <span class="mp-results-sort-label">
           <i class="fas fa-sort me-1"></i>
           <%= sortLabels[currentFilters.sort || 'newest'] %>
@@ -967,7 +1014,7 @@
                     <% } %>
 
                     <% if (isSold) { %>
-                      <span class="product-sold-float">Sold</span>
+                      <span class="product-sold-float"><%= t("Sold") %></span>
                     <% } %>
                   </div>
                 </a>
@@ -983,7 +1030,7 @@
                     <% if (hasPrice) { %>
                       <span class="product-price">₹<%= price.toLocaleString('en-IN') %></span>
                     <% } else { %>
-                      <span class="product-mrp" style="text-decoration:none;">Price not set</span>
+                      <span class="product-mrp" style="text-decoration:none;"><%= t("Price not set") %></span>
                     <% } %>
                   </div>
 
@@ -1003,12 +1050,12 @@
                   <div class="product-actions">
                     <% if (c.farmer && c.farmer._id && !isSold) { %>
                       <a href="<%= locals.user ? '/chat?with=' + c.farmer._id : '/login?next=' + encodeURIComponent('/chat?with=' + c.farmer._id) %>" class="btn-add-cart" style="text-align:center;text-decoration:none;">
-                        <i class="fas fa-comments"></i> Message seller
+                        <i class="fas fa-comments"></i> <%= t("Message seller") %>
                       </a>
                     <% } %>
 
                     <a href="<%= cUrl %>" class="btn-buy-now">
-                      <i class="fas fa-eye"></i> View details
+                      <i class="fas fa-eye"></i> <%= t("View details") %>
                     </a>
                   </div>
                 </div>
@@ -1080,7 +1127,7 @@
                       </span>
                     <% } else { %>
                       <span class="product-stock stock-out">
-                        <i class="fas fa-times-circle"></i> Out of stock
+                        <i class="fas fa-times-circle"></i> <%= t("Out of stock") %>
                       </span>
                     <% } %>
                   </div>
@@ -1090,12 +1137,12 @@
                     <form action="/cart/<%= product._id %>/add" method="POST" class="product-cart-form">
                       <input type="hidden" name="quantity" value="1">
                       <button type="submit" class="btn-add-cart" <%= stock <= 0 ? 'disabled' : '' %>>
-                        <i class="fas fa-cart-plus"></i> Add to Cart
+                        <i class="fas fa-cart-plus"></i> <%= t("Add to Cart") %>
                       </button>
                     </form>
                     <% } else { %>
                     <a href="/login?next=<%= encodeURIComponent('/products/view/' + product._id) %>" class="btn-add-cart product-cart-form" style="text-align:center;text-decoration:none;">
-                      <i class="fas fa-right-to-bracket"></i> Login to buy
+                      <i class="fas fa-right-to-bracket"></i> <%= t("Login to buy") %>
                     </a>
                     <% } %>
 
@@ -1121,10 +1168,10 @@
               <li class="page-item <%= pagination.hasPrev ? '' : 'disabled' %>">
                 <% if (pagination.hasPrev) { %>
                   <a class="page-link" href="<%= buildQuery(pagination.page - 1) %>">
-                    <i class="fas fa-chevron-left me-1"></i> Previous
+                    <i class="fas fa-chevron-left me-1"></i> <%= t("Previous") %>
                   </a>
                 <% } else { %>
-                  <span class="page-link">Previous</span>
+                  <span class="page-link"><%= t("Previous") %></span>
                 <% } %>
               </li>
 
@@ -1135,10 +1182,10 @@
               <li class="page-item <%= pagination.hasNext ? '' : 'disabled' %>">
                 <% if (pagination.hasNext) { %>
                   <a class="page-link" href="<%= buildQuery(pagination.page + 1) %>">
-                    Next <i class="fas fa-chevron-right ms-1"></i>
+                    <%= t("Next") %> <i class="fas fa-chevron-right ms-1"></i>
                   </a>
                 <% } else { %>
-                  <span class="page-link">Next</span>
+                  <span class="page-link"><%= t("Next") %></span>
                 <% } %>
               </li>
 
@@ -1173,6 +1220,7 @@
         value = String(value).trim();
         if (!value) return;
         if (key === 'sort' && value === 'newest') return;
+        if (key === 'radius' && !form.elements.lat.value) return;
         params.set(key, value);
       });
       var qs = params.toString();
@@ -1229,6 +1277,12 @@
       clearTimeout(timer);
 
       form.querySelectorAll('input:not([type="hidden"])').forEach(function (input) { input.value = ''; });
+      ['lat', 'lng', 'state'].forEach(function (name) {
+        var field = form.elements[name];
+        if (field) field.value = '';
+      });
+      var nearNote = document.getElementById('nearMeNote');
+      if (nearNote) nearNote.textContent = <%- JSON.stringify(t('Tap the button to find cattle close to you')) %>;
       form.querySelector('[name="category"]').value = '';
       var breedType = form.querySelector('[name="breedType"]');
       if (breedType) breedType.value = '';
@@ -1241,6 +1295,43 @@
       if (!link) return;
       e.preventDefault();
       load(link.getAttribute('href'), true);
+    });
+  })();
+</script>
+<script>
+  (function () {
+    var button = document.getElementById('nearMeButton');
+    if (!button) return;
+
+    var form = document.getElementById('marketplaceFilters');
+    var lat = document.getElementById('filterLat');
+    var lng = document.getElementById('filterLng');
+    var note = document.getElementById('nearMeNote');
+
+    button.addEventListener('click', function () {
+      if (lat.value && lng.value) {
+        lat.value = '';
+        lng.value = '';
+        note.textContent = <%- JSON.stringify(t('Tap the button to find cattle close to you')) %>;
+        form.requestSubmit();
+        return;
+      }
+
+      if (!navigator.geolocation) {
+        note.textContent = <%- JSON.stringify(t('This browser cannot share your location')) %>;
+        return;
+      }
+
+      note.textContent = <%- JSON.stringify(t('Finding your location...')) %>;
+
+      navigator.geolocation.getCurrentPosition(function (position) {
+        lat.value = position.coords.latitude.toFixed(3);
+        lng.value = position.coords.longitude.toFixed(3);
+        note.textContent = <%- JSON.stringify(t('Showing cattle near your location')) %>;
+        form.requestSubmit();
+      }, function () {
+        note.textContent = <%- JSON.stringify(t('Could not get your location. Please allow location access.')) %>;
+      }, { timeout: 10000, maximumAge: 600000 });
     });
   })();
 </script>

@@ -34,6 +34,21 @@
     .item strong { display:block; font-size:.95rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .item span { color:var(--muted); font-size:.8rem; }
     .item .price { display:block; color:var(--text); font-weight:800; margin-top:4px; font-family:'Plus Jakarta Sans',sans-serif; }
+    .vbadge { display:inline-flex; align-items:center; gap:5px; background:#DCFCE7; color:#166534; font-size:.74rem; font-weight:700; padding:3px 11px; border-radius:30px; margin-left:8px; vertical-align:middle; }
+    .stars { color:#F59E0B; font-weight:700; }
+    .alert { border-radius:14px; padding:11px 15px; font-size:.88rem; font-weight:500; margin:14px 0 0; }
+    .alert.ok { background:#DCFCE7; color:#166534; }
+    .alert.bad { background:#FEE2E2; color:#B91C1C; }
+    .review { background:#fff; border:1px solid var(--line); border-radius:16px; padding:14px 16px; margin-bottom:10px; }
+    .review header { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .review header strong { font-size:.92rem; }
+    .review header small { color:var(--muted); margin-left:auto; }
+    .review p { margin:6px 0 0; font-size:.9rem; word-break:break-word; }
+    .review form { margin:6px 0 0; }
+    .review button.link { border:0; background:none; color:#B91C1C; font-size:.78rem; font-weight:600; cursor:pointer; padding:0; }
+    .rate-form { background:#fff; border:1px solid var(--line); border-radius:18px; padding:16px; display:grid; gap:10px; margin-bottom:14px; }
+    .rate-form select, .rate-form textarea { width:100%; border:1.5px solid #D6E4F2; border-radius:12px; padding:9px 12px; font:inherit; background:#fff; }
+    .rate-form button { justify-self:start; border:0; background:var(--green); color:#fff; font-weight:700; border-radius:40px; padding:10px 22px; cursor:pointer; font:inherit; font-weight:700; }
     .none { background:#fff; border:1px solid var(--line); border-radius:18px; padding:26px; color:var(--muted); text-align:center; }
   </style>
 </head>
@@ -52,15 +67,25 @@
       <% if (farmer.avatar && /^https:\/\//.test(farmer.avatar)) { %><img src="<%= farmer.avatar %>" alt=""><% } else { %><%= initials %><% } %>
     </div>
     <div class="who">
-      <h1><%= farmer.fullName %></h1>
+      <h1><%= farmer.fullName %><% if (farmer.verification && farmer.verification.status === 'verified') { %><span class="vbadge"><i class="bi bi-patch-check-fill" aria-hidden="true"></i> Verified</span><% } %></h1>
       <p>@<%= farmer.username %><%= place ? ' · ' + place : '' %></p>
-      <p><%= cattle.length %> for sale · <%= reelCount %> reel<%= reelCount === 1 ? '' : 's' %></p>
+      <p><%= cattle.length %> for sale · <%= locals.followers || 0 %> follower<%= (locals.followers || 0) === 1 ? '' : 's' %> · <%= reelCount %> reel<%= reelCount === 1 ? '' : 's' %><% if (farmer.sellerRating && farmer.sellerRating.count > 0) { %> · <span class="stars">★ <%= farmer.sellerRating.avg.toFixed(1) %></span> (<%= farmer.sellerRating.count %> review<%= farmer.sellerRating.count === 1 ? '' : 's' %>)<% } %></p>
     </div>
     <div class="btns">
+      <% if (!isMe) { %>
+        <% if (locals.user) { %>
+          <form method="post" action="/farmers/<%= encodeURIComponent(farmer.username) %>/<%= locals.isFollowing ? 'unfollow' : 'follow' %>" style="margin:0"><button class="btn" type="submit"><i class="bi <%= locals.isFollowing ? 'bi-person-check-fill' : 'bi-person-plus' %>" aria-hidden="true"></i> <%= locals.isFollowing ? 'Following' : 'Follow' %></button></form>
+        <% } else { %>
+          <a class="btn" href="/login?next=<%= encodeURIComponent('/farmers/' + farmer.username) %>"><i class="bi bi-person-plus" aria-hidden="true"></i> Follow</a>
+        <% } %>
+      <% } %>
       <% if (!isMe) { %><a class="btn main" href="<%= chatHref %>"><i class="bi bi-chat-dots-fill" aria-hidden="true"></i> Message</a><% } %>
       <% if (reelCount > 0) { %><a class="btn" href="/reels?farmer=<%= farmer._id %>"><i class="bi bi-camera-reels" aria-hidden="true"></i> Watch reels</a><% } %>
     </div>
   </section>
+
+  <% if (locals.success) { %><div class="alert ok" role="status"><%= success %></div><% } %>
+  <% if (locals.error) { %><div class="alert bad" role="alert"><%= error %></div><% } %>
 
   <h2>Cattle for sale</h2>
   <% if (!cattle.length) { %>
@@ -81,6 +106,50 @@
         </a>
       <% }) %>
     </div>
+  <% } %>
+
+  <h2 id="reviews">Reviews</h2>
+
+  <% if (locals.user && !isMe) { %>
+    <% if (eligibleDeals.length) { %>
+      <form class="rate-form" action="/farmers/<%= encodeURIComponent(farmer.username) %>/reviews" method="POST">
+        <strong>Rate this seller</strong>
+        <select name="deal" required aria-label="Purchase to review">
+          <% eligibleDeals.forEach(deal => { %><option value="<%= deal.value %>"><%= deal.label %></option><% }) %>
+        </select>
+        <select name="rating" required aria-label="Rating">
+          <option value="5">★★★★★ Excellent</option>
+          <option value="4">★★★★ Good</option>
+          <option value="3">★★★ Okay</option>
+          <option value="2">★★ Poor</option>
+          <option value="1">★ Bad</option>
+        </select>
+        <textarea name="comment" rows="3" maxlength="500" placeholder="Share your experience (optional)" aria-label="Your review"></textarea>
+        <button type="submit">Submit review</button>
+      </form>
+    <% } else { %>
+      <p class="none" style="margin-bottom:12px;">You can review this seller after a delivered order or an accepted offer.</p>
+    <% } %>
+  <% } %>
+
+  <% if (!reviews.length) { %>
+    <div class="none">No reviews yet.</div>
+  <% } else { %>
+    <% reviews.forEach(review => { %>
+      <article class="review">
+        <header>
+          <strong><%= review.buyer ? review.buyer.fullName : 'Buyer' %></strong>
+          <span class="stars" aria-label="<%= review.rating %> out of 5"><%= '★'.repeat(review.rating) %><span style="color:#CBD5E1"><%= '★'.repeat(5 - review.rating) %></span></span>
+          <small><%= new Date(review.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></small>
+        </header>
+        <% if (review.comment) { %><p><%= review.comment %></p><% } %>
+        <% if (locals.user && ((review.buyer && String(review.buyer._id) === String(user._id)) || user.role === 'admin')) { %>
+          <form action="/farmers/reviews/<%= review._id %>/delete" method="POST" onsubmit="return confirm('Delete this review?');">
+            <button type="submit" class="link">Delete</button>
+          </form>
+        <% } %>
+      </article>
+    <% }) %>
   <% } %>
 </div>
 </body>

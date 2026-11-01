@@ -96,4 +96,22 @@ const getPredictionHistory = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, history, "Prediction history fetched successfully"));
 });
 
-export { showDetectPage, predictBreed, showResultPage, getPredictionHistory };
+const suggestBreed = asyncHandler(async (req, res) => {
+    if (!req.file) throw new ApiError(400, "Please choose a photo first.");
+
+    try {
+        const result = await requestPrediction({
+            filePath: req.file.path,
+            filename: req.file.originalname,
+            mimetype: req.file.mimetype
+        });
+
+        return res.status(200).json(
+            new ApiResponse(200, { breed: result.breed, confidence: result.confidence }, "Breed suggested")
+        );
+    } finally {
+        await discardUploads(req);
+    }
+});
+
+export { suggestBreed, showDetectPage, predictBreed, showResultPage, getPredictionHistory };

@@ -3,8 +3,8 @@ import mongoose, { Schema } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-export const USER_ROLES = Object.freeze(["user", "admin", "farmer", "doctor", "buyer"]);
-export const SELF_REGISTER_ROLES = Object.freeze(["farmer", "doctor", "buyer", "user"]);
+export const USER_ROLES = Object.freeze(["user", "admin", "farmer", "doctor", "seller"]);
+export const SELF_REGISTER_ROLES = Object.freeze(["farmer", "doctor", "seller", "user"]);
 export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 const MAX_SESSIONS = 5;
@@ -84,9 +84,34 @@ const userSchema = new Schema(
             location: { type: String, trim: true, maxlength: 200 }
         },
 
+        sellerRating: {
+            avg: { type: Number, min: 0, max: 5, default: 0 },
+            count: { type: Number, min: 0, default: 0 }
+        },
+
+        verification: {
+            status: {
+                type: String,
+                enum: ["none", "pending", "verified", "rejected"],
+                default: "none"
+            },
+            phone: { type: String, trim: true, maxlength: 15 },
+            farmPhotoUrl: { type: String, trim: true, maxlength: 500 },
+            note: { type: String, trim: true, maxlength: 300 },
+            submittedAt: Date,
+            reviewedAt: Date,
+            reviewedBy: { type: Schema.Types.ObjectId, ref: "User" }
+        },
+
         doctorDetails: {
             specialization: { type: String, trim: true, maxlength: 150 },
-            experience: { type: Number, min: 0, max: 80 }
+            experience: { type: Number, min: 0, max: 80 },
+            consultationFee: { type: Number, min: 0, max: 100000, default: 0 },
+            availableFrom: { type: String, match: /^([01]\d|2[0-3]):[0-5]\d$/, default: "10:00" },
+            availableTo: { type: String, match: /^([01]\d|2[0-3]):[0-5]\d$/, default: "17:00" },
+            slotMinutes: { type: Number, min: 10, max: 60, default: 20 },
+            workDays: { type: [Number], default: [1, 2, 3, 4, 5, 6] },
+            acceptingBookings: { type: Boolean, default: false }
         },
 
         buyerDetails: {
@@ -101,6 +126,28 @@ password: {
     maxlength: [72, "Password cannot exceed 72 characters"],
     select: false
 },
+
+        contactPhone: {
+            type: String,
+            trim: true,
+            set: (value) => (value ? value : undefined),
+            validate: {
+                validator: (value) => value === undefined || /^[6-9]\d{9}$/.test(value),
+                message: "Enter a valid 10 digit mobile number"
+            }
+        },
+
+        notificationPrefs: {
+            email: { type: Boolean, default: true },
+            push: { type: Boolean, default: true }
+        },
+
+        privacy: {
+            showPresence: { type: Boolean, default: true },
+            showContact: { type: Boolean, default: false }
+        },
+
+        lastSeenAt: Date,
 
         isActive: {
             type: Boolean,

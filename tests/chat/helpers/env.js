@@ -47,4 +47,4 @@ export const createUser = async (role = "user", overrides = {}) => {
     };
 };
 
-export const ROLES = ["user", "farmer", "doctor", "buyer", "admin"];
+export const ROLES = ["user", "farmer", "doctor", "seller", "admin"];

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= locals.title || 'Settings | BoviNetra' %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <style>
+    :root { --primary: #0F62AC; --green: #176b45; --text-main: #1A2C3E; --text-muted: #5A6E7F; --border-light: rgba(15, 98, 172, 0.12); }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #F4F9FE; color: var(--text-main); line-height: 1.5; }
+    h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; }
+    .page { padding: 110px 0 70px; min-height: 100vh; }
+    .wrap { max-width: 680px; margin: 0 auto; padding: 0 16px; }
+    .card-x { background: #fff; border: 1px solid var(--border-light); border-radius: 20px; padding: 1.2rem 1.4rem; margin-bottom: 1rem; }
+    .card-x h3 { font-size: 1.05rem; margin-bottom: .6rem; }
+    .opt { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-top: 1px solid #EEF3F8; }
+    .opt:first-of-type { border-top: 0; }
+    .opt input[type=checkbox] { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--green); flex-shrink: 0; }
+    .opt strong { display: block; font-size: .92rem; }
+    .opt span { color: var(--text-muted); font-size: .82rem; }
+    .field { width: 100%; border: 1.5px solid #D6E4F2; border-radius: 12px; padding: 10px 12px; background: #fff; font-family: inherit; margin-top: 6px; }
+    .btn-main { display: inline-flex; align-items: center; gap: 6px; padding: 10px 24px; border-radius: 40px; font-weight: 700; font-size: .9rem; border: 0; background: var(--green); color: #fff; cursor: pointer; }
+    .btn-main:disabled { opacity: .6; }
+    .alert-modern { border-radius: 16px; padding: 12px 16px; font-size: .88rem; font-weight: 500; margin-bottom: 1rem; }
+    .alert-error { background: #FEE2E2; color: #B91C1C; }
+    .alert-success { background: #DCFCE7; color: #166534; }
+    .muted { color: var(--text-muted); font-size: .84rem; }
+    .row-push { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+  </style>
+</head>
+<body>
+<%- include('../partials/header') %>
+
+<main class="page">
+  <div class="wrap">
+    <h2 style="margin-bottom:1rem"><%= t("Settings") %></h2>
+
+    <% if (locals.success) { %><div class="alert-modern alert-success" role="status"><%= success %></div><% } %>
+    <% if (locals.error) { %><div class="alert-modern alert-error" role="alert"><%= error %></div><% } %>
+
+    <section class="card-x">
+      <h3><%= t("Phone notifications") %></h3>
+      <% if (pushAvailable) { %>
+        <p class="muted"><%= t("Get messages, offers, order updates and sold alerts on this phone or browser, even when BoviNetra is closed.") %></p>
+        <div class="row-push">
+          <button type="button" id="pushToggle" class="btn-main"><%= t("Turn on for this device") %></button>
+          <span id="pushStatus" class="muted"></span>
+        </div>
+        <p class="muted" style="margin-top:8px">Devices registered: <%= devices %></p>
+      <% } else { %>
+        <p class="muted"><%= t("Push notifications are not set up on the server yet.") %></p>
+      <% } %>
+    </section>
+
+    <form method="post" action="/account/preferences">
+      <section class="card-x">
+        <h3><%= t("What to send you") %></h3>
+        <label class="opt"><input type="checkbox" name="email" <%= prefs.email ? 'checked' : '' %>><div><strong><%= t("Email") %></strong><span><%= t("New messages, offers, order status and sold alerts by email.") %></span></div></label>
+        <label class="opt"><input type="checkbox" name="push" <%= prefs.push ? 'checked' : '' %>><div><strong><%= t("Push") %></strong><span><%= t("The same alerts on your devices that have push turned on.") %></span></div></label>
+      </section>
+
+      <section class="card-x">
+        <h3><%= t("Privacy") %></h3>
+        <label class="opt"><input type="checkbox" name="showPresence" <%= prefs.showPresence ? 'checked' : '' %>><div><strong><%= t("Show online and last seen in chat") %></strong><span><%= t("If you turn this off you will not see others' status either.") %></span></div></label>
+      </section>
+
+      <% if (isFarmer) { %>
+        <section class="card-x">
+          <h3><%= t("Call and WhatsApp on your reels") %></h3>
+          <label for="contactPhone" class="muted"><%= t("Mobile number (10 digits)") %></label>
+          <input class="field" id="contactPhone" name="contactPhone" type="tel" inputmode="numeric" maxlength="15" value="<%= prefs.contactPhone %>" placeholder="9876543210">
+          <label class="opt" style="margin-top:10px"><input type="checkbox" name="showContact" <%= prefs.showContact ? 'checked' : '' %>><div><strong><%= t("Show Call and WhatsApp buttons") %></strong><span><%= t("Only logged in buyers can see your number.") %></span></div></label>
+        </section>
+      <% } %>
+
+      <button class="btn-main" type="submit"><i class="fas fa-check"></i> <%= t("Save settings") %></button>
+    </form>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/js/push.js"></script>
+</body>
+</html>

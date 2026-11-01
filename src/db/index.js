@@ -24,8 +24,15 @@ const warnIfStandalone = async () => {
 const connectDB = async () => {
     try {
         const connectionInstance = await mongoose.connect(process.env.MONGODB_URI, {
-            dbName: DB_NAME
+            dbName: DB_NAME,
+            serverSelectionTimeoutMS: Number(process.env.DB_SELECT_TIMEOUT_MS) || 8000,
+            connectTimeoutMS: 8000,
+            socketTimeoutMS: 45000,
+            maxPoolSize: 10
         });
+
+        mongoose.connection.on("disconnected", () => console.warn("[db] connection lost, waiting to reconnect"));
+        mongoose.connection.on("reconnected", () => console.log("[db] reconnected"));
 
         console.log(`\n MongoDB connected !! DB HOST: ${connectionInstance.connection.host}`);
 

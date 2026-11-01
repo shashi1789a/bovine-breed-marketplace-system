@@ -11,6 +11,10 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { removeReelsForCattle } from "./reel.controller.js";
 import { Reel } from "../models/reel.model.js";
+import { Wishlist } from "../models/wishlist.model.js";
+import { Offer, OFFER_STATUS } from "../models/offer.model.js";
+import { DEFAULT_NEAR_KM, EARTH_RADIUS_KM, INDIA_STATES, NEAR_RADII_KM, inIndia } from "../utils/india.js";
+import { handleCattleUpdate } from "../services/cattleEvents.service.js";
 
 const ADMIN_ROLE = "admin";
 const CATTLE_HOME = "/farmer/cattle";
@@ -22,7 +26,7 @@ const MAX_FLASH_LENGTH = 200;
 
 const OBJECT_ID_PATTERN = /^[a-f\d]{24}$/i;
 
-const FARMER_PUBLIC_FIELDS = "fullName username role avatar farmerDetails";
+const FARMER_PUBLIC_FIELDS = "fullName username role avatar farmerDetails sellerRating verification.status";
 
 const LISTING_FIELDS = [
     "breedName",
@@ -38,6 +42,10 @@ const LISTING_FIELDS = [
     "images",
     "imageUrl",
     "originState",
+    "locationState",
+    "locationDistrict",
+    "latitude",
+    "longitude",
     "avgMilkPerDay",
     "avgMarketPrice",
     "sold",
@@ -51,7 +59,8 @@ const SORT_OPTIONS = Object.freeze({
     oldest: { createdAt: 1, _id: 1 },
     price_asc: { price: 1, _id: 1 },
     price_desc: { price: -1, _id: 1 },
-    milk_desc: { avgMilkPerDay: -1, _id: 1 }
+    milk_desc: { avgMilkPerDay: -1, _id: 1 },
+    milk_asc: { avgMilkPerDay: 1, _id: 1 }
 });
 
 const PROTECTED_FIELDS = new Set([
@@ -65,7 +74,10 @@ const PROTECTED_FIELDS = new Set([
     "isDeleted",
     "deletedAt",
     "images",
-    "imageUrl"
+    "imageUrl",
+    "geo",
+    "geo.type",
+    "geo.coordinates"
 ]);
 
 const EDITABLE_FIELDS = Object.freeze(
@@ -205,6 +217,7 @@ const renderForm = (req, res, view, options = {}) => {
         user: req.user,
         cattle,
         categories: CATTLE_CATEGORIES,
+        states: INDIA_STATES,
         formData,
         error,
         success: null
@@ -334,10 +347,43 @@ const buildFilterConditions = (query) => {
     const minPrice = queryNumber(query.minPrice);
     const maxPrice = queryNumber(query.maxPrice);
     const sold = query.sold === "true" || query.sold === "false" ? query.sold : "";
+    const locationState = matchOption(INDIA_STATES, query.state);
+    const district = queryString(query.district, 80);
+    const minMilk = queryNumber(query.minMilk);
+    const maxMilk = queryNumber(query.maxMilk);
+    const nearLat = queryNumber(query.lat);
+    const nearLng = queryNumber(query.lng);
+    const near =
+        nearLat !== undefined && nearLng !== undefined && inIndia(nearLat, nearLng)
+            ? {
+                  lat: nearLat,
+                  lng: nearLng,
+                  km: NEAR_RADII_KM.includes(Number(query.radius)) ? Number(query.radius) : DEFAULT_NEAR_KM
+              }
+            : null;
 
     if (category) conditions.push({ category });
     if (breedType) conditions.push({ breedType });
     if (sold) conditions.push({ sold: sold === "true" });
+
+    if (locationState) conditions.push({ locationState });
+
+    if (district) {
+        conditions.push({ locationDistrict: new RegExp(`^${escapeRegExp(district)}`, "i") });
+    }
+
+    if (minMilk !== undefined || maxMilk !== undefined) {
+        const range = {};
+        if (minMilk !== undefined) range.$gte = minMilk;
+        if (maxMilk !== undefined) range.$lte = maxMilk;
+        conditions.push({ avgMilkPerDay: range });
+    }
+
+    if (near) {
+        conditions.push({
+            geo: { $geoWithin: { $centerSphere: [[near.lng, near.lat], near.km / EARTH_RADIUS_KM] } }
+        });
+    }
 
     if (originState) {
         conditions.push({
@@ -373,6 +419,13 @@ const buildFilterConditions = (query) => {
             category,
             breedType,
             originState,
+            state: locationState || "",
+            district,
+            minMilk: minMilk ?? "",
+            maxMilk: maxMilk ?? "",
+            lat: near ? near.lat : "",
+            lng: near ? near.lng : "",
+            radius: near ? near.km : "",
             minPrice: minPrice ?? "",
             maxPrice: maxPrice ?? "",
             sold
@@ -558,7 +611,15 @@ const getCattleById = asyncHandler(async (req, res) => {
             .json(new ApiResponse(200, cattle, "Cattle fetched successfully"));
     }
 
-    const reelCount = await Reel.countDocuments({ cattle: cattle._id, isActive: true });
+    const [reelCount, savedEntry, openOffer] = await Promise.all([
+        Reel.countDocuments({ cattle: cattle._id, isActive: true }),
+        req.user ? Wishlist.exists({ user: req.user._id, cattle: cattle._id }) : null,
+        req.user
+            ? Offer.findOne({ cattle: cattle._id, buyer: req.user._id, status: OFFER_STATUS.PENDING })
+                  .select("amount expiresAt")
+                  .lean()
+            : null
+    ]);
 
     return res.status(200).render("farmer/cattle/show", {
         title: cattle.name || cattle.breedName,
@@ -566,6 +627,8 @@ const getCattleById = asyncHandler(async (req, res) => {
         cattle,
         isOwner,
         reelCount,
+        isSaved: Boolean(savedEntry),
+        openOffer,
         success: readFlash(req.query.success),
         error: readFlash(req.query.error)
     });
@@ -575,6 +638,8 @@ const updateCattle = asyncHandler(async (req, res) => {
     requireCattleManager(req);
 
     const cattle = await findOwnedCattle(req.params.id, req.user._id);
+
+    const before = { price: cattle.price, sold: cattle.sold === true };
 
     const { data, errors } = parseCattleInput(req.body);
 
@@ -621,6 +686,10 @@ const updateCattle = asyncHandler(async (req, res) => {
         });
     }
 
+    await handleCattleUpdate({ before, cattle }).catch((error) =>
+        console.error("[cattle] update notifications failed:", error.message)
+    );
+
     return respond(req, res, {
         redirectTo: `${CATTLE_HOME}/${cattle._id}`,
         data: cattle,
@@ -644,7 +713,6 @@ const deleteCattle = asyncHandler(async (req, res) => {
         }
     );
 
-    /* The videos go with the listing. A failure here must not undo the delete. */
     await removeReelsForCattle(cattle._id).catch((error) =>
         console.error("[reel] cleanup failed:", error.message)
     );
@@ -676,7 +744,51 @@ const getAllCattle = asyncHandler(async (req, res) => {
     );
 });
 
+const MAP_LIMIT = 500;
+
+const showCattleMap = asyncHandler(async (req, res) =>
+    res.status(200).render("cattle/map", {
+        title: "Cattle Map | BoviNetra",
+        user: req.user,
+        states: INDIA_STATES,
+        nearRadii: NEAR_RADII_KM
+    })
+);
+
+const getCattleMapData = asyncHandler(async (req, res) => {
+    const { conditions, filters } = buildFilterConditions({ ...req.query, sold: undefined });
+
+    const rows = await Cattle.find({
+        $and: [{ isActive: { $ne: false }, sold: { $ne: true }, "geo.coordinates.0": { $exists: true } }, ...conditions]
+    })
+        .select("name breedName category price images imageUrl geo locationState locationDistrict avgMilkPerDay")
+        .sort({ createdAt: -1 })
+        .limit(MAP_LIMIT)
+        .lean();
+
+    const points = rows
+        .filter((row) => Array.isArray(row.geo?.coordinates) && row.geo.coordinates.length === 2)
+        .map((row) => ({
+            id: String(row._id),
+            title: row.name || row.breedName,
+            breed: row.breedName,
+            category: row.category,
+            price: row.price,
+            milk: row.avgMilkPerDay,
+            image: row.images?.[0] || row.imageUrl || "",
+            lng: row.geo.coordinates[0],
+            lat: row.geo.coordinates[1],
+            place: [row.locationDistrict, row.locationState].filter(Boolean).join(", ")
+        }));
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, { points, filters, truncated: rows.length >= MAP_LIMIT }, "Cattle map data fetched"));
+});
+
 export {
+    showCattleMap,
+    getCattleMapData,
     addCattle,
     showAddCattlePage,
     showEditCattlePage,
@@ -685,5 +797,6 @@ export {
     updateCattle,
     deleteCattle,
     getAllCattle,
-    runListing
+    runListing,
+    buildFilterConditions
 };

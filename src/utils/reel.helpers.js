@@ -1,11 +1,9 @@
-/* Small pure helpers for the Reels feature. No database, no network. */
 
 export const MAX_REEL_SECONDS = 60;
 export const MAX_REEL_BYTES = 80 * 1024 * 1024;
 export const MAX_CAPTION_LENGTH = 150;
 export const MAX_REELS_PER_CATTLE = 3;
 
-/* mime type -> file extension. Anything else is refused. */
 export const REEL_TYPES = Object.freeze({
     "video/mp4": ".mp4",
     "video/quicktime": ".mov",
@@ -15,11 +13,9 @@ export const REEL_TYPES = Object.freeze({
 const startsWith = (buffer, bytes, offset = 0) =>
     bytes.every((byte, index) => buffer[offset + index] === byte);
 
-/* The browser's mime type is only a claim, so look at the first bytes of the file as well. */
 export const videoMatchesType = (mimeType, head) => {
     if (!head || head.length < 12) return false;
 
-    /* MP4 and MOV both carry an "ftyp" box right after a 4 byte length. */
     const hasFtyp = startsWith(head, [0x66, 0x74, 0x79, 0x70], 4);
 
     switch (mimeType) {
@@ -35,7 +31,6 @@ export const videoMatchesType = (mimeType, head) => {
 
 export const cleanCaption = (value) =>
     String(value ?? "")
-        // eslint-disable-next-line no-control-regex
         .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, "")
         .replace(/\s+/g, " ")
         .trim()
@@ -44,11 +39,11 @@ export const cleanCaption = (value) =>
 const isCloudinaryUpload = (url) =>
     typeof url === "string" && /^https:\/\/res\.cloudinary\.com\/[^/]+\/video\/upload\//.test(url);
 
-/* A lighter 720p copy for phones. Cloudinary makes it the first time somebody asks for it. */
-export const streamUrlFor = (url) =>
-    isCloudinaryUpload(url) ? url.replace("/video/upload/", "/video/upload/q_auto,w_720,c_limit/") : url;
+export const STREAM_TRANSFORMATION = "q_auto,w_720,c_limit";
 
-/* A still picture of the first second, shown while the video loads. */
+export const streamUrlFor = (url) =>
+    isCloudinaryUpload(url) ? url.replace("/video/upload/", `/video/upload/${STREAM_TRANSFORMATION}/`) : url;
+
 export const posterUrlFor = (url) =>
     isCloudinaryUpload(url)
         ? url

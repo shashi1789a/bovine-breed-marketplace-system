@@ -3,16 +3,12 @@ import { Message, MAX_MESSAGE_LENGTH } from "../models/message.model.js";
 import { User, USER_ROLES } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 
-const PUBLIC_USER_FIELDS = "fullName username avatar role";
+const PUBLIC_USER_FIELDS = "fullName username avatar role lastSeenAt privacy.showPresence";
 const ID_PATTERN = /^[a-f\d]{24}$/i;
 const MAX_CONVERSATIONS = 50;
 const DEFAULT_PAGE = 30;
 const MAX_PAGE = 100;
 
-/*
- * Always turn ids into plain strings before they reach a query, so a request
- * like { "$ne": "x" } can never become a Mongo operator.
- */
 export const toId = (value) => {
     const id = String(value ?? "");
 
@@ -71,6 +67,13 @@ export const toPublicMessage = (message) => ({
     createdAt: message.createdAt
 });
 
+const readAtFor = (conversation, userId) => {
+    const map = conversation.readAt;
+    const value = map instanceof Map ? map.get(String(userId)) : map?.[String(userId)];
+
+    return value || null;
+};
+
 const unreadFor = (conversation, userId) => {
     const unread = conversation.unread;
     const value = unread instanceof Map ? unread.get(userId) : unread?.[userId];
@@ -80,7 +83,13 @@ const unreadFor = (conversation, userId) => {
 
 export const toPublicConversation = (conversation, userId, other) => ({
     id: String(conversation._id),
-    other: toPublicUser(other),
+    other: {
+        ...toPublicUser(other),
+        presenceHidden: other?.privacy?.showPresence === false,
+        lastSeenAt: other?.privacy?.showPresence === false ? null : other?.lastSeenAt || null,
+        online: false
+    },
+    otherReadAt: readAtFor(conversation, other?._id),
     unread: unreadFor(conversation, userId),
     lastMessage: conversation.lastMessage?.at
         ? {
@@ -96,7 +105,6 @@ export const toPublicConversation = (conversation, userId, other) => ({
 export const otherParticipant = (conversation, userId) =>
     String(conversation.participants.find((id) => String(id) !== String(userId)));
 
-/* Only participants may touch a conversation; everyone else just gets "not found". */
 export const getConversationFor = async (conversationId, userId) => {
     const conversation = await Conversation.findOne({
         _id: toId(conversationId),
@@ -215,7 +223,6 @@ export const listMessages = async ({ conversationId, userId, before, limit }) =>
 
 const PREVIEW_LENGTH = 120;
 
-/* What the conversation list shows under a person's name. */
 const previewOf = ({ type, text, attachment }) => {
     if (type === "file") {
         const label = attachment?.kind === "image" ? "Photo" : attachment?.name || "File";
@@ -225,7 +232,6 @@ const previewOf = ({ type, text, attachment }) => {
     return String(text || "").slice(0, PREVIEW_LENGTH);
 };
 
-/* Saves a message and updates the conversation's last message and unread count. */
 const saveMessage = async ({ conversation, senderId, recipientId, fields }) => {
     const message = await Message.create({
         conversation: conversation._id,
@@ -251,10 +257,6 @@ const saveMessage = async ({ conversation, senderId, recipientId, fields }) => {
     return message;
 };
 
-/*
- * The quote shown above a reply. Only messages of the same conversation can be
- * answered, so a made-up id can never pull in someone else's text.
- */
 const buildReply = async (conversation, replyToId) => {
     if (replyToId === undefined || replyToId === null || replyToId === "") return undefined;
 
@@ -315,10 +317,6 @@ export const sendMessage = async ({ conversationId, senderId, text, replyToId })
     return { message: toPublicMessage(message), recipientId };
 };
 
-/*
- * Called by the upload route only, after the file is stored. The attachment is
- * built on the server, so a client can never post a link of its own.
- */
 export const sendAttachment = async ({ conversationId, senderId, attachment, caption, replyToId }) => {
     const sender = toId(senderId);
     const conversation = await getConversationFor(conversationId, sender);
@@ -340,7 +338,6 @@ export const sendAttachment = async ({ conversationId, senderId, attachment, cap
 
 export const MAX_FORWARD_TARGETS = 5;
 
-/* Copies one message into up to five other conversations of the same user. */
 export const forwardMessage = async ({ messageId, userId, conversationIds }) => {
     const me = toId(userId);
 
@@ -359,7 +356,6 @@ export const forwardMessage = async ({ messageId, userId, conversationIds }) => 
         type: { $in: ["text", "file"] }
     }).lean();
 
-    /* Only someone who is in the original conversation may forward from it. */
     if (!original) throw new ApiError(404, "Message not found");
 
     await getConversationFor(original.conversation, me);
@@ -397,15 +393,18 @@ export const markRead = async ({ conversationId, userId }) => {
     const me = toId(userId);
     const conversation = await getConversationFor(conversationId, me);
 
+    const readAt = new Date();
+
     await Conversation.updateOne(
         { _id: conversation._id },
-        { $set: { [`unread.${me}`]: 0 } },
+        { $set: { [`unread.${me}`]: 0, [`readAt.${me}`]: readAt } },
         { timestamps: false }
     );
 
     return {
         conversationId: String(conversation._id),
-        otherId: otherParticipant(conversation, me)
+        otherId: otherParticipant(conversation, me),
+        readAt
     };
 };
 
@@ -415,7 +414,6 @@ const CALL_LABELS = Object.freeze({
     declined: "Declined video call"
 });
 
-/* Saves "who called, how long, answered or not" as a normal chat entry. */
 export const logCall = async ({ conversationId, callerId, outcome, durationSec = 0 }) => {
     const caller = toId(callerId);
     const conversation = await getConversationFor(conversationId, caller);

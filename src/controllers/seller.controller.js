@@ -1,3 +1,4 @@
+import { orderStatusChanged } from "../services/orderEvents.service.js";
 import mongoose from "mongoose";
 
 import { Product } from "../models/product.model.js";
@@ -33,9 +34,8 @@ const matchOption = (values, raw) => {
     return values.find((item) => item.toLowerCase() === normalized) || "";
 };
 
-/* Seller pages live under /farmer or /doctor. */
 const orderUrl = (req, order) =>
-    `/${req.user.role === "doctor" ? "doctor" : "farmer"}/orders/${order._id}`;
+    `/${["doctor", "seller"].includes(req.user.role) ? req.user.role : "farmer"}/orders/${order._id}`;
 
 const findSellerOrder = async (id, sellerId) => {
     if (!isObjectId(id)) {
@@ -124,6 +124,7 @@ const markOrderShipped = asyncHandler(async (req, res) => {
     order.shippedAt = new Date();
 
     await order.save();
+    await orderStatusChanged(order);
 
     return respond(req, res, {
         redirectTo: orderUrl(req, order),
@@ -151,6 +152,7 @@ const markOrderDelivered = asyncHandler(async (req, res) => {
     }
 
     await order.save();
+    await orderStatusChanged(order);
 
     return respond(req, res, {
         redirectTo: orderUrl(req, order),
@@ -214,6 +216,8 @@ const sellerCancelOrder = asyncHandler(async (req, res) => {
     } finally {
         await session.endSession();
     }
+
+    await orderStatusChanged(order);
 
     return respond(req, res, {
         redirectTo: orderUrl(req, order),

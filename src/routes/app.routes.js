@@ -1,9 +1,10 @@
 import { Router } from "express";
 
+import apiRoutes from "./api.routes.js";
 import userRoutes from "./user.routes.js";
 import dashboardRoutes from "./dashboard.routes.js";
 import adminRoutes from "./admin.routes.js";
-import { farmerRouter, doctorRouter } from "./seller.routes.js";
+import { farmerRouter, doctorRouter, sellerRouter } from "./seller.routes.js";
 import productRoutes from "./product.routes.js";
 import cattleRoutes from "./cattle.routes.js";
 import cartRoutes from "./cart.routes.js";
@@ -13,16 +14,29 @@ import contactRoutes from "./contact.routes.js";
 import chatRoutes from "./chat.routes.js";
 import reelRoutes from "./reel.routes.js";
 import farmerProfileRoutes from "./farmerProfile.routes.js";
+import wishlistRoutes from "./wishlist.routes.js";
+import notificationRoutes from "./notification.routes.js";
+import offerRoutes from "./offer.routes.js";
+import verificationRoutes from "./verification.routes.js";
+import preferencesRoutes from "./preferences.routes.js";
+import dairyRoutes from "./dairy.routes.js";
+import reminderRoutes from "./reminder.routes.js";
+import { doctorsRouter, appointmentsRouter, availabilityRouter } from "./appointment.routes.js";
 const router = Router();
 
 router.use("/healthz", healthcheckRoutes);
+router.use("/api/v1", apiRoutes);
 
 router.use("/", userRoutes);
 router.use("/", contactRoutes);
 router.use("/", dashboardRoutes);
 router.use("/admin", adminRoutes);
+router.use("/farmer/dairy", dairyRoutes);
+router.use("/farmer/reminders", reminderRoutes);
 router.use("/farmer", farmerRouter);
+router.use("/doctor/availability", availabilityRouter);
 router.use("/doctor", doctorRouter);
+router.use("/seller", sellerRouter);
 router.use("/products", productRoutes);
 router.use("/cattle", cattleRoutes);
 router.use("/cart", cartRoutes);
@@ -30,5 +44,12 @@ router.use("/orders", orderRoutes);
 router.use("/chat", chatRoutes);
 router.use("/reels", reelRoutes);
 router.use("/farmers", farmerProfileRoutes);
+router.use("/wishlist", wishlistRoutes);
+router.use("/notifications", notificationRoutes);
+router.use("/offers", offerRoutes);
+router.use("/verification", verificationRoutes);
+router.use("/account", preferencesRoutes);
+router.use("/doctors", doctorsRouter);
+router.use("/appointments", appointmentsRouter);
 
 export default router;

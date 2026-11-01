@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= locals.title || 'Notifications | BoviNetra' %></title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+  <style>
+    :root { --primary: #0F62AC; --green: #176b45; --text-main: #1A2C3E; --text-muted: #5A6E7F; --border-light: rgba(15, 98, 172, 0.12); --shadow-sm: 0 8px 20px rgba(0,0,0,.04), 0 2px 4px rgba(0,0,0,.02); }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #F4F9FE; color: var(--text-main); line-height: 1.5; overflow-x: hidden; }
+    h1, h2, h3, h4, h5 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; }
+    a { color: inherit; text-decoration: none; }
+    .page { padding: 110px 0 70px; min-height: 100vh; }
+    .page-head { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px; margin-bottom: 1.2rem; }
+    .page-head h2 { font-size: 1.7rem; margin: 0; }
+    .page-head p { color: var(--text-muted); font-size: .88rem; margin: 2px 0 0; }
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.3rem; }
+    .tabs a { padding: 7px 18px; border-radius: 40px; border: 1.5px solid #E2EDF7; background: #fff; font-size: .84rem; font-weight: 600; }
+    .tabs a:hover { border-color: var(--primary); color: var(--primary); }
+    .tabs a.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .card-x { background: #fff; border: 1px solid var(--border-light); border-radius: 20px; box-shadow: var(--shadow-sm); padding: 1.1rem 1.3rem; margin-bottom: 1rem; }
+    .row-x { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+    .thumb { width: 72px; height: 72px; border-radius: 16px; background: #EAF3FB; overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #94A3B8; font-size: 1.6rem; }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .grow { flex: 1; min-width: 180px; }
+    .grow strong { display: block; word-break: break-word; }
+    .muted { color: var(--text-muted); font-size: .84rem; }
+    .btn-main, .btn-soft, .btn-danger-soft { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 18px; border-radius: 40px; font-weight: 600; font-size: .83rem; cursor: pointer; border: 1.5px solid transparent; font-family: inherit; }
+    .btn-main { background: var(--green); color: #fff; }
+    .btn-main:hover { background: #1d8558; color: #fff; }
+    .btn-soft { background: #fff; border-color: #E2EDF7; color: var(--text-main); }
+    .btn-soft:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-danger-soft { background: #fff; border-color: #FECACA; color: #B91C1C; }
+    .actions-x { display: flex; gap: 8px; flex-wrap: wrap; }
+    .actions-x form { margin: 0; }
+    .pill { font-size: .72rem; font-weight: 700; padding: 4px 12px; border-radius: 30px; text-transform: capitalize; white-space: nowrap; }
+    .pill.pending { background: #FEF3C7; color: #92400E; }
+    .pill.accepted, .pill.verified { background: #DCFCE7; color: #166534; }
+    .pill.rejected { background: #FEE2E2; color: #B91C1C; }
+    .pill.withdrawn, .pill.expired, .pill.none { background: #E2E8F0; color: #475569; }
+    .down { color: #166534; font-weight: 700; }
+    .up { color: #B45309; font-weight: 700; }
+    .empty-x { text-align: center; background: #fff; border: 1px solid var(--border-light); border-radius: 24px; padding: 3rem 1.5rem; box-shadow: var(--shadow-sm); }
+    .empty-x i { font-size: 2.4rem; color: var(--primary); opacity: .7; }
+    .empty-x h3 { font-size: 1.25rem; margin: .6rem 0 4px; }
+    .empty-x p { color: var(--text-muted); margin-bottom: 1rem; }
+    .alert-modern { display: flex; align-items: flex-start; gap: 10px; border-radius: 16px; padding: 12px 16px; font-size: .88rem; font-weight: 500; margin-bottom: 1.2rem; }
+    .alert-error { background: #FEE2E2; color: #B91C1C; }
+    .alert-success { background: #DCFCE7; color: #166534; }
+    input, textarea, select { font-family: inherit; }
+    .field { width: 100%; border: 1.5px solid #D6E4F2; border-radius: 12px; padding: 10px 12px; background: #fff; }
+    .field:focus { outline: 3px solid rgba(15,98,172,.2); border-color: var(--primary); }
+    .note { display: flex; gap: 12px; align-items: flex-start; }
+    .note .ico { width: 40px; height: 40px; border-radius: 12px; background: rgba(15,98,172,.08); color: var(--primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .note.unread { border-left: 4px solid var(--green); }
+    .note strong { display: block; word-break: break-word; }
+  </style>
+</head>
+<body>
+<%- include('../partials/header') %>
+
+<main class="page">
+  <div class="container">
+    <%
+      const icons = { price_drop: 'fa-arrow-trend-down', cattle_sold: 'fa-tag', offer_received: 'fa-handshake', offer_accepted: 'fa-circle-check', offer_rejected: 'fa-circle-xmark', offer_expired: 'fa-hourglass-end', review_received: 'fa-star', verification: 'fa-shield-halved', new_message: 'fa-comment-dots', order_new: 'fa-box', order_update: 'fa-truck', new_reel: 'fa-film', reel_comment: 'fa-comment', new_follower: 'fa-user-plus', reminder: 'fa-calendar-check', appointment: 'fa-user-doctor' };
+      const when = (v) => new Date(v).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    %>
+    <div class="page-head">
+      <div>
+        <h2><%= t("Notifications") %></h2>
+        <p><%= t("Price drops, sold cattle, offers, reviews and verification updates") %></p>
+      </div>
+      <div class="actions-x">
+        <a href="/account/preferences" class="btn-soft"><i class="fas fa-gear"></i> <%= t("Settings") %></a>
+        <a href="/wishlist" class="btn-soft"><i class="far fa-heart"></i> <%= t("Saved") %></a>
+        <a href="/offers" class="btn-soft"><i class="fas fa-handshake"></i> <%= t("Offers") %></a>
+        <% if (user && user.role === 'farmer') { %><a href="/verification" class="btn-soft"><i class="fas fa-shield-halved"></i> <%= t("Get verified") %></a><% } %>
+      </div>
+    </div>
+
+    <% if (!items.length) { %>
+      <div class="empty-x">
+        <i class="far fa-bell"></i>
+        <h3><%= t("You are all caught up") %></h3>
+        <p><%= t("Save cattle or send offers to get updates here.") %></p>
+      </div>
+    <% } else { %>
+      <% items.forEach(item => { %>
+        <article class="card-x note <%= item.readAt ? '' : 'unread' %>">
+          <span class="ico"><i class="fas <%= icons[item.type] || 'fa-bell' %>"></i></span>
+          <div class="grow">
+            <strong><% if (item.link && item.link.startsWith('/')) { %><a href="<%= item.link %>"><%= item.title %></a><% } else { %><%= item.title %><% } %></strong>
+            <% if (item.body) { %><span class="muted"><%= item.body %></span><br><% } %>
+            <span class="muted"><%= when(item.createdAt) %></span>
+          </div>
+        </article>
+      <% }) %>
+    <% } %>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const navbar = document.querySelector('.navbar');
+
+  if (navbar) {
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 20);
+    });
+  }
+</script>
+</body>
+</html>

@@ -94,7 +94,6 @@
     let call = null; // the call this tab is part of
     let incoming = null; // a call that is ringing here
 
-    /* ------------------------------------------------------------ helpers */
 
     const el = (tag, className, text) => {
         const node = document.createElement(tag);
@@ -188,7 +187,6 @@
         return message.text;
     };
 
-    /* Only web addresses and local previews may become links or image sources. */
     const safeUrl = (value) => (/^(https?:|blob:)/i.test(String(value || "")) ? value : "");
 
     const formatSize = (bytes) => {
@@ -221,7 +219,6 @@
     const whoLabel = (senderId) =>
         senderId === state.me.id ? "You" : activeConversation()?.other.fullName || "Them";
 
-    /* One line describing a message, for quotes and the forward dialog. */
     const snippetOf = (message) => {
         if (message.type === "file") {
             const kind = message.attachment?.kind || message.attachmentKind;
@@ -243,7 +240,6 @@
         attachmentKind: message.attachment?.kind || ""
     });
 
-    /* ------------------------------------------------------ conversation list */
 
     const sortConversations = () =>
         state.conversations.sort(
@@ -264,6 +260,8 @@
             const body = el("div", "person-body");
             const top = el("div", "person-name");
             top.append(el("span", "", conv.other.fullName));
+            const rowAvatar = avatar(conv.other);
+            if (conv.other.online && !conv.other.presenceHidden) rowAvatar.classList.add("online");
             if (conv.lastMessage) top.append(el("time", "", timeLabel(conv.lastMessage.at)));
 
             const bottom = el("div", "person-sub");
@@ -271,7 +269,7 @@
             if (conv.unread > 0) bottom.append(el("span", "badge", String(conv.unread)));
 
             body.append(top, bottom);
-            button.append(avatar(conv.other), body);
+            button.append(rowAvatar, body);
             button.addEventListener("click", () => openConversation(conv.id));
             row.append(button);
             frag.append(row);
@@ -287,7 +285,6 @@
         renderConversations();
     };
 
-    /* ------------------------------------------------------------- thread */
 
     const renderMessage = (message) => {
         const mine = message.senderId === state.me.id;
@@ -329,9 +326,18 @@
         if (message.attachment) bubble.append(renderAttachment(message.attachment));
         if (message.text) bubble.append(el("p", "", message.text));
 
-        bubble.append(
-            el("time", "", message.failed ? "Not sent" : message.pending ? "Sending…" : timeLabel(message.createdAt))
-        );
+        const stamp = el("time", "", message.failed ? "Not sent" : message.pending ? "Sending…" : timeLabel(message.createdAt));
+
+        if (mine && settled) {
+            const read = isRead(message);
+            const tick = icon(read ? "bi-check2-all" : "bi-check2");
+            tick.classList.add("tick");
+            if (read) tick.classList.add("read");
+            tick.setAttribute("title", read ? "Seen" : "Sent");
+            stamp.append(tick);
+        }
+
+        bubble.append(stamp);
 
         if (settled) {
             const more = el("button", "msg-more");
@@ -345,7 +351,6 @@
             });
             bubble.append(more);
 
-            /* Right-click, or long-press on a phone. */
             bubble.addEventListener("contextmenu", (event) => {
                 event.preventDefault();
                 openMenu(message, more);
@@ -431,7 +436,6 @@
         target.classList.add("flash");
     }
 
-    /* Drag a message to the right to reply, like WhatsApp. */
     function enableSwipeReply(bubble, message) {
         let startX = 0;
         let startY = 0;
@@ -488,7 +492,6 @@
         bubble.addEventListener("touchcancel", finish);
     }
 
-    /* --------------------------------------------------- message menu / reply */
 
     let menuMessage = null;
 
@@ -539,15 +542,11 @@
         }
     };
 
-    /*
-     * Messages never change once they are sent, so keep the DOM node and reuse it.
-     * Without this every new message rebuilt every bubble (and re-created every image).
-     */
     const nodeCache = new Map();
     const NODE_CACHE_LIMIT = 400;
 
     const nodeFor = (message) => {
-        const key = `${message.id}|${message.pending ? 1 : 0}|${message.failed ? 1 : 0}`;
+        const key = `${message.id}|${message.pending ? 1 : 0}|${message.failed ? 1 : 0}|${isRead(message) ? 1 : 0}`;
         const cached = nodeCache.get(message.id);
 
         if (cached && cached.key === key) return cached.node;
@@ -582,10 +581,45 @@
         box.scrollTop = scrollToEnd ? box.scrollHeight : previousTop + (box.scrollHeight - previousHeight);
     };
 
+    const lastSeenLabel = (iso) => {
+        const date = new Date(iso);
+        if (Number.isNaN(date.getTime())) return "";
+
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+
+        const dayMs = 24 * 60 * 60 * 1000;
+        const time = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+        if (date >= startOfToday) return `last seen today at ${time}`;
+        if (date >= startOfToday - dayMs) return `last seen yesterday at ${time}`;
+
+        return `last seen ${date.toLocaleDateString([], { day: "numeric", month: "short" })}`;
+    };
+
+    const presenceText = (conv) => {
+        if (!conv || conv.other.presenceHidden) return conv ? conv.other.role : "";
+        if (conv.other.online) return "online";
+
+        return conv.other.lastSeenAt ? lastSeenLabel(conv.other.lastSeenAt) : conv.other.role;
+    };
+
     const setStatus = (text) => {
         const conv = activeConversation();
-        els.threadStatus.textContent = text || (conv ? conv.other.role : "");
-        els.threadStatus.style.textTransform = text ? "none" : "capitalize";
+        const shown = text || presenceText(conv);
+        const plain = Boolean(text) || Boolean(conv && !conv.other.presenceHidden && (conv.other.online || conv.other.lastSeenAt));
+
+        els.threadStatus.textContent = shown;
+        els.threadStatus.style.textTransform = plain ? "none" : "capitalize";
+        els.threadStatus.classList.toggle("is-online", !text && Boolean(conv?.other.online));
+    };
+
+    const isRead = (message) => {
+        if (message.senderId !== state.me.id || message.pending || message.failed) return false;
+
+        const conv = findConversation(message.conversationId);
+
+        return Boolean(conv?.otherReadAt) && new Date(conv.otherReadAt) >= new Date(message.createdAt);
     };
 
     const fetchMessages = async (conversationId, before) => {
@@ -670,7 +704,6 @@
         els.app.dataset.view = "list";
     };
 
-    /* ----------------------------------------------------------- attachments */
 
     const clearAttachment = () => {
         const preview = els.attachThumb.querySelector("img");
@@ -715,7 +748,6 @@
         els.messageInput.focus({ preventScroll: true });
     };
 
-    /* ----------------------------------------------------------- sending */
 
     const updateLastMessage = (conv, message) => {
         conv.lastMessage = {
@@ -729,7 +761,6 @@
         renderConversations();
     };
 
-    /* Swaps the "sending…" bubble for the real message (which may already have arrived by socket). */
     const settleLocal = (thread, clientId, message) => {
         const index = thread.items.findIndex((item) => item.clientId === clientId);
         const alreadyHere = thread.items.some((item) => item.id === message.id);
@@ -872,7 +903,6 @@
         }, 2500);
     };
 
-    /* ------------------------------------------------------------ forwarding */
 
     let forwardSource = null;
     const forwardPicked = new Set();
@@ -963,7 +993,6 @@
         });
     };
 
-    /* ------------------------------------------------------- incoming chat */
 
     const countsAsUnread = (message) =>
         message.type === "text" || message.type === "file" || message.call?.outcome === "missed";
@@ -979,7 +1008,6 @@
         const thread = ensureThread(conv.id);
 
         if (thread.loaded && !thread.items.some((item) => item.id === message.id)) {
-            /* A file this tab is still sending comes back with its clientId: replace the local bubble. */
             const local = message.clientId
                 ? thread.items.findIndex((item) => item.clientId === message.clientId && item.pending)
                 : -1;
@@ -1013,7 +1041,6 @@
         if (state.activeId === conv.id) renderMessages(true);
     };
 
-    /* -------------------------------------------------------------- search */
 
     let searchTimer;
 
@@ -1080,7 +1107,6 @@
         }
     }
 
-    /* --------------------------------------------------------------- calls */
 
     const mediaErrorMessage = (error) => {
         switch (error?.name) {
@@ -1102,7 +1128,6 @@
 
         const video = { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: "user" };
 
-        /* Best case both; if a device is missing, join with whatever exists. */
         const attempts = [{ audio: true, video }, { audio: true }, { video }];
         let lastError;
 
@@ -1112,7 +1137,6 @@
             } catch (error) {
                 lastError = error;
 
-                /* Permission denied or device busy: trying again would not help. */
                 if (error?.name !== "NotFoundError" && error?.name !== "OverconstrainedError") break;
             }
         }
@@ -1312,7 +1336,6 @@
         cleanupCall();
     }
 
-    /* ---------------------------------------------------- front / back camera */
 
     const listCameras = async () => {
         try {
@@ -1323,7 +1346,6 @@
         }
     };
 
-    /* Selfie view is mirrored; the back camera is not. */
     const showFacing = (track) => {
         els.localVideo.classList.toggle("rear", track?.getSettings().facingMode === "environment");
     };
@@ -1334,13 +1356,11 @@
 
         if (!call) return;
 
-        /* Phones may report one device until a camera is open; show the button whenever a switch is plausible. */
         const canSwitch = hasVideo && (cameras.length > 1 || Boolean(call.local.getVideoTracks()[0].getSettings().facingMode));
 
         els.flipBtn.hidden = !canSwitch;
     };
 
-    /* What to ask for next: the other side on a phone, the next camera on a laptop. */
     const nextCameraOptions = (track, cameras) => {
         const { facingMode, deviceId } = track.getSettings();
 
@@ -1377,7 +1397,6 @@
         const before = oldTrack.getSettings();
         const attempts = nextCameraOptions(oldTrack, await listCameras());
 
-        /* Many phones cannot open two cameras at once, so release the current one first. */
         oldTrack.stop();
 
         let stream = null;
@@ -1387,18 +1406,15 @@
                 stream = await openCamera(options);
                 break;
             } catch {
-                /* try the next option */
             }
         }
 
         if (!stream) {
-            /* Could not switch: get the old camera back so the call keeps working. */
             try {
                 stream = await openCamera(
                     before.deviceId ? { deviceId: { exact: before.deviceId } } : { facingMode: before.facingMode || "user" }
                 );
             } catch {
-                /* nothing more to try */
             }
 
             toast(stream ? "Could not switch the camera." : "The camera stopped working. Turn it off and on again.");
@@ -1483,7 +1499,6 @@
         return "Call ended.";
     };
 
-    /* -------------------------------------------------------------- socket */
 
     const connectSocket = () => {
         socket = io({ transports: ["websocket", "polling"] });
@@ -1517,18 +1532,45 @@
         socket.on("connect_error", async (error) => {
             els.connBanner.hidden = false;
 
-            /* Access token expired: any authenticated request rotates the cookies, then retry. */
             if (error.message === "unauthorized" && authRetries++ < 2) {
                 try {
                     await api("/chat/api/me");
                     socket.connect();
                 } catch {
-                    /* api() already redirects to /login on 401 */
                 }
             }
         });
 
         socket.on("chat:message", onIncomingMessage);
+
+        socket.on("chat:read", ({ conversationId, readerId, readAt }) => {
+            const conv = findConversation(conversationId);
+
+            if (!conv || readerId === state.me.id) return;
+
+            conv.otherReadAt = readAt;
+
+            if (state.activeId === conversationId) renderMessages(false);
+        });
+
+        socket.on("presence:update", ({ userId, online, lastSeenAt }) => {
+            let touched = false;
+
+            for (const conv of state.conversations) {
+                if (conv.other.id !== userId) continue;
+
+                conv.other.online = Boolean(online);
+                if (lastSeenAt) conv.other.lastSeenAt = lastSeenAt;
+                touched = true;
+            }
+
+            if (!touched) return;
+
+            renderConversations();
+
+            const active = activeConversation();
+            if (active && active.other.id === userId) setStatus("");
+        });
 
         socket.on("chat:typing", ({ conversationId, isTyping }) => {
             if (conversationId !== state.activeId) return;
@@ -1576,7 +1618,6 @@
         });
     };
 
-    /* ---------------------------------------------------------------- wiring */
 
     els.composer.addEventListener("submit", (event) => {
         event.preventDefault();
@@ -1620,7 +1661,6 @@
     els.attachCancel.addEventListener("click", clearAttachment);
     els.replyCancel.addEventListener("click", clearReply);
 
-    /* Paste a screenshot straight into the message box. */
     els.messageInput.addEventListener("paste", (event) => {
         const file = [...(event.clipboardData?.files || [])].find((item) => item.type.startsWith("image/"));
 
@@ -1677,11 +1717,21 @@
             connectSocket();
             await loadConversations();
 
-            const withId = new URLSearchParams(location.search).get("with");
+            const query = new URLSearchParams(location.search);
+            const withId = query.get("with");
+            const wantsCall = query.get("call") === "1";
 
             if (withId) {
                 history.replaceState(null, "", "/chat");
                 await startWith(withId);
+
+                if (wantsCall) {
+                    for (let tries = 0; tries < 25 && !socket?.connected; tries += 1) {
+                        await new Promise((resolve) => setTimeout(resolve, 200));
+                    }
+
+                    await startCall();
+                }
             }
         } catch (error) {
             toast(error.message);

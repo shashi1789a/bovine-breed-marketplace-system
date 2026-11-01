@@ -280,6 +280,13 @@
       data-name="<%= user.fullName %>"
       data-email="<%= user.email %>"
     >
+      <% if (locals.only) { %>
+        <input type="hidden" name="only" value="<%= only %>">
+        <div class="alert-modern" role="status">
+          <i class="fas fa-bolt mt-1"></i>
+          <span>You are checking out one item. The rest of your cart stays saved. <a href="/cart">Back to cart</a></span>
+        </div>
+      <% } %>
       <div class="row g-4">
         <div class="col-lg-7">
           <section class="panel">

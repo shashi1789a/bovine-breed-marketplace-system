@@ -1,0 +1,31 @@
+name: Database backup
+
+on:
+  schedule:
+    - cron: "30 21 * * *"
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Install MongoDB database tools
+        run: |
+          curl -fsSL https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-x86_64-100.10.0.tgz -o tools.tgz
+          tar -xzf tools.tgz
+          echo "$PWD/mongodb-database-tools-ubuntu2204-x86_64-100.10.0/bin" >> "$GITHUB_PATH"
+
+      - name: Dump the database
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        run: |
+          test -n "$MONGODB_URI" || { echo "Add the MONGODB_URI secret first"; exit 1; }
+          mongodump --uri "$MONGODB_URI" --gzip --archive="bovinetra-$(date -u +%Y%m%d).gz"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bovinetra-db-backup
+          path: bovinetra-*.gz
+          retention-days: 14
+          if-no-files-found: error

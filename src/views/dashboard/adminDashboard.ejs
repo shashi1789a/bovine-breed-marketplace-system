@@ -132,7 +132,7 @@
   const formatDate = (value) =>
     value ? new Date(value).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
 
-  const roleClass = { admin: 'bg-danger', farmer: 'bg-success', doctor: 'bg-info text-dark', buyer: 'bg-primary', user: 'bg-secondary' };
+  const roleClass = { admin: 'bg-danger', farmer: 'bg-success', doctor: 'bg-info text-dark', seller: 'bg-primary', user: 'bg-secondary' };
 
   const users = stats.users;
   const products = stats.products;
@@ -157,8 +157,10 @@
 
     <a href="/admin/dashboard" class="nav-link active"><i class="fas fa-gauge"></i> Dashboard</a>
     <a href="/chat" class="nav-link"><i class="fas fa-comments"></i> Messages</a>
+    <a href="/admin/analytics" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a>
     <a href="/admin/users" class="nav-link"><i class="fas fa-users"></i> Users</a>
     <a href="/admin/products" class="nav-link"><i class="fas fa-boxes-stacked"></i> Products</a>
+    <a href="/admin/verifications" class="nav-link"><i class="fas fa-shield-halved"></i> Verifications</a>
     <a href="/admin/products?status=Pending" class="nav-link">
       <i class="fas fa-clipboard-check"></i> Pending approvals
       <% if (products.pending > 0) { %><span class="count"><%= products.pending %></span><% } %>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= locals.title || 'Verifications | BoviNetra' %></title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+  <style>
+    :root { --primary: #0F62AC; --green: #176b45; --text-main: #1A2C3E; --text-muted: #5A6E7F; --border-light: rgba(15, 98, 172, 0.12); --shadow-sm: 0 8px 20px rgba(0,0,0,.04), 0 2px 4px rgba(0,0,0,.02); }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #F4F9FE; color: var(--text-main); line-height: 1.5; overflow-x: hidden; }
+    h1, h2, h3, h4, h5 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; }
+    a { color: inherit; text-decoration: none; }
+    .page { padding: 110px 0 70px; min-height: 100vh; }
+    .page-head { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px; margin-bottom: 1.2rem; }
+    .page-head h2 { font-size: 1.7rem; margin: 0; }
+    .page-head p { color: var(--text-muted); font-size: .88rem; margin: 2px 0 0; }
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.3rem; }
+    .tabs a { padding: 7px 18px; border-radius: 40px; border: 1.5px solid #E2EDF7; background: #fff; font-size: .84rem; font-weight: 600; }
+    .tabs a:hover { border-color: var(--primary); color: var(--primary); }
+    .tabs a.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .card-x { background: #fff; border: 1px solid var(--border-light); border-radius: 20px; box-shadow: var(--shadow-sm); padding: 1.1rem 1.3rem; margin-bottom: 1rem; }
+    .row-x { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+    .thumb { width: 72px; height: 72px; border-radius: 16px; background: #EAF3FB; overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #94A3B8; font-size: 1.6rem; }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .grow { flex: 1; min-width: 180px; }
+    .grow strong { display: block; word-break: break-word; }
+    .muted { color: var(--text-muted); font-size: .84rem; }
+    .btn-main, .btn-soft, .btn-danger-soft { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 18px; border-radius: 40px; font-weight: 600; font-size: .83rem; cursor: pointer; border: 1.5px solid transparent; font-family: inherit; }
+    .btn-main { background: var(--green); color: #fff; }
+    .btn-main:hover { background: #1d8558; color: #fff; }
+    .btn-soft { background: #fff; border-color: #E2EDF7; color: var(--text-main); }
+    .btn-soft:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-danger-soft { background: #fff; border-color: #FECACA; color: #B91C1C; }
+    .actions-x { display: flex; gap: 8px; flex-wrap: wrap; }
+    .actions-x form { margin: 0; }
+    .pill { font-size: .72rem; font-weight: 700; padding: 4px 12px; border-radius: 30px; text-transform: capitalize; white-space: nowrap; }
+    .pill.pending { background: #FEF3C7; color: #92400E; }
+    .pill.accepted, .pill.verified { background: #DCFCE7; color: #166534; }
+    .pill.rejected { background: #FEE2E2; color: #B91C1C; }
+    .pill.withdrawn, .pill.expired, .pill.none { background: #E2E8F0; color: #475569; }
+    .down { color: #166534; font-weight: 700; }
+    .up { color: #B45309; font-weight: 700; }
+    .empty-x { text-align: center; background: #fff; border: 1px solid var(--border-light); border-radius: 24px; padding: 3rem 1.5rem; box-shadow: var(--shadow-sm); }
+    .empty-x i { font-size: 2.4rem; color: var(--primary); opacity: .7; }
+    .empty-x h3 { font-size: 1.25rem; margin: .6rem 0 4px; }
+    .empty-x p { color: var(--text-muted); margin-bottom: 1rem; }
+    .alert-modern { display: flex; align-items: flex-start; gap: 10px; border-radius: 16px; padding: 12px 16px; font-size: .88rem; font-weight: 500; margin-bottom: 1.2rem; }
+    .alert-error { background: #FEE2E2; color: #B91C1C; }
+    .alert-success { background: #DCFCE7; color: #166534; }
+    input, textarea, select { font-family: inherit; }
+    .field { width: 100%; border: 1.5px solid #D6E4F2; border-radius: 12px; padding: 10px 12px; background: #fff; }
+    .field:focus { outline: 3px solid rgba(15,98,172,.2); border-color: var(--primary); }
+    .photo { width: 120px; height: 90px; border-radius: 12px; object-fit: cover; background: #EAF3FB; }
+  </style>
+</head>
+<body>
+<%- include('../partials/header') %>
+
+<main class="page">
+  <div class="container">
+    <div class="page-head">
+      <div>
+        <h2>Farmer verifications</h2>
+        <p><%= farmers.length %> <%= status %> request<%= farmers.length === 1 ? '' : 's' %></p>
+      </div>
+      <a href="/admin/users" class="btn-soft">Manage users</a>
+    </div>
+
+    <% if (locals.success) { %>
+      <div class="alert-modern alert-success" role="status"><i class="fas fa-circle-check mt-1"></i><span><%= success %></span></div>
+    <% } %>
+    <% if (locals.error) { %>
+      <div class="alert-modern alert-error" role="alert"><i class="fas fa-circle-exclamation mt-1"></i><span><%= error %></span></div>
+    <% } %>
+
+    <nav class="tabs" aria-label="Status">
+      <% ['pending', 'verified', 'rejected'].forEach(s => { %>
+        <a href="/admin/verifications?status=<%= s %>" class="<%= status === s ? 'active' : '' %>" style="text-transform:capitalize;"><%= s %></a>
+      <% }) %>
+    </nav>
+
+    <% if (!farmers.length) { %>
+      <div class="empty-x"><i class="fas fa-shield-halved"></i><h3>Nothing here</h3><p>No <%= status %> requests.</p></div>
+    <% } else { %>
+      <% farmers.forEach(f => { const v = f.verification || {}; %>
+        <article class="card-x">
+          <div class="row-x">
+            <% if (v.farmPhotoUrl && /^https:\/\//.test(v.farmPhotoUrl)) { %>
+              <a href="<%= v.farmPhotoUrl %>" target="_blank" rel="noopener noreferrer"><img class="photo" src="<%= v.farmPhotoUrl %>" alt="Farm photo of <%= f.fullName %>" loading="lazy"></a>
+            <% } %>
+            <div class="grow">
+              <strong><a href="/farmers/<%= encodeURIComponent(f.username) %>" target="_blank" rel="noopener"><%= f.fullName %></a> <span class="muted">@<%= f.username %></span></strong>
+              <span class="muted"><%= f.email %></span><br>
+              <span class="muted">Farm: <%= (f.farmerDetails && f.farmerDetails.farmName) || '—' %> &middot; <%= (f.farmerDetails && f.farmerDetails.location) || '—' %></span><br>
+              <span class="muted">Phone: <strong style="display:inline;"><%= v.phone || '—' %></strong> &middot; sent <%= v.submittedAt ? new Date(v.submittedAt).toLocaleDateString('en-IN') : '' %></span>
+              <% if (v.note) { %><br><span class="muted">Note: <%= v.note %></span><% } %>
+            </div>
+          </div>
+          <% if (status === 'pending') { %>
+            <div class="actions-x" style="margin-top:.8rem;">
+              <form action="/admin/verifications/<%= f._id %>/approve" method="POST">
+                <button type="submit" class="btn-main"><i class="fas fa-check"></i> Verify</button>
+              </form>
+              <form action="/admin/verifications/<%= f._id %>/reject" method="POST" class="d-flex gap-2">
+                <input type="text" name="note" maxlength="300" class="field" style="width:240px;padding:7px 12px;" placeholder="Reason for rejecting" aria-label="Reason for rejecting">
+                <button type="submit" class="btn-danger-soft"><i class="fas fa-xmark"></i> Reject</button>
+              </form>
+            </div>
+          <% } %>
+        </article>
+      <% }) %>
+    <% } %>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const navbar = document.querySelector('.navbar');
+
+  if (navbar) {
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 20);
+    });
+  }
+</script>
+</body>
+</html>

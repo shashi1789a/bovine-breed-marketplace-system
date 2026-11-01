@@ -11,6 +11,14 @@ import {
     showReelsPage,
     showUploadPage
 } from "../controllers/reel.controller.js";
+import {
+    addComment,
+    deleteComment,
+    listComments,
+    recordView,
+    toggleLike
+} from "../controllers/reelEngagement.controller.js";
+import { userLimiter } from "../utils/limiter.js";
 
 const router = Router();
 
@@ -24,13 +32,35 @@ const uploadLimiter = rateLimit({
     message: { success: false, message: "Too many uploads. Please wait a few minutes." }
 });
 
-/* Watching is open to everyone. */
 router.get("/", optionalAuth, showReelsPage);
 router.get("/api", optionalAuth, listReels);
 
-/* Uploading and deleting need a login. Only farmers can upload. */
 router.get("/new", verifyJWT, canManageCattle, showUploadPage);
 router.post("/", verifyJWT, canManageCattle, uploadLimiter, reelUploadHandler, createReel);
 router.post("/:id/delete", verifyJWT, deleteReel);
+
+const viewLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    limit: 90,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: "Too many requests." }
+});
+
+router.post("/:id/view", optionalAuth, viewLimiter, recordView);
+router.post(
+    "/:id/like",
+    verifyJWT,
+    userLimiter({ windowMs: 60 * 1000, limit: 60, message: "Too many likes. Please slow down." }),
+    toggleLike
+);
+router.get("/:id/comments", optionalAuth, listComments);
+router.post(
+    "/:id/comments",
+    verifyJWT,
+    userLimiter({ windowMs: 10 * 60 * 1000, limit: 30, message: "You are commenting too fast. Please wait a few minutes." }),
+    addComment
+);
+router.post("/:id/comments/:commentId/delete", verifyJWT, deleteComment);
 
 export default router;

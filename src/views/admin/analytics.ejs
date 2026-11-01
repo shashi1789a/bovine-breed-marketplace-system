@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="/assets/css/tools.css" rel="stylesheet">
+</head>
+<body>
+<%- include('../partials/header') %>
+
+<%
+  const inr = (v) => '₹ ' + Number(v).toLocaleString('en-IN');
+  const charts = [
+    { id: 'chUsers', title: 'New users per day', key: 'users', color: '#0F62AC' },
+    { id: 'chCattle', title: 'New cattle listings per day', key: 'cattle', color: '#16A34A' },
+    { id: 'chOrders', title: 'Orders per day', key: 'orders', color: '#F59E0B' },
+    { id: 'chRevenue', title: 'Revenue per day (₹)', key: 'revenue', color: '#7C3AED' }
+  ];
+  const seriesJson = JSON.stringify(series).replace(/</g, '\\u003c');
+%>
+
+<main class="page">
+  <div class="wrap">
+    <div class="page-head">
+      <div>
+        <h2>Analytics</h2>
+        <p class="muted">Last <%= range %> days, India time</p>
+      </div>
+      <div class="actions-x">
+        <% ranges.forEach(r => { %><a class="btn-soft" style="<%= r === range ? 'background:#0F62AC;color:#fff;border-color:#0F62AC' : '' %>" href="/admin/analytics?range=<%= r %>"><%= r %> days</a><% }) %>
+        <a class="btn-soft" href="/admin/dashboard"><i class="fas fa-gauge"></i> Dashboard</a>
+      </div>
+    </div>
+
+    <section class="grid cols-4" style="margin-bottom:1rem">
+      <div class="stat"><span>Total users</span><strong><%= totals.users.toLocaleString('en-IN') %></strong></div>
+      <div class="stat"><span>Cattle listed (for sale)</span><strong><%= totals.cattle.toLocaleString('en-IN') %> (<%= totals.cattleForSale.toLocaleString('en-IN') %>)</strong></div>
+      <div class="stat"><span>Products</span><strong><%= totals.products.toLocaleString('en-IN') %></strong></div>
+      <div class="stat"><span>Reels</span><strong><%= totals.reels.toLocaleString('en-IN') %></strong></div>
+      <div class="stat"><span>Orders (all time)</span><strong><%= totals.orders.toLocaleString('en-IN') %></strong></div>
+      <div class="stat good"><span>Revenue (all time)</span><strong><%= inr(totals.revenue) %></strong></div>
+    </section>
+
+    <section class="grid cols-4" style="margin-bottom:1rem">
+      <div class="stat"><span>New users, last <%= range %> days</span><strong><%= period.users %></strong></div>
+      <div class="stat"><span>New listings</span><strong><%= period.cattle %></strong></div>
+      <div class="stat"><span>Orders</span><strong><%= period.orders %></strong></div>
+      <div class="stat good"><span>Revenue</span><strong><%= inr(period.revenue) %></strong></div>
+    </section>
+
+    <div class="grid cols-2">
+      <% charts.forEach(c => { %>
+        <section class="card-x">
+          <h3><%= c.title %></h3>
+          <svg id="<%= c.id %>" class="chart" role="img" aria-label="<%= c.title %>"></svg>
+        </section>
+      <% }) %>
+    </div>
+
+    <div class="grid cols-2">
+      <% Object.keys(breakdowns).forEach(name => { const rows = breakdowns[name]; const top = rows.length ? rows[0].count : 1; %>
+        <section class="card-x">
+          <h3><%= name %></h3>
+          <% if (!rows.length) { %><p class="muted">No data yet.</p><% } else { rows.forEach(row => { %>
+            <div class="bar-row"><span class="name" style="width:130px"><%= row._id || 'unknown' %></span><span class="track"><span style="width:<%= Math.max(3, Math.round(row.count / top * 100)) %>%"></span></span><strong><%= row.count %></strong></div>
+          <% }) } %>
+        </section>
+      <% }) %>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script id="seriesData" type="application/json"><%- seriesJson %></script>
+<script>
+  (function () {
+    var data = JSON.parse(document.getElementById('seriesData').textContent);
+    var charts = <%- JSON.stringify(charts) %>;
+    var NS = 'http://www.w3.org/2000/svg';
+    var W = 600, H = 220, L = 40, R = 10, T = 10, B = 24;
+
+    function make(tag, attrs, text) {
+      var node = document.createElementNS(NS, tag);
+      Object.keys(attrs).forEach(function (key) { node.setAttribute(key, attrs[key]); });
+      if (text !== undefined) node.textContent = text;
+      return node;
+    }
+
+    charts.forEach(function (chart) {
+      var svg = document.getElementById(chart.id);
+      var values = data[chart.key];
+      var max = Math.max(1, Math.max.apply(null, values));
+      var slot = (W - L - R) / values.length;
+      var plotH = H - T - B;
+
+      svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+      [0, 0.5, 1].forEach(function (fraction) {
+        var y = T + plotH * (1 - fraction);
+        svg.appendChild(make('line', { x1: L, x2: W - R, y1: y, y2: y, stroke: '#E2EDF7' }));
+        svg.appendChild(make('text', { x: L - 4, y: y + 3, 'text-anchor': 'end', 'font-size': 10, fill: '#5A6E7F' }, Math.round(max * fraction)));
+      });
+
+      values.forEach(function (value, index) {
+        var h = (value / max) * plotH;
+        var bar = make('rect', { x: L + slot * index + slot * 0.15, y: T + plotH - h, width: Math.max(1.5, slot * 0.7), height: h, fill: chart.color, rx: 1.5 });
+        bar.appendChild(make('title', {}, data.days[index] + ': ' + value));
+        svg.appendChild(bar);
+
+        if (index % Math.ceil(values.length / 8) === 0) {
+          svg.appendChild(make('text', { x: L + slot * index + slot / 2, y: H - 8, 'text-anchor': 'middle', 'font-size': 10, fill: '#5A6E7F' }, data.days[index].slice(5)));
+        }
+      });
+    });
+  })();
+</script>
+</body>
+</html>

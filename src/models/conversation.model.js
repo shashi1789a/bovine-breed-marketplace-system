@@ -1,6 +1,5 @@
 import mongoose, { Schema } from "mongoose";
 
-/* One document per pair of users, whatever their roles. */
 export const makePairKey = (firstId, secondId) =>
     [String(firstId), String(secondId)].sort().join(":");
 
@@ -28,8 +27,9 @@ const conversationSchema = new Schema(
 
         lastMessage: { type: lastMessageSchema, default: undefined },
 
-        /* unread count per user id: { "<userId>": 3 } */
-        unread: { type: Map, of: Number }
+        unread: { type: Map, of: Number },
+
+        readAt: { type: Map, of: Date }
     },
     { timestamps: true }
 );

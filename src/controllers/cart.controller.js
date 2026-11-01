@@ -1,5 +1,6 @@
 import { Cart, MAX_CART_ITEMS, MAX_QUANTITY_PER_ITEM } from "../models/cart.model.js";
 import { Product, APPROVAL_STATUS } from "../models/product.model.js";
+import { ProductWishlist, MAX_SAVED_PRODUCTS } from "../models/productWishlist.model.js";
 
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -135,6 +136,77 @@ const addToCart = asyncHandler(async (req, res) => {
     });
 });
 
+const buyNow = asyncHandler(async (req, res) => {
+    const product = await findPurchasableProduct(req.params.productId, req.user._id);
+    const requested = Math.min(readQuantity(req.body?.quantity), product.stock);
+
+    const cart = await getOrCreateCart(req.user._id);
+    const existing = cart.items.find((item) => item.product.toString() === product._id.toString());
+
+    if (existing) {
+        existing.quantity = requested;
+        existing.price = product.price;
+    } else {
+        if (cart.items.length >= MAX_CART_ITEMS) {
+            throw new ApiError(400, `Your cart can hold at most ${MAX_CART_ITEMS} different products.`);
+        }
+
+        cart.items.push({
+            product: product._id,
+            seller: product.owner,
+            sellerRole: product.ownerRole,
+            quantity: requested,
+            price: product.price,
+            totalPrice: 0
+        });
+    }
+
+    cart.calculateCart();
+    await cart.save();
+
+    return respond(req, res, {
+        redirectTo: `/orders/checkout?only=${product._id}`,
+        data: { productId: String(product._id) },
+        message: "Ready to checkout"
+    });
+});
+
+const saveForLater = asyncHandler(async (req, res) => {
+    const { productId } = req.params;
+
+    if (!isObjectId(productId)) throw new ApiError(400, "Invalid product id");
+
+    const product = await Product.findById(productId).select("price owner").lean();
+
+    if (!product) throw new ApiError(404, "Product not found");
+
+    const saved = await ProductWishlist.countDocuments({ user: req.user._id });
+
+    if (saved >= MAX_SAVED_PRODUCTS) {
+        throw new ApiError(400, `You can save up to ${MAX_SAVED_PRODUCTS} products. Remove some first.`);
+    }
+
+    await ProductWishlist.updateOne(
+        { user: req.user._id, product: product._id },
+        { $setOnInsert: { user: req.user._id, product: product._id, priceAtSave: product.price } },
+        { upsert: true }
+    );
+
+    const cart = await Cart.findOne({ user: req.user._id });
+
+    if (cart) {
+        cart.items = cart.items.filter((item) => item.product.toString() !== productId);
+        cart.calculateCart();
+        await cart.save();
+    }
+
+    return respond(req, res, {
+        redirectTo: CART_HOME,
+        data: { saved: true },
+        message: "Moved to your wishlist"
+    });
+});
+
 const getMyCart = asyncHandler(async (req, res) => {
     const cart = await Cart.findOne({ user: req.user._id }).populate({
         path: "items.product",
@@ -241,4 +313,4 @@ const clearCart = asyncHandler(async (req, res) => {
     });
 });
 
-export { addToCart, getMyCart, updateCartItem, removeCartItem, clearCart };
+export { addToCart, buyNow, saveForLater, getMyCart, updateCartItem, removeCartItem, clearCart };

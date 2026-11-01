@@ -83,6 +83,10 @@
     .pv-qty-input { max-width: 100px; background: #F8FDFF; border: 1.5px solid #E2EDF7; border-radius: 14px; padding: 11px 14px; font-size: 0.9rem; font-weight: 600; text-align: center; transition: var(--transition); }
     .pv-qty-input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.14); background: #fff; }
     .pv-add-btn { background: var(--gradient-cta); color: #fff; border: none; border-radius: var(--radius-pill); padding: 0.75rem 1.8rem; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 0.92rem; box-shadow: 0 6px 20px rgba(245, 158, 11, 0.38); transition: var(--transition); display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+    .pv-buy-btn { background: #0F62AC; color: #fff; border: none; border-radius: var(--radius-pill); padding: 0.75rem 1.8rem; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 0.92rem; box-shadow: 0 6px 20px rgba(15, 98, 172, 0.3); transition: var(--transition); display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+    .pv-buy-btn:hover { transform: translateY(-3px); color: #fff; }
+    .pv-wish-btn { background: #fff; color: #BE185D; border: 1.5px solid #FBCFE8; border-radius: var(--radius-pill); padding: 0.7rem 1.5rem; font-weight: 700; font-size: 0.9rem; display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: var(--transition); }
+    .pv-wish-btn:hover, .pv-wish-btn.is-saved { background: #FDF2F8; }
     .pv-add-btn:hover { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(245, 158, 11, 0.5); }
     .pv-unavailable { background: #9CA3AF; color: #fff; border: none; border-radius: var(--radius-pill); padding: 0.75rem 1.8rem; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 0.92rem; cursor: not-allowed; margin-bottom: 1.25rem; display: inline-flex; align-items: center; gap: 8px; }
 
@@ -145,7 +149,7 @@
       .pv-price { font-size: 1.45rem; }
       .pv-cart-form { flex-direction: column; }
       .pv-qty-input { max-width: 100%; }
-      .pv-add-btn, .pv-unavailable { width: 100%; justify-content: center; }
+      .pv-add-btn, .pv-buy-btn, .pv-wish-btn, .pv-unavailable { width: 100%; justify-content: center; }
       .pv-owner-actions { flex-direction: column; }
       .pv-btn-outline { width: 100%; justify-content: center; }
       .pv-thumb { width: 56px; height: 56px; }
@@ -171,7 +175,10 @@
   const isOwner = Boolean(viewer && product.owner && String(product.owner._id) === String(viewer._id));
   const isAdmin = Boolean(viewer && String(viewer.role).toLowerCase() === 'admin');
   const isExpired = Boolean(product.expiryDate) && new Date(product.expiryDate).getTime() <= Date.now();
-  const canBuy = Boolean(viewer) && !isOwner && product.isActive && product.approvalStatus === 'Approved' && product.stock > 0 && !isExpired;
+  const purchasable = !isOwner && product.isActive && product.approvalStatus === 'Approved' && product.stock > 0 && !isExpired;
+  const canBuy = Boolean(viewer) && purchasable;
+  const loginNext = '/login?next=' + encodeURIComponent('/products/view/' + product._id);
+  const saved = Boolean(locals.inWishlist);
   const maxQty = Math.max(1, Math.min(product.stock, MAX_QTY_PER_ITEM));
 
   const gallery = [product.image].concat(product.images || []).filter(Boolean).filter((url, index, all) => all.indexOf(url) === index);
@@ -293,19 +300,36 @@
         <p class="pv-short-desc"><%= product.shortDescription %></p>
       <% } %>
 
-      <% if (canBuy && !locals.user) { %>
+      <% if (purchasable && !viewer) { %>
         <div class="pv-cart-form">
-          <a href="/login?next=<%= encodeURIComponent('/products/view/' + product._id) %>" class="pv-add-btn" style="text-decoration:none;text-align:center;">
-            <i class="fas fa-right-to-bracket"></i> Login to add to cart
+          <a href="<%= loginNext %>" class="pv-add-btn" style="text-decoration:none;text-align:center;">
+            <i class="fas fa-cart-plus"></i> Login to add to cart
+          </a>
+          <a href="<%= loginNext %>" class="pv-buy-btn" style="text-decoration:none;text-align:center;">
+            <i class="fas fa-bolt"></i> Login to buy now
+          </a>
+          <a href="<%= loginNext %>" class="pv-wish-btn" style="text-decoration:none;text-align:center;">
+            <i class="far fa-heart"></i> Wishlist
           </a>
         </div>
       <% } else if (canBuy) { %>
         <form action="/cart/<%= product._id %>/add" method="POST" class="pv-cart-form">
           <input type="number" name="quantity" value="1" min="1" max="<%= maxQty %>" class="pv-qty-input" aria-label="Quantity" inputmode="numeric">
           <button type="submit" class="pv-add-btn"><i class="fas fa-cart-plus"></i> Add to cart</button>
+          <button type="submit" formaction="/cart/<%= product._id %>/buy" class="pv-buy-btn"><i class="fas fa-bolt"></i> Buy now</button>
         </form>
       <% } else if (!isOwner) { %>
         <button type="button" class="pv-unavailable" disabled><i class="fas fa-ban"></i> Currently unavailable</button>
+      <% } %>
+
+      <% if (viewer && !isOwner) { %>
+        <form action="/wishlist/product" method="POST" class="pv-cart-form">
+          <input type="hidden" name="productId" value="<%= product._id %>">
+          <input type="hidden" name="redirect" value="/products/view/<%= product._id %>">
+          <button type="submit" class="pv-wish-btn<%= saved ? ' is-saved' : '' %>">
+            <i class="<%= saved ? 'fas' : 'far' %> fa-heart"></i> <%= saved ? 'Saved to wishlist' : 'Add to wishlist' %>
+          </button>
+        </form>
       <% } %>
 
       <% if (isOwner) { %>

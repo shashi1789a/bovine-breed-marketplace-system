@@ -48,7 +48,7 @@ const ROLES = Object.freeze({
     ADMIN: "admin",
     FARMER: "farmer",
     DOCTOR: "doctor",
-    BUYER: "buyer",
+    SELLER: "seller",
     USER: "user"
 });
 
@@ -57,21 +57,21 @@ const ROLE_HOME = Object.freeze({
     [ROLES.ADMIN]: "/admin/dashboard",
     [ROLES.FARMER]: "/farmer/dashboard",
     [ROLES.DOCTOR]: "/doctor/dashboard",
-    [ROLES.BUYER]: "/buyer/dashboard",
+    [ROLES.SELLER]: "/seller/dashboard",
     [ROLES.USER]: "/dashboard"
 });
 
 const DASHBOARD_VIEW = Object.freeze({
     [ROLES.FARMER]: "dashboard/farmerDashboard",
     [ROLES.DOCTOR]: "dashboard/doctorDashboard",
-    [ROLES.BUYER]: "dashboard/buyerDashboard",
+    [ROLES.SELLER]: "dashboard/sellerDashboard",
     [ROLES.USER]: "dashboard/userDashboard"
 });
 
 const DASHBOARD_TITLE = Object.freeze({
     [ROLES.FARMER]: "Farmer Dashboard",
     [ROLES.DOCTOR]: "Doctor Dashboard",
-    [ROLES.BUYER]: "Buyer Dashboard",
+    [ROLES.SELLER]: "Seller Dashboard",
     [ROLES.USER]: "My Dashboard"
 });
 
@@ -732,7 +732,10 @@ const buildFarmerDashboard = async (user, warnings) => {
 const buildDoctorDashboard = (user, warnings) =>
     buildSellerDashboard(user, warnings);
 
-// "buyer" and "user" are both customers, so they share one builder.
+const buildShopDashboard = (user, warnings) =>
+    buildSellerDashboard(user, warnings);
+
+// "user" is the customer role.
 const buildBuyerDashboard = async (user, warnings) => {
 
     const userId = toObjectId(user._id);
@@ -767,7 +770,7 @@ const buildBuyerDashboard = async (user, warnings) => {
 const DASHBOARD_BUILDERS = Object.freeze({
     [ROLES.FARMER]: buildFarmerDashboard,
     [ROLES.DOCTOR]: buildDoctorDashboard,
-    [ROLES.BUYER]: buildBuyerDashboard,
+    [ROLES.SELLER]: buildShopDashboard,
     [ROLES.USER]: buildBuyerDashboard
 });
 
@@ -837,7 +840,7 @@ const createDashboardPage = (role) =>
 ========================================================= */
 const farmerDashboard = createDashboardPage(ROLES.FARMER);
 const doctorDashboard = createDashboardPage(ROLES.DOCTOR);
-const buyerDashboard = createDashboardPage(ROLES.BUYER);
+const sellerDashboard = createDashboardPage(ROLES.SELLER);
 const userDashboard = createDashboardPage(ROLES.USER);
 
 // GET /dashboard  -> "user" role sees their dashboard,
@@ -873,7 +876,7 @@ export {
     dashboardHome,
     farmerDashboard,
     doctorDashboard,
-    buyerDashboard,
+    sellerDashboard,
     userDashboard,
     getDashboardData
 };

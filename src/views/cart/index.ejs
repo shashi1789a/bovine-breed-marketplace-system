@@ -115,6 +115,10 @@
 
     .qty-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(15, 98, 172, 0.12); }
 
+    .btn-buy-item { background: #0F62AC; color: #fff; border-radius: 999px; padding: 6px 14px; font-size: 0.82rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-buy-item:hover { color: #fff; opacity: 0.9; }
+    .btn-save-item { background: none; border: none; color: #BE185D; font-size: 0.82rem; font-weight: 600; padding: 0; cursor: pointer; }
+
     .btn-link-danger {
       background: none;
       border: none;
@@ -342,6 +346,12 @@
                           inputmode="numeric"
                           aria-label="Quantity for <%= product.name %>"
                         >
+                      </form>
+
+                      <a href="/orders/checkout?only=<%= product._id %>" class="btn-buy-item"><i class="fas fa-bolt"></i> Buy this item</a>
+
+                      <form action="/cart/<%= product._id %>/save" method="POST">
+                        <button type="submit" class="btn-save-item"><i class="far fa-heart me-1"></i>Save to wishlist</button>
                       </form>
 
                       <form action="/cart/<%= product._id %>/remove" method="POST">

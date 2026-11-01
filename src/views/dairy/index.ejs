@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= locals.title || 'Dairy Record | BoviNetra' %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="/assets/css/tools.css" rel="stylesheet">
+</head>
+<body>
+<%- include('../partials/header') %>
+
+<%
+  const monthLabel = new Date(month + '-01T00:00:00Z').toLocaleString('en-IN', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+  const inr = (v) => '₹ ' + Number(v).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+  const dayLabel = (d) => new Date(d + 'T00:00:00Z').toLocaleString('en-IN', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+  const chartData = JSON.stringify(series).replace(/</g, '\\u003c');
+%>
+
+<main class="page">
+  <div class="wrap">
+    <div class="page-head">
+      <div>
+        <h2><%= t("Dairy record") %></h2>
+        <p class="muted">Daily milk, expenses and income for <%= monthLabel %></p>
+      </div>
+      <div class="actions-x">
+        <a class="btn-soft" href="/farmer/dairy?month=<%= prevMonth %>"><i class="fas fa-chevron-left"></i> <%= t("Previous") %></a>
+        <% if (nextMonth) { %><a class="btn-soft" href="/farmer/dairy?month=<%= nextMonth %>"><%= t("Next") %> <i class="fas fa-chevron-right"></i></a><% } %>
+        <a class="btn-soft" href="/farmer/reminders"><i class="fas fa-calendar-check"></i> <%= t("Reminders") %></a>
+      </div>
+    </div>
+
+    <% if (locals.success) { %><div class="alert-modern alert-success" role="status"><%= success %></div><% } %>
+    <% if (locals.error) { %><div class="alert-modern alert-error" role="alert"><%= error %></div><% } %>
+
+    <section class="grid cols-4" style="margin-bottom:1rem">
+      <div class="stat"><span><%= t("Milk this month") %></span><strong><%= summary.litres %> L</strong></div>
+      <div class="stat"><span><%= t("Average per day") %></span><strong><%= summary.avgLitres %> L</strong></div>
+      <div class="stat good"><span><%= t("Income") %></span><strong><%= inr(summary.income) %></strong></div>
+      <div class="stat bad"><span><%= t("Expenses") %></span><strong><%= inr(summary.expense) %></strong></div>
+      <div class="stat <%= summary.profit >= 0 ? 'good' : 'bad' %>"><span><%= t("Profit") %></span><strong><%= inr(summary.profit) %></strong></div>
+    </section>
+
+    <section class="card-x">
+      <h3><%= t("Daily milk and money") %></h3>
+      <svg id="chart" class="chart" role="img" aria-label="Daily milk, income and expense chart"></svg>
+      <div class="legend">
+        <span><i style="background:#0F62AC"></i><%= t("Milk (litres)") %></span>
+        <span><i style="background:#16A34A"></i><%= t("Income (₹)") %></span>
+        <span><i style="background:#F59E0B"></i><%= t("Expense (₹)") %></span>
+      </div>
+    </section>
+
+    <div class="grid cols-2">
+      <section class="card-x">
+        <h3><%= t("Add milk record") %></h3>
+        <form method="post" action="/farmer/dairy/milk">
+          <div class="form-grid">
+            <div><label for="mDay"><%= t("Date") %></label><input class="field" id="mDay" type="date" name="day" value="<%= today %>" max="<%= today %>" required></div>
+            <div><label for="mMorning"><%= t("Morning (L)") %></label><input class="field" id="mMorning" type="number" name="morningLitres" min="0" max="1000" step="0.1" value="<%= todayMilk ? todayMilk.morningLitres : '' %>" inputmode="decimal"></div>
+            <div><label for="mEvening"><%= t("Evening (L)") %></label><input class="field" id="mEvening" type="number" name="eveningLitres" min="0" max="1000" step="0.1" value="<%= todayMilk ? todayMilk.eveningLitres : '' %>" inputmode="decimal"></div>
+            <div><label for="mRate"><%= t("Rate per litre (₹)") %></label><input class="field" id="mRate" type="number" name="ratePerLitre" min="0" max="1000" step="0.01" value="<%= todayMilk ? todayMilk.ratePerLitre : '' %>" inputmode="decimal"></div>
+          </div>
+          <p class="muted" style="margin:8px 0"><%= t("Saving a date again replaces that day's record.") %></p>
+          <button class="btn-main" type="submit"><i class="fas fa-check"></i> <%= t("Save milk") %></button>
+        </form>
+      </section>
+
+      <section class="card-x">
+        <h3><%= t("Add expense or income") %></h3>
+        <form method="post" action="/farmer/dairy/money">
+          <div class="form-grid">
+            <div><label for="kind"><%= t("Type") %></label>
+              <select class="field" id="kind" name="kind"><option value="expense"><%= t("Expense") %></option><option value="income"><%= t("Income") %></option></select></div>
+            <div><label for="category"><%= t("Category") %></label>
+              <select class="field" id="category" name="category"></select></div>
+            <div><label for="amount"><%= t("Amount (₹)") %></label><input class="field" id="amount" type="number" name="amount" min="1" max="100000000" step="0.01" required inputmode="decimal"></div>
+            <div><label for="moneyDay"><%= t("Date") %></label><input class="field" id="moneyDay" type="date" name="day" value="<%= today %>" max="<%= today %>" required></div>
+          </div>
+          <div style="margin:10px 0"><label for="note" class="muted"><%= t("Note (optional)") %></label><input class="field" id="note" type="text" name="note" maxlength="150" placeholder="e.g. 2 bags cattle feed"></div>
+          <button class="btn-main" type="submit"><i class="fas fa-plus"></i> <%= t("Add") %></button>
+        </form>
+      </section>
+    </div>
+
+    <% if (byCategory.length) { %>
+      <section class="card-x">
+        <h3><%= t("Where the money went") %></h3>
+        <% const top = byCategory[0].value; byCategory.forEach(item => { %>
+          <div class="bar-row"><span class="name"><%= item.name.replace('_', ' ') %></span><span class="track"><span style="width:<%= Math.max(3, Math.round(item.value / top * 100)) %>%"></span></span><strong><%= inr(item.value) %></strong></div>
+        <% }) %>
+      </section>
+    <% } %>
+
+    <section class="card-x">
+      <h3><%= t("Entries") %></h3>
+      <% if (!entries.length) { %>
+        <p class="empty-x"><%= t("No entries this month yet. Add today's milk above.") %></p>
+      <% } else { entries.forEach(entry => { %>
+        <div class="row-x">
+          <div class="grow">
+            <% if (entry.kind === 'milk') { %>
+              <strong><%= entry.morningLitres + entry.eveningLitres %> L milk<% if (entry.amount) { %> · <%= inr(entry.amount) %><% } %></strong>
+              <span class="muted"><%= dayLabel(entry.day) %> · morning <%= entry.morningLitres %> L, evening <%= entry.eveningLitres %> L<%= entry.ratePerLitre ? ' at ₹' + entry.ratePerLitre : '' %></span>
+            <% } else { %>
+              <strong><%= entry.kind === 'expense' ? 'Expense' : 'Income' %> · <%= inr(entry.amount) %></strong>
+              <span class="muted"><%= dayLabel(entry.day) %> · <%= entry.category.replace('_', ' ') %><%= entry.note ? ' · ' + entry.note : '' %></span>
+            <% } %>
+          </div>
+          <span class="pill <%= entry.kind === 'expense' ? 'late' : 'ok' %>"><%= entry.kind %></span>
+          <form method="post" action="/farmer/dairy/<%= entry._id %>/delete" onsubmit="return confirm('Delete this entry?')"><button class="btn-danger-soft" type="submit" aria-label="Delete entry"><i class="fas fa-trash"></i></button></form>
+        </div>
+      <% }) } %>
+    </section>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script id="seriesData" type="application/json"><%- chartData %></script>
+<script>
+  (function () {
+    const series = JSON.parse(document.getElementById('seriesData').textContent);
+    const categories = {
+      expense: <%- JSON.stringify(expenseCategories) %>,
+      income: <%- JSON.stringify(incomeCategories) %>
+    };
+    const kind = document.getElementById('kind');
+    const category = document.getElementById('category');
+
+    const fillCategories = () => {
+      category.replaceChildren();
+      categories[kind.value].forEach((name) => {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name.replace('_', ' ');
+        category.append(option);
+      });
+    };
+
+    kind.addEventListener('change', fillCategories);
+    fillCategories();
+
+    const svg = document.getElementById('chart');
+    const NS = 'http://www.w3.org/2000/svg';
+    const W = 900, H = 220, L = 38, R = 38, T = 10, B = 24;
+
+    const make = (tag, attrs, text) => {
+      const node = document.createElementNS(NS, tag);
+      Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+      if (text !== undefined) node.textContent = text;
+      return node;
+    };
+
+    const draw = () => {
+      svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+      
+
+      const maxLitres = Math.max(1, ...series.map((p) => p.litres));
+      const maxMoney = Math.max(1, ...series.map((p) => Math.max(p.income, p.expense)));
+      const slot = (W - L - R) / series.length;
+      const plotH = H - T - B;
+
+      [0, 0.5, 1].forEach((fraction) => {
+        const y = T + plotH * (1 - fraction);
+        svg.append(make('line', { x1: L, x2: W - R, y1: y, y2: y, stroke: '#E2EDF7' }));
+        svg.append(make('text', { x: L - 4, y: y + 3, 'text-anchor': 'end', 'font-size': 10, fill: '#5A6E7F' }, Math.round(maxLitres * fraction)));
+        svg.append(make('text', { x: W - R + 4, y: y + 3, 'font-size': 10, fill: '#5A6E7F' }, Math.round(maxMoney * fraction)));
+      });
+
+      series.forEach((point, index) => {
+        const x = L + slot * index;
+        const barW = Math.max(2, slot * 0.7);
+        const h = (point.litres / maxLitres) * plotH;
+        const bar = make('rect', { x: x + (slot - barW) / 2, y: T + plotH - h, width: barW, height: h, fill: '#0F62AC', rx: 2 });
+        bar.append(make('title', {}, point.day + ': ' + point.litres + ' L, income ₹' + point.income + ', expense ₹' + point.expense));
+        svg.append(bar);
+
+        if (index % 5 === 0 || index === series.length - 1) {
+          svg.append(make('text', { x: x + slot / 2, y: H - 8, 'text-anchor': 'middle', 'font-size': 10, fill: '#5A6E7F' }, Number(point.day.slice(8))));
+        }
+      });
+
+      const line = (key, color) => {
+        const points = series.map((point, index) => (L + slot * index + slot / 2) + ',' + (T + plotH - (point[key] / maxMoney) * plotH));
+        svg.append(make('polyline', { points: points.join(' '), fill: 'none', stroke: color, 'stroke-width': 2, 'stroke-linejoin': 'round' }));
+      };
+
+      line('income', '#16A34A');
+      line('expense', '#F59E0B');
+    };
+
+    draw();
+  })();
+</script>
+</body>
+</html>

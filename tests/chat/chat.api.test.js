@@ -21,7 +21,7 @@ beforeAll(async () => {
 
     alice = await createUser("farmer", { fullName: "Alice Kumar" });
     bob = await createUser("doctor", { fullName: "Bob Singh" });
-    carol = await createUser("buyer", { fullName: "Carol Devi" });
+    carol = await createUser("seller", { fullName: "Carol Devi" });
 });
 
 afterAll(async () => {
@@ -108,7 +108,7 @@ describe("finding people", () => {
     });
 
     it("hides deactivated users", async () => {
-        const ghost = await createUser("buyer", { fullName: "Zeta Ghost" });
+        const ghost = await createUser("seller", { fullName: "Zeta Ghost" });
         await User.updateOne({ _id: ghost.id }, { isActive: false });
 
         const res = await get("/chat/api/users?q=zeta", alice);

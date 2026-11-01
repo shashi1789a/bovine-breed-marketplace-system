@@ -6,10 +6,41 @@ export const PRODUCT_CATEGORIES = Object.freeze([
     "Vaccine",
     "Medicine",
     "Feed",
-    "Other"
+    "Other",
+    "Fodder & Straw",
+    "Dung Cake (Goitha)",
+    "Manure & Compost",
+    "Trough (Naad)",
+    "Supplement",
+    "Equipment",
+    "Pet Food",
+    "Pet Accessories",
+    "Grooming & Hygiene",
+    "Bedding & Shelter"
 ]);
 
-export const SELLER_ROLES = Object.freeze(["farmer", "doctor", "admin"]);
+export const FARMER_CATEGORIES = Object.freeze([
+    "Feed",
+    "Fodder & Straw",
+    "Dung Cake (Goitha)",
+    "Manure & Compost",
+    "Trough (Naad)"
+]);
+
+export const SELLER_CATEGORIES = Object.freeze(
+    PRODUCT_CATEGORIES.filter((category) => category !== "Cattle Breed")
+);
+
+export const categoriesForRole = (role) => {
+    const key = String(role || "").toLowerCase();
+
+    if (key === "farmer") return FARMER_CATEGORIES;
+    if (key === "seller") return SELLER_CATEGORIES;
+
+    return PRODUCT_CATEGORIES;
+};
+
+export const SELLER_ROLES = Object.freeze(["farmer", "doctor", "seller", "admin"]);
 
 export const APPROVAL_STATUS = Object.freeze({
     PENDING: "Pending",

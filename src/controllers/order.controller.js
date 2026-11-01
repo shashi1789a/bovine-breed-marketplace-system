@@ -22,6 +22,7 @@ import {
     readFlash
 } from "../utils/http.js";
 import { generateOrderNumber } from "../utils/orderNumber.js";
+import { orderCancelledByBuyer, orderPlaced } from "../services/orderEvents.service.js";
 import {
     getRazorpay,
     toPaise,
@@ -79,6 +80,37 @@ const loadCartForCheckout = async (userId) => {
     }
 
     return cart;
+};
+
+const readOnly = (value) => {
+    const text = typeof value === "string" ? value.trim() : "";
+
+    return isObjectId(text) ? text : "";
+};
+
+const pickItems = (cart, only) => {
+    if (!only) return cart.items;
+
+    const items = cart.items.filter((item) => String(item.product) === only);
+
+    if (!items.length) {
+        throw new ApiError(400, "That item is not in your cart");
+    }
+
+    return items;
+};
+
+const removeFromCart = async (userId, productIds, session) => {
+    const cart = await Cart.findOne({ user: userId }).session(session);
+
+    if (!cart) return;
+
+    const gone = new Set(productIds.map(String));
+
+    cart.items = cart.items.filter((item) => !gone.has(String(item.product)));
+    cart.calculateCart();
+
+    await cart.save({ session });
 };
 
 const previewGroups = async (cartItems) => {
@@ -200,17 +232,25 @@ const reserveStockAndCreateOrders = async ({
 
 const showCheckoutPage = asyncHandler(async (req, res) => {
     const cart = await loadCartForCheckout(req.user._id);
-    const groups = await previewGroups(cart.items);
+    const only = readOnly(req.query.only);
+    const groups = await previewGroups(pickItems(cart, only));
 
     const totalAmount = round2(
         groups.reduce((sum, group) => sum + group.subtotal + group.shippingTotal, 0)
     );
+
+    if (wantsJson(req)) {
+        return res
+            .status(200)
+            .json(new ApiResponse(200, { groups, totalAmount, only }, "Checkout preview"));
+    }
 
     return res.status(200).render("checkout/index", {
         title: "Checkout",
         user: req.user,
         groups,
         totalAmount,
+        only,
         error: readFlash(req.query.error)
     });
 });
@@ -223,7 +263,9 @@ const placeOrderCOD = asyncHandler(async (req, res) => {
         throw new ApiError(400, errors.join(" "));
     }
 
-    const groups = await previewGroups(cart.items);
+    const only = readOnly(req.body?.only);
+    const groups = await previewGroups(pickItems(cart, only));
+    const purchased = groups.flatMap((group) => group.items.map((item) => item.product));
     const checkoutId = crypto.randomUUID();
 
     const session = await mongoose.startSession();
@@ -240,15 +282,13 @@ const placeOrderCOD = asyncHandler(async (req, res) => {
                 groups
             });
 
-            await Cart.updateOne(
-                { _id: cart._id },
-                { $set: { items: [], totalItems: 0, totalQuantity: 0, totalAmount: 0 } },
-                { session }
-            );
+            await removeFromCart(req.user._id, purchased, session);
         });
     } finally {
         await session.endSession();
     }
+
+    await orderPlaced(orders);
 
     return respond(req, res, {
         status: 201,
@@ -266,7 +306,7 @@ const createRazorpayCheckout = asyncHandler(async (req, res) => {
         throw new ApiError(400, errors.join(" "));
     }
 
-    const groups = await previewGroups(cart.items);
+    const groups = await previewGroups(pickItems(cart, readOnly(req.body?.only)));
 
     const totalAmount = round2(
         groups.reduce((sum, group) => sum + group.subtotal + group.shippingTotal, 0)
@@ -379,15 +419,17 @@ const verifyRazorpayPayment = asyncHandler(async (req, res) => {
                 { session }
             );
 
-            await Cart.updateOne(
-                { user: req.user._id },
-                { $set: { items: [], totalItems: 0, totalQuantity: 0, totalAmount: 0 } },
-                { session }
+            await removeFromCart(
+                req.user._id,
+                orders.flatMap((order) => order.items.map((item) => item.product)),
+                session
             );
         });
     } finally {
         await session.endSession();
     }
+
+    await orderPlaced(orders);
 
     return res.status(200).json(
         new ApiResponse(
@@ -649,6 +691,8 @@ const cancelOrder = asyncHandler(async (req, res) => {
     } finally {
         await session.endSession();
     }
+
+    await orderCancelledByBuyer(order);
 
     return respond(req, res, {
         redirectTo: "/orders",

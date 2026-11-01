@@ -15,12 +15,17 @@ const reelSchema = new Schema(
 
         caption: { type: String, trim: true, maxlength: MAX_CAPTION_LENGTH, default: "" },
 
+        optimized: { type: Boolean, default: false },
+
+        likeCount: { type: Number, default: 0, min: 0 },
+        commentCount: { type: Number, default: 0, min: 0 },
+        viewCount: { type: Number, default: 0, min: 0 },
+
         isActive: { type: Boolean, default: true }
     },
     { timestamps: true }
 );
 
-/* Newest first, per farmer or per cattle. */
 reelSchema.index({ isActive: 1, _id: -1 });
 reelSchema.index({ farmer: 1, _id: -1 });
 

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= locals.title || "BoviNetra" %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="/assets/css/tools.css" rel="stylesheet">
+</head>
+<body>
+<%- include("../partials/header") %>
+
+<main class="page">
+  <div class="wrap">
+    <div class="page-head">
+      <div>
+        <h2><%= t("Book a doctor") %></h2>
+        <p class="muted"><%= t("Pick a cattle doctor, choose a time and consult by video.") %></p>
+      </div>
+      <div class="actions-x">
+        <% if (locals.user) { %><a class="btn-soft" href="/appointments"><i class="fas fa-calendar-check"></i> <%= t("My appointments") %></a><% } %>
+      </div>
+    </div>
+
+    <form method="get" action="/doctors" class="actions-x" style="margin-bottom:1rem">
+      <input class="field" style="max-width:340px" type="search" name="q" value="<%= q %>" placeholder="Search by name or specialization" aria-label="Search doctors">
+      <button class="btn-main" type="submit"><i class="fas fa-search"></i> <%= t("Search") %></button>
+    </form>
+
+    <% if (!doctors.length) { %>
+      <section class="card-x"><p class="empty-x"><%= t("No doctors are taking bookings right now.") %></p></section>
+    <% } else { %>
+      <div class="grid cols-2">
+        <% doctors.forEach(d => { const info = d.doctorDetails || {}; %>
+          <article class="card-x">
+            <div class="row-x" style="border:0;padding:0">
+              <img src="<%= d.avatar && /^https:\/\//.test(d.avatar) ? d.avatar : '/images/default-avatar.png' %>" alt="" width="56" height="56" style="border-radius:50%;object-fit:cover">
+              <div class="grow">
+                <strong><%= d.fullName %></strong>
+                <span class="muted"><%= info.specialization || 'Veterinary doctor' %><%= info.experience != null ? ' · ' + info.experience + ' yrs' : '' %></span>
+              </div>
+            </div>
+            <p class="muted" style="margin:10px 0"><%= info.consultationFee ? 'Fee ₹' + info.consultationFee : 'Fee on request' %> · <%= info.availableFrom || '10:00' %> to <%= info.availableTo || '17:00' %></p>
+            <a class="btn-main" href="/doctors/<%= d._id %>"><i class="fas fa-video"></i> <%= t("Book consultation") %></a>
+          </article>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</main>
+
+<%- include("../partials/footer") %>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

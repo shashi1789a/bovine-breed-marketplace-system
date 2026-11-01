@@ -1,5 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
+import { INDIA_STATES } from "../utils/india.js";
+
 export const CATTLE_CATEGORIES = Object.freeze(["Cow", "Buffalo"]);
 export const CATTLE_MANAGER_ROLES = Object.freeze(["farmer"]);
 export const MAX_CATTLE_IMAGES = 6;
@@ -21,6 +23,21 @@ const amount = (max) => ({
     ...(max !== undefined && { max: [max, `{PATH} cannot exceed ${max}`] })
 });
 
+export const HEALTH_RECORD_KINDS = Object.freeze(["vaccination", "checkup", "treatment", "report", "other"]);
+export const MAX_HEALTH_RECORDS = 25;
+
+const healthRecordSchema = new Schema({
+    kind: { type: String, enum: HEALTH_RECORD_KINDS, default: "other" },
+    title: { type: String, required: true, trim: true, maxlength: 100 },
+    date: { type: Date, required: true },
+    notes: { type: String, trim: true, maxlength: 500, default: "" },
+    fileUrl: { type: String, trim: true, maxlength: 500, default: "" },
+    fileName: { type: String, trim: true, maxlength: 150, default: "" },
+    fileKind: { type: String, enum: ["", "image", "pdf"], default: "" },
+    publicId: { type: String, trim: true, maxlength: 300, default: "" },
+    addedAt: { type: Date, default: Date.now }
+});
+
 const cattleSchema = new Schema(
     {
         breedName: {
@@ -34,6 +51,15 @@ const cattleSchema = new Schema(
         name: text(100),
 
         imageUrl: text(500),
+
+        healthRecords: {
+            type: [healthRecordSchema],
+            default: [],
+            validate: {
+                validator: (value) => value.length <= MAX_HEALTH_RECORDS,
+                message: `A cattle can have at most ${MAX_HEALTH_RECORDS} health records`
+            }
+        },
 
         images: {
             type: [String],
@@ -53,6 +79,15 @@ const cattleSchema = new Schema(
                 values: CATTLE_CATEGORIES,
                 message: "{VALUE} is not a valid category"
             }
+        },
+
+        locationState: text(60),
+        locationDistrict: text(80),
+        latitude: { type: Number, min: [-90, "Latitude is not valid"], max: [90, "Latitude is not valid"] },
+        longitude: { type: Number, min: [-180, "Longitude is not valid"], max: [180, "Longitude is not valid"] },
+        geo: {
+            type: { type: String, enum: ["Point"], default: undefined },
+            coordinates: { type: [Number], default: undefined }
         },
 
         originCountry: text(100),
@@ -181,6 +216,26 @@ const cattleSchema = new Schema(
     }
 );
 
+cattleSchema.pre("validate", function () {
+    if (this.locationState) {
+        const wanted = String(this.locationState).trim().toLowerCase();
+        this.locationState = INDIA_STATES.find((state) => state.toLowerCase() === wanted);
+    }
+
+    const hasLat = typeof this.latitude === "number" && Number.isFinite(this.latitude);
+    const hasLng = typeof this.longitude === "number" && Number.isFinite(this.longitude);
+
+    if (hasLat && hasLng) {
+        this.latitude = Math.round(this.latitude * 100) / 100;
+        this.longitude = Math.round(this.longitude * 100) / 100;
+        this.geo = { type: "Point", coordinates: [this.longitude, this.latitude] };
+    } else {
+        this.latitude = undefined;
+        this.longitude = undefined;
+        this.geo = undefined;
+    }
+});
+
 cattleSchema.pre("validate", async function () {
     if (!this.isModified("sold")) return;
 
@@ -218,5 +273,8 @@ cattleSchema.index({ buyer: 1, createdAt: -1 }, { sparse: true });
 cattleSchema.index({ isActive: 1, sold: 1, category: 1, createdAt: -1 });
 cattleSchema.index({ isActive: 1, sold: 1, price: 1 });
 cattleSchema.index({ breedName: 1 });
+cattleSchema.index({ geo: "2dsphere" });
+cattleSchema.index({ isActive: 1, sold: 1, locationState: 1, locationDistrict: 1 });
+cattleSchema.index({ isActive: 1, sold: 1, avgMilkPerDay: 1 });
 
 export const Cattle = mongoose.model("Cattle", cattleSchema);

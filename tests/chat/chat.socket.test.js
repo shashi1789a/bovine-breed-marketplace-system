@@ -66,7 +66,7 @@ const eventually = async (read, check = Boolean, ms = 2000) => {
     }
 };
 
-const pair = async (roleA = "farmer", roleB = "buyer") => {
+const pair = async (roleA = "farmer", roleB = "seller") => {
     const a = await createUser(roleA);
     const b = await createUser(roleB);
     const { conversation } = await openConversation(a.id, b.id);
@@ -324,7 +324,7 @@ describe("video calls", () => {
     });
 
     it("lets the callee decline and logs it", async () => {
-        const { a, b, conversationId } = await pair("buyer", "farmer");
+        const { a, b, conversationId } = await pair("seller", "farmer");
         const caller = await openSocket(a.cookie);
         const callee = await openSocket(b.cookie);
 
@@ -429,7 +429,7 @@ describe("video calls", () => {
 
     it("never relays signals before the call is answered or to outsiders", async () => {
         const { a, b, conversationId } = await pair();
-        const outsider = await createUser("buyer");
+        const outsider = await createUser("seller");
         const caller = await openSocket(a.cookie);
         const callee = await openSocket(b.cookie);
         const spy = await openSocket(outsider.cookie);

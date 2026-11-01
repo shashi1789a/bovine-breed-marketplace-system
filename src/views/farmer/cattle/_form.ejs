@@ -29,7 +29,19 @@
   const pick = (name, label, options, extra = {}) => ({ type: 'select', name, label, options, ...extra });
   const flag = (name, label, hint, extra = {}) => ({ type: 'flag', name, label, hint, ...extra });
 
+  const stateOptions = locals.states && locals.states.length ? locals.states : [];
+
   const sections = [
+    {
+      title: 'Where is the animal?', icon: 'fa-location-dot', open: true,
+      fields: [
+        pick('locationState', 'State', stateOptions),
+        text('locationDistrict', 'District', 80, { placeholder: 'e.g. Karnal' }),
+        { type: 'locate' },
+        num('latitude', 'Latitude (for Near me and map)', { min: 6, max: 38 }),
+        num('longitude', 'Longitude', { min: 68, max: 98 })
+      ]
+    },
     {
       title: 'Basic details', icon: 'fa-id-card', open: true,
       fields: [
@@ -204,6 +216,9 @@
   .dropzone { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; border: 2px dashed #CFE0F1; border-radius: 18px; padding: 1rem 1.2rem; margin-top: 0.9rem; background: #F8FBFF; transition: border-color 0.2s, background 0.2s; }
   .dropzone.over { border-color: var(--primary); background: #EEF6FD; }
 
+  .breed-suggest { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 0.8rem; padding: 10px 14px; border-radius: 14px; background: #EEF6FF; border: 1px solid var(--border-light); font-size: 0.88rem; font-weight: 500; }
+  .breed-suggest[hidden] { display: none; }
+  .breed-suggest button { border: 0; border-radius: 40px; padding: 6px 16px; background: var(--primary); color: #fff; font-weight: 600; font-size: 0.82rem; cursor: pointer; }
   .thumbs { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 0.9rem; }
   .thumb, .existing-image { position: relative; width: 104px; height: 104px; border-radius: 16px; overflow: hidden; background: #EAF3FB; border: 1px solid var(--border-light); }
   .thumb img, .existing-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -292,6 +307,11 @@
     </div>
 
     <div class="note-error" id="imageProblem" role="alert" hidden></div>
+    <div class="breed-suggest" id="breedSuggest" role="status" aria-live="polite" hidden>
+      <i class="fas fa-brain" aria-hidden="true"></i>
+      <span id="breedSuggestText"></span>
+      <button type="button" id="breedSuggestUse" hidden>Use this breed</button>
+    </div>
     <div class="thumbs" id="imagePreview"></div>
   </section>
 
@@ -311,7 +331,12 @@
         <% section.fields.forEach((f) => { %>
           <% if (f.only && f.only !== mode) { return; } %>
 
-          <% if (f.type === 'flag') { %>
+          <% if (f.type === 'locate') { %>
+            <div class="field" style="grid-column:1/-1">
+              <button type="button" class="btn-soft" id="useLocation"><i class="fas fa-crosshairs"></i> <span>Use my current location</span></button>
+              <small id="locationNote" style="display:block;margin-top:6px;color:var(--text-muted)">Buyers can then find this animal with "Near me" and on the map. Location is saved rounded to about 1 km.</small>
+            </div>
+          <% } else if (f.type === 'flag') { %>
             <div class="field flag">
               <label class="switch">
                 <input type="hidden" name="<%= f.name %>" value="false">
@@ -417,7 +442,7 @@
       hint.textContent = free + ' of ' + MAX_IMAGES + ' photo slots free. JPG, PNG, WEBP or GIF, up to 5 MB each.';
     };
 
-    const addFiles = (incoming) => {
+    let addFiles = (incoming) => {
       const messages = [];
 
       Array.from(incoming).forEach((file) => {
@@ -442,6 +467,92 @@
       showProblem(Array.from(new Set(messages)));
       render();
     };
+
+    const suggestBox = document.getElementById('breedSuggest');
+    const suggestText = document.getElementById('breedSuggestText');
+    const suggestUse = document.getElementById('breedSuggestUse');
+    const breedInput = document.getElementById('breedName');
+    let suggestedFor = null;
+    let suggestedBreed = '';
+
+    const say = (message, breed) => {
+      suggestBox.hidden = false;
+      suggestText.textContent = message;
+      suggestedBreed = breed || '';
+      suggestUse.hidden = !breed;
+    };
+
+    const suggest = async () => {
+      const file = files[0];
+
+      if (!file || !breedInput || file === suggestedFor) return;
+
+      suggestedFor = file;
+
+      if (breedInput.value.trim()) return;
+
+      say('Checking the photo for breed…');
+
+      const body = new FormData();
+      body.append('image', file);
+
+      try {
+        const response = await fetch('/breed/suggest', { method: 'POST', body, credentials: 'same-origin', headers: { Accept: 'application/json' } });
+        const json = await response.json().catch(() => ({}));
+
+        if (!response.ok) throw new Error(json.message || 'Could not check the photo.');
+
+        const data = json.data || {};
+        const confidence = Math.round(Number(data.confidence) || 0);
+
+        if (!breedInput.value.trim()) {
+          breedInput.value = data.breed;
+          say('Breed filled in as ' + data.breed + ' (' + confidence + '% sure). Please correct it if it looks wrong.', '');
+        } else {
+          say('Photo looks like ' + data.breed + ' (' + confidence + '% sure).', data.breed);
+        }
+      } catch (error) {
+        say(error.message + ' You can type the breed yourself.', '');
+      }
+    };
+
+    suggestUse.addEventListener('click', () => {
+      if (suggestedBreed && breedInput) breedInput.value = suggestedBreed;
+      suggestUse.hidden = true;
+    });
+
+    const baseAddFiles = addFiles;
+    addFiles = (incoming) => {
+      baseAddFiles(incoming);
+      suggest();
+    };
+
+    const locateButton = document.getElementById('useLocation');
+
+    if (locateButton) {
+      const note = document.getElementById('locationNote');
+
+      locateButton.addEventListener('click', () => {
+        if (!navigator.geolocation) {
+          note.textContent = 'This browser cannot share your location. Type the district instead.';
+          return;
+        }
+
+        note.textContent = 'Finding your location…';
+
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            document.getElementById('latitude').value = position.coords.latitude.toFixed(4);
+            document.getElementById('longitude').value = position.coords.longitude.toFixed(4);
+            note.textContent = 'Location added. Please also pick the state and district.';
+          },
+          () => {
+            note.textContent = 'Could not get your location. Allow location access or type the district instead.';
+          },
+          { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 }
+        );
+      });
+    }
 
     pickButton.addEventListener('click', () => input.click());
 

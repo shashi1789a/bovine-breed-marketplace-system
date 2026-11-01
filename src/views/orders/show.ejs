@@ -406,6 +406,9 @@
               <span class="text-muted" style="text-transform: capitalize;">&middot; <%= order.sellerRole %></span>
             <% } %>
           </p>
+          <% if (order.orderStatus === 'Delivered' && order.seller && order.seller.username && order.sellerRole === 'farmer') { %>
+            <a href="/farmers/<%= encodeURIComponent(order.seller.username) %>#reviews" class="btn-soft mt-2"><i class="fas fa-star"></i> Rate this seller</a>
+          <% } %>
         </section>
 
         <section class="panel no-print">

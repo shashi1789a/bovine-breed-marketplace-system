@@ -1,3 +1,4 @@
+import { notifyNewMessage } from "../services/chatNotify.service.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -27,7 +28,6 @@ export const showChatPage = (req, res) =>
         user: req.user
     });
 
-/* Also used by the browser to refresh an expired session before reconnecting the socket. */
 export const getMe = (req, res) =>
     res.status(200).json(new ApiResponse(200, toPublicUser(req.user), "Session is valid"));
 
@@ -43,6 +43,13 @@ export const findPeople = asyncHandler(async (req, res) => {
 
 export const getMyConversations = asyncHandler(async (req, res) => {
     const conversations = await listConversations(req.user._id);
+    const io = req.app.get("io");
+
+    for (const conversation of conversations) {
+        if (conversation.other.presenceHidden) continue;
+
+        conversation.other.online = Boolean(io?.sockets.adapter.rooms.get(`user:${conversation.other.id}`)?.size);
+    }
 
     return res
         .status(200)
@@ -88,17 +95,12 @@ export const getIceServers = (req, res) => {
         );
 };
 
-/*
- * Upload a picture or document into a conversation. The server stores the file,
- * saves the message and pushes it to both people over the socket.
- */
 export const uploadAttachment = asyncHandler(async (req, res) => {
     try {
         const file = req.file;
 
         if (!file) throw new ApiError(400, "Choose a file to send");
 
-        /* Check the chat belongs to this person before anything is uploaded. */
         await getConversationFor(req.params.id, req.user._id);
 
         if (
@@ -144,15 +146,21 @@ export const uploadAttachment = asyncHandler(async (req, res) => {
             }
         });
 
-        /* clientId lets the sender's browser swap its "sending…" bubble for the real message. */
         const clientId = typeof req.body?.clientId === "string" ? req.body.clientId.slice(0, 64) : undefined;
         const payload = { ...message, clientId };
 
         const io = req.app.get("io");
 
         if (io) {
-            /* Both people, and every tab of the sender. The browser ignores a message it already has. */
             io.to(`user:${recipientId}`).to(`user:${req.user._id}`).emit("chat:message", payload);
+
+            if (!io.sockets.adapter.rooms.get(`user:${recipientId}`)?.size) {
+                notifyNewMessage({
+                    recipientId,
+                    sender: { id: String(req.user._id), fullName: req.user.fullName },
+                    message: payload
+                }).catch(() => {});
+            }
         }
 
         return res.status(201).json(new ApiResponse(201, payload, "File sent"));

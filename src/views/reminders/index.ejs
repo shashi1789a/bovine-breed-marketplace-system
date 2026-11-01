@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= locals.title || 'Reminders | BoviNetra' %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="/assets/css/tools.css" rel="stylesheet">
+</head>
+<body>
+<%- include('../partials/header') %>
+
+<%
+  const label = (v) => String(v).replace(/_/g, ' ');
+  const dateLabel = (d) => new Date(d + 'T00:00:00Z').toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+  const stateText = (r) => r.done ? 'Done' : r.distance < 0 ? 'Overdue ' + (-r.distance) + 'd' : r.distance === 0 ? 'Today' : 'In ' + r.distance + 'd';
+  const presets = [
+    { title: 'FMD vaccine', kind: 'vaccination', repeat: 180 },
+    { title: 'HS vaccine', kind: 'vaccination', repeat: 365 },
+    { title: 'BQ vaccine', kind: 'vaccination', repeat: 365 },
+    { title: 'Brucellosis vaccine (calves)', kind: 'vaccination', repeat: 0 },
+    { title: 'Theileriosis vaccine', kind: 'vaccination', repeat: 365 },
+    { title: 'Deworming', kind: 'deworming', repeat: 90 },
+    { title: 'Heat expected', kind: 'heat', repeat: 21 },
+    { title: 'Health checkup', kind: 'checkup', repeat: 0 }
+  ];
+%>
+
+<main class="page">
+  <div class="wrap">
+    <div class="page-head">
+      <div>
+        <h2>Vaccination &amp; breeding reminders</h2>
+        <p class="muted"><%= t("We notify you in the app, by email and on your phone before the date.") %></p>
+      </div>
+      <div class="actions-x">
+        <a class="btn-soft" href="/farmer/dairy"><i class="fas fa-chart-column"></i> <%= t("Dairy record") %></a>
+        <a class="btn-soft" href="/account/preferences"><i class="fas fa-gear"></i> <%= t("Settings") %></a>
+      </div>
+    </div>
+
+    <% if (locals.success) { %><div class="alert-modern alert-success" role="status"><%= success %></div><% } %>
+    <% if (locals.error) { %><div class="alert-modern alert-error" role="alert"><%= error %></div><% } %>
+
+    <div class="grid cols-2">
+      <section class="card-x">
+        <h3><%= t("Vaccination or checkup") %></h3>
+        <form method="post" action="/farmer/reminders">
+          <div class="form-grid">
+            <div style="grid-column:1/-1"><label for="preset"><%= t("Common") %></label>
+              <select class="field" id="preset"><option value=""><%= t("Choose or type your own below") %></option>
+                <% presets.forEach((p, i) => { %><option value="<%= i %>"><%= p.title %></option><% }) %></select></div>
+            <div style="grid-column:1/-1"><label for="title"><%= t("What") %></label><input class="field" id="title" name="title" maxlength="100" required placeholder="e.g. FMD vaccine"></div>
+            <input type="hidden" name="kind" id="kind" value="vaccination">
+            <div><label for="cattleLabel"><%= t("Animal (tag / name)") %></label><input class="field" id="cattleLabel" name="cattleLabel" maxlength="80" placeholder="e.g. Gauri or all"></div>
+            <div><label for="dueDay"><%= t("Due date") %></label><input class="field" id="dueDay" type="date" name="dueDay" value="<%= today %>" required></div>
+            <div><label for="leadDays"><%= t("Remind me before (days)") %></label><input class="field" id="leadDays" type="number" name="leadDays" min="0" max="30" value="3"></div>
+            <div><label for="repeatDays">Repeat every (days, 0 = never)</label><input class="field" id="repeatDays" type="number" name="repeatDays" min="0" max="730" value="0"></div>
+          </div>
+          <div style="margin:10px 0"><label for="notes" class="muted"><%= t("Notes (optional)") %></label><input class="field" id="notes" name="notes" maxlength="300"></div>
+          <button class="btn-main" type="submit"><i class="fas fa-plus"></i> <%= t("Add reminder") %></button>
+        </form>
+      </section>
+
+      <section class="card-x">
+        <h3><%= t("Breeding and calving") %></h3>
+        <p class="muted" style="margin-bottom:10px"><%= t("Enter the insemination or mating date. We add a pregnancy check after 60 days and the expected calving date (about 283 days for cows, 310 for buffaloes).") %></p>
+        <form method="post" action="/farmer/reminders/breeding">
+          <div class="form-grid">
+            <div><label for="bLabel"><%= t("Animal (tag / name)") %></label><input class="field" id="bLabel" name="cattleLabel" maxlength="80" required></div>
+            <div><label for="bSpecies"><%= t("Animal type") %></label><select class="field" id="bSpecies" name="species"><option value="cow"><%= t("Cow") %></option><option value="buffalo"><%= t("Buffalo") %></option></select></div>
+            <div><label for="serviceDay"><%= t("Insemination date") %></label><input class="field" id="serviceDay" type="date" name="serviceDay" max="<%= today %>" value="<%= today %>" required></div>
+          </div>
+          <button class="btn-main" type="submit" style="margin-top:12px"><i class="fas fa-baby"></i> <%= t("Add breeding dates") %></button>
+        </form>
+      </section>
+    </div>
+
+    <nav class="tabs" aria-label="Reminder lists">
+      <a href="/farmer/reminders" class="<%= tab === 'open' ? 'active' : '' %>"><%= t("Upcoming") %></a>
+      <a href="/farmer/reminders?tab=done" class="<%= tab === 'done' ? 'active' : '' %>"><%= t("Done") %></a>
+    </nav>
+
+    <section class="card-x">
+      <% if (!reminders.length) { %>
+        <p class="empty-x"><%= tab === 'open' ? 'Nothing upcoming. Add your first vaccination or breeding date above.' : 'Nothing finished yet.' %></p>
+      <% } else { reminders.forEach(r => { %>
+        <div class="row-x">
+          <div class="grow">
+            <strong><%= r.title %><%= r.cattleLabel ? ' · ' + r.cattleLabel : '' %></strong>
+            <span class="muted"><%= label(r.kind) %> · <%= dateLabel(r.dueDay) %><%= r.repeatDays ? ' · repeats every ' + r.repeatDays + ' days' : '' %><%= r.notes ? ' · ' + r.notes : '' %></span>
+          </div>
+          <span class="pill <%= r.state === 'overdue' ? 'late' : (r.state === 'done' || r.state === 'later') ? 'ok' : 'pending' %>"><%= stateText(r) %></span>
+          <% if (!r.done) { %><form method="post" action="/farmer/reminders/<%= r._id %>/done"><button class="btn-main" type="submit"><i class="fas fa-check"></i> <%= t("Done") %></button></form><% } %>
+          <form method="post" action="/farmer/reminders/<%= r._id %>/delete" onsubmit="return confirm('Delete this reminder?')"><button class="btn-danger-soft" type="submit" aria-label="Delete reminder"><i class="fas fa-trash"></i></button></form>
+        </div>
+      <% }) } %>
+    </section>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  (function () {
+    const presets = <%- JSON.stringify(presets) %>;
+    const select = document.getElementById('preset');
+
+    select.addEventListener('change', () => {
+      const item = presets[Number(select.value)];
+      if (!item) return;
+      document.getElementById('title').value = item.title;
+      document.getElementById('kind').value = item.kind;
+      document.getElementById('repeatDays').value = item.repeat;
+    });
+  })();
+</script>
+</body>
+</html>

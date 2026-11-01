@@ -32,7 +32,6 @@ const uploader = multer({
     limits: { fileSize: MAX_REEL_BYTES, files: 1, fields: 6, fieldSize: 2000 }
 }).single("video");
 
-/* Turns multer's own errors into messages a person can read. */
 export const reelUploadHandler = (req, res, next) => {
     uploader(req, res, (error) => {
         if (!error) return next();

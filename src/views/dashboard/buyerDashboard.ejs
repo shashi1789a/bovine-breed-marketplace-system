@@ -414,7 +414,7 @@
   const inr = (value) =>
     Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 
-  const homeLink = user.role === 'buyer' ? '/buyer/dashboard' : '/dashboard';
+  const homeLink = '/dashboard';
 
   const orderClass = {
     Placed: 'bg-info text-dark',
@@ -451,6 +451,10 @@
 
     <a href="<%= homeLink %>" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a>
     <a href="/chat" class="nav-link"><i class="fas fa-comments"></i> Messages</a>
+    <a href="/cart" class="nav-link"><i class="fas fa-cart-shopping"></i> My Cart</a>
+    <a href="/wishlist" class="nav-link"><i class="fas fa-heart"></i> Wishlist</a>
+    <a href="/doctors" class="nav-link"><i class="fas fa-user-doctor"></i> Book a Doctor</a>
+    <a href="/appointments" class="nav-link"><i class="fas fa-video"></i> Appointments</a>
     <a href="/profile" class="nav-link"><i class="fas fa-user"></i> My Profile</a>
     <a href="/products" class="nav-link"><i class="fas fa-store"></i> Marketplace</a>
     <a href="/cart" class="nav-link">

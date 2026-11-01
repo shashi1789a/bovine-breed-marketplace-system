@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main, chat-features]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Cache the in-memory MongoDB binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/mongodb-binaries
+          key: mongodb-binaries-${{ runner.os }}
+
+      - name: Install
+        run: npm install --no-audit --no-fund
+
+      - name: Check syntax of every source file
+        run: find src -name "*.js" -print0 | xargs -0 -n1 node --check
+
+      - name: Run tests
+        run: npm test -- --ci

@@ -8,6 +8,8 @@
     "start": "node -r ./dns-fix.cjs -r dotenv/config src/index.js",
     "dev": "nodemon -r ./dns-fix.cjs -r dotenv/config src/index.js",
     "create-admin": "node -r ./dns-fix.cjs -r dotenv/config scripts/createAdmin.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:unit": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/unit",
     "test:chat": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/chat",
     "test:e2e:call": "node tests/e2e/video-call.e2e.mjs"
   },
@@ -27,9 +29,11 @@
     "supertest": "^7.3.1"
   },
   "dependencies": {
+    "@sentry/node": "^10.0.0",
     "axios": "^1.20.0",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.9.0",
+    "compression": "^1.8.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
@@ -47,6 +51,7 @@
     "path": "^0.12.7",
     "razorpay": "^2.9.8",
     "socket.io": "^4.8.4",
-    "views": "^1.0.2"
+    "views": "^1.0.2",
+    "web-push": "^3.6.7"
   }
 }

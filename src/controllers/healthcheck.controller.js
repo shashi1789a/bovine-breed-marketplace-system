@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
+import { monitoringEnabled } from "../utils/monitoring.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
-/* Booleans only. Never put a secret or its value in this response. */
 const readiness = () => ({
     cloudinary: Boolean(
         process.env.CLOUDINARY_CLOUD_NAME &&
@@ -12,7 +12,9 @@ const readiness = () => ({
     ),
     corsOriginSet: Boolean(process.env.CORS_ORIGIN),
     turnConfigured: Boolean(process.env.TURN_URLS),
-    production: process.env.NODE_ENV === "production"
+    production: process.env.NODE_ENV === "production",
+    monitoring: monitoringEnabled(),
+    pushConfigured: Boolean(process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY)
 });
 
 const healthcheck = asyncHandler(async (req, res) => {
@@ -23,7 +25,6 @@ const healthcheck = asyncHandler(async (req, res) => {
             200,
             {
                 db: dbState,
-                /* If this is missing, Render is still running an old deploy. */
                 chatFeatures: ["reply", "forward", "attachments", "camera-switch"],
                 chatClientVersion: req.app.locals.chatClientVersion,
                 ...readiness()

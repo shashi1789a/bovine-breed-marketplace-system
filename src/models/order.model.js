@@ -27,7 +27,7 @@ export const REFUND_STATUS = Object.freeze({
     FAILED: "Failed"
 });
 
-export const PURCHASER_ROLES = Object.freeze(["user", "buyer", "farmer", "doctor"]);
+export const PURCHASER_ROLES = Object.freeze(["user", "seller", "buyer", "farmer", "doctor"]);
 
 const UNPAID_ORDER_TTL_SECONDS = 30 * 24 * 60 * 60;
 
@@ -120,7 +120,7 @@ const orderSchema = new Schema(
 
         sellerRole: {
             type: String,
-            enum: ["farmer", "doctor", "admin"],
+            enum: ["farmer", "doctor", "seller", "admin"],
             required: true
         },
 

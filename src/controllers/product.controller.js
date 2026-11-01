@@ -1,12 +1,15 @@
 import {
     Product,
     PRODUCT_CATEGORIES,
+    categoriesForRole,
     APPROVAL_STATUS,
     SELLER_ROLES,
     MAX_GALLERY_IMAGES
 } from "../models/product.model.js";
+import { ProductWishlist } from "../models/productWishlist.model.js";
 
 import { Cattle, CATTLE_CATEGORIES } from "../models/cattle.model.js";
+import { INDIA_STATES, NEAR_RADII_KM } from "../utils/india.js";
 import { runListing as runCattleListing } from "./cattle.controller.js";
 
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -151,6 +154,14 @@ const queryNumber = (value) => {
     return Number.isFinite(parsed) && parsed >= 0 ? parsed : undefined;
 };
 
+const allowedCategories = (role, current) => {
+    const list = [...categoriesForRole(role)];
+
+    if (current && !list.includes(current)) list.push(current);
+
+    return list;
+};
+
 const matchCategory = (value) => {
     const normalized = value.toLowerCase().replace(/[-_]+/g, " ").trim();
     return PRODUCT_CATEGORIES.find((item) => item.toLowerCase() === normalized) || null;
@@ -242,7 +253,7 @@ const renderForm = (req, res, view, options = {}) => {
         title,
         user: req.user,
         product,
-        categories: PRODUCT_CATEGORIES,
+        categories: allowedCategories(req.user?.role, product?.category),
         formData,
         error,
         success: null
@@ -269,7 +280,7 @@ const readTags = (value) => {
     return [...new Set(tags)].slice(0, MAX_TAGS);
 };
 
-const parseProductInput = (body, { isForm, isAdmin, isCreate }) => {
+const parseProductInput = (body, { isForm, isAdmin, isCreate, role, currentCategory }) => {
     const source = body && typeof body === "object" ? body : {};
     const data = {};
     const seller = {};
@@ -363,10 +374,17 @@ const parseProductInput = (body, { isForm, isAdmin, isCreate }) => {
     if (provided("category")) {
         const category = matchCategory(readText(source.category) || "");
 
-        if (category) {
-            data.category = category;
-        } else {
+        if (!category) {
             fail("category", "Invalid category.");
+        } else if (category !== currentCategory && !categoriesForRole(role).includes(category)) {
+            fail(
+                "category",
+                role === "farmer"
+                    ? "Farmers can sell only feed, fodder and straw, dung cake (goitha), manure and troughs here. Add cattle from My Cattle. Other products are sold by sellers."
+                    : "You cannot sell this category."
+            );
+        } else {
+            data.category = category;
         }
     }
 
@@ -636,7 +654,8 @@ const addProduct = asyncHandler(async (req, res) => {
     const { data, seller, errors } = parseProductInput(req.body, {
         isForm: isFormRequest(req),
         isAdmin,
-        isCreate: true
+        isCreate: true,
+        role
     });
 
     if (errors.length) {
@@ -691,7 +710,6 @@ const addProduct = asyncHandler(async (req, res) => {
     });
 });
 
-/* $ne also matches documents inserted by hand that lack these fields. */
 const CATTLE_FOR_SALE = Object.freeze([{ isActive: { $ne: false }, sold: { $ne: true } }]);
 
 const getAllProducts = asyncHandler(async (req, res) => {
@@ -703,6 +721,23 @@ const getAllProducts = asyncHandler(async (req, res) => {
             query: { ...req.query, sold: undefined }
         });
 
+        if (wantsJson(req)) {
+            return res.status(200).json(
+                new ApiResponse(
+                    200,
+                    {
+                        type: "cattle",
+                        cattle: listing.cattle,
+                        total: listing.total,
+                        categories: CATTLE_CATEGORIES,
+                        pagination: listing.pagination,
+                        filters: listing.filters
+                    },
+                    "Cattle fetched successfully"
+                )
+            );
+        }
+
         return res.render("products/marketplace", {
             title: "Marketplace",
             user: req.user,
@@ -710,6 +745,8 @@ const getAllProducts = asyncHandler(async (req, res) => {
             cattles: listing.cattle,
             totalCattle: listing.total,
             cattleCategories: CATTLE_CATEGORIES,
+            states: INDIA_STATES,
+            nearRadii: NEAR_RADII_KM,
             pagination: listing.pagination,
             filters: listing.filters,
             counts: { cattle: cattleCount }
@@ -721,6 +758,23 @@ const getAllProducts = asyncHandler(async (req, res) => {
         query: req.query,
         projection: LISTING_PROJECTION
     });
+
+    if (wantsJson(req)) {
+        return res.status(200).json(
+            new ApiResponse(
+                200,
+                {
+                    type: "products",
+                    products: listing.products,
+                    total: listing.total,
+                    categories: PRODUCT_CATEGORIES,
+                    pagination: listing.pagination,
+                    filters: listing.filters
+                },
+                "Products fetched successfully"
+            )
+        );
+    }
 
     return res.render("products/marketplace", {
         title: "Marketplace",
@@ -792,10 +846,15 @@ const getProductById = asyncHandler(async (req, res) => {
         });
     }
 
+    const inWishlist = req.user
+        ? Boolean(await ProductWishlist.exists({ user: req.user._id, product: product._id }))
+        : false;
+
     return res.render("products/product-details", {
         title: product.name,
         user: req.user,
-        product
+        product,
+        inWishlist
     });
 });
 
@@ -824,7 +883,9 @@ const updateProduct = asyncHandler(async (req, res) => {
     const parsed = parseProductInput(req.body, {
         isForm: isFormRequest(req),
         isAdmin,
-        isCreate: false
+        isCreate: false,
+        role,
+        currentCategory: product.category
     });
 
     if (parsed.errors.length) {
@@ -989,5 +1050,9 @@ export {
     getProductDetails,
     deleteProduct,
     searchProducts,
-    filterProductsByCategory
+    filterProductsByCategory,
+    runListing,
+    publicConditions,
+    LISTING_PROJECTION,
+    CATTLE_FOR_SALE
 };

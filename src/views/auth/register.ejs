@@ -8,7 +8,7 @@
 <body>
   <%- include("../partials/header", {
     title: "Create Account | BoviNetra",
-    description: "Register as a farmer, buyer, doctor or user. Detect cattle breeds with AI and trade on the BoviNetra marketplace."
+    description: "Register as a farmer, seller, doctor or user. Detect cattle breeds with AI and trade on the BoviNetra marketplace."
 }) %>
 
 <%
@@ -17,7 +17,7 @@
     const selectedRole = keep('role');
     const roles = [
         ['farmer', 'Farmer: milk producer or cattle owner'],
-        ['buyer', 'Buyer: purchaser or trader'],
+        ['seller', 'Seller: pet and animal products'],
         ['doctor', 'Doctor: veterinary expert'],
         ['user', 'User: general bovin user']
     ];
@@ -429,7 +429,7 @@
                                 </div>
                             </div>
 
-                            <div id="buyerFields" class="extra-fields">
+                            <div id="sellerFields" class="extra-fields">
                                 <div class="input-icon-wrap">
                                     <i class="fas fa-warehouse"></i>
                                     <input type="text" name="address" class="input-modern" placeholder="Business address" maxlength="300">
@@ -470,7 +470,7 @@
         var groups = {
             farmer: document.getElementById('farmerFields'),
             doctor: document.getElementById('doctorFields'),
-            buyer: document.getElementById('buyerFields')
+            seller: document.getElementById('sellerFields')
         };
 
         function handleRoleChange() {
