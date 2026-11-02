@@ -11,7 +11,9 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:unit": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/unit",
     "test:chat": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/chat",
-    "test:e2e:call": "node tests/e2e/video-call.e2e.mjs"
+    "test:e2e:call": "node tests/e2e/video-call.e2e.mjs",
+     "seed": "node -r ./dns-fix.cjs -r dotenv/config scripts/seed.js",
+   "seed:reset": "node -r ./dns-fix.cjs -r dotenv/config scripts/seed.js --reset"
   },
   "keywords": [
     "javaScript",

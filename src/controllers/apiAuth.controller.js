@@ -105,7 +105,7 @@ const registerApi = asyncHandler(async (req, res) => {
             throw new ApiError(502, "Image upload failed. Please try again.");
         }
 
-        const user = await User.create({
+        const payload = {
             fullName,
             email,
             username,
@@ -113,7 +113,28 @@ const registerApi = asyncHandler(async (req, res) => {
             password,
             avatar: avatarUrl,
             coverImage: coverUrl
-        });
+        };
+
+        if (role === "farmer") {
+            payload.farmerDetails = {
+                farmName: readText(req.body?.farmName).slice(0, 150),
+                location: readText(req.body?.location).slice(0, 200)
+            };
+        }
+
+        if (role === "doctor") {
+            const years = Number(readText(req.body?.experience));
+            payload.doctorDetails = {
+                specialization: readText(req.body?.specialization).slice(0, 150),
+                ...(Number.isFinite(years) && years >= 0 && years <= 80 ? { experience: years } : {})
+            };
+        }
+
+        if (role === "seller") {
+            payload.buyerDetails = { address: readText(req.body?.address).slice(0, 300) };
+        }
+
+        const user = await User.create(payload);
 
         const tokens = await issueTokens(user);
 
@@ -301,4 +322,34 @@ const changePasswordApi = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, authPayload(user, tokens), "Password changed successfully"));
 });
 
-export { registerApi, loginApi, refreshApi, logoutApi, getMeApi, updateMeApi, changePasswordApi };
+const updateImageApi = (field) =>
+    asyncHandler(async (req, res) => {
+        const file = req.file;
+
+        try {
+            if (!file) {
+                throw new ApiError(400, field === "avatar" ? "Please select an avatar image." : "Please select a cover image.");
+            }
+
+            if (!isImage(file)) throw new ApiError(400, "Only image files are allowed.");
+
+            const url = await uploadImage(file);
+
+            if (!url) throw new ApiError(502, "Image upload failed. Please try again.");
+
+            const user = await User.findById(req.user._id);
+
+            user[field] = url;
+
+            await user.save();
+
+            return res.status(200).json(new ApiResponse(200, user.toJSON(), "Image updated"));
+        } finally {
+            await discardUploads(req);
+        }
+    });
+
+const updateAvatarApi = updateImageApi("avatar");
+const updateCoverApi = updateImageApi("coverImage");
+
+export { updateAvatarApi, updateCoverApi, registerApi, loginApi, refreshApi, logoutApi, getMeApi, updateMeApi, changePasswordApi };

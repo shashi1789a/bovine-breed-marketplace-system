@@ -8,7 +8,9 @@ import {
     logoutApi,
     getMeApi,
     updateMeApi,
-    changePasswordApi
+    changePasswordApi,
+    updateAvatarApi,
+    updateCoverApi
 } from "../controllers/apiAuth.controller.js";
 
 import { submitContactApi } from "../controllers/apiContact.controller.js";
@@ -49,6 +51,8 @@ router.post("/auth/login", authLimiter, loginApi);
 router.post("/auth/refresh", authLimiter, refreshApi);
 router.post("/auth/logout", verifyJWT, logoutApi);
 router.post("/auth/change-password", verifyJWT, authLimiter, changePasswordApi);
+router.post("/auth/avatar", verifyJWT, upload.single("avatar"), updateAvatarApi);
+router.post("/auth/cover", verifyJWT, upload.single("coverImage"), updateCoverApi);
 
 router.post(
     "/contact",

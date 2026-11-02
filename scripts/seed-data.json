@@ -1,0 +1,2097 @@
+{
+  "password": "Demo@1234",
+  "users": [
+    {
+      "username": "ramesh.patel",
+      "fullName": "Ramesh Patel",
+      "role": "farmer",
+      "avatar": "https://i.pravatar.cc/300?img=12",
+      "coverImage": "https://picsum.photos/seed/patel-gaushala/1200/400",
+      "contactPhone": "9824011101",
+      "farmerDetails": {
+        "farmName": "Patel Gir Gaushala",
+        "location": "Junagadh, Gujarat"
+      },
+      "verification": {
+        "status": "verified",
+        "phone": "9824011101",
+        "farmPhotoUrl": "https://picsum.photos/seed/patel-farm/1200/400",
+        "note": "Farm visited by field team"
+      },
+      "privacy": {
+        "showPresence": true,
+        "showContact": true
+      },
+      "email": "ramesh.patel@seed.bovinetra.dev"
+    },
+    {
+      "username": "harpreet.singh",
+      "fullName": "Harpreet Singh",
+      "role": "farmer",
+      "avatar": "https://i.pravatar.cc/300?img=15",
+      "coverImage": "https://picsum.photos/seed/singh-dairy/1200/400",
+      "contactPhone": "9812345602",
+      "farmerDetails": {
+        "farmName": "Singh Dairy Farm",
+        "location": "Karnal, Haryana"
+      },
+      "verification": {
+        "status": "verified",
+        "phone": "9812345602",
+        "farmPhotoUrl": "https://picsum.photos/seed/singh-farm/1200/400",
+        "note": "Verified with farm photo"
+      },
+      "privacy": {
+        "showPresence": true,
+        "showContact": true
+      },
+      "email": "harpreet.singh@seed.bovinetra.dev"
+    },
+    {
+      "username": "sunita.devi",
+      "fullName": "Sunita Devi",
+      "role": "farmer",
+      "avatar": "https://i.pravatar.cc/300?img=47",
+      "coverImage": "https://picsum.photos/seed/devi-murrah/1200/400",
+      "contactPhone": "9896011103",
+      "farmerDetails": {
+        "farmName": "Devi Murrah Farm",
+        "location": "Rohtak, Haryana"
+      },
+      "verification": {
+        "status": "verified",
+        "phone": "9896011103",
+        "farmPhotoUrl": "https://picsum.photos/seed/devi-farm/1200/400",
+        "note": ""
+      },
+      "privacy": {
+        "showPresence": true,
+        "showContact": false
+      },
+      "email": "sunita.devi@seed.bovinetra.dev"
+    },
+    {
+      "username": "mohan.yadav",
+      "fullName": "Mohan Yadav",
+      "role": "farmer",
+      "avatar": "https://i.pravatar.cc/300?img=33",
+      "coverImage": "https://picsum.photos/seed/yadav-pashu/1200/400",
+      "contactPhone": "9411022204",
+      "farmerDetails": {
+        "farmName": "Yadav Pashu Palan",
+        "location": "Mathura, Uttar Pradesh"
+      },
+      "verification": {
+        "status": "pending",
+        "phone": "9411022204",
+        "farmPhotoUrl": "https://picsum.photos/seed/yadav-farm/1200/400",
+        "note": ""
+      },
+      "privacy": {
+        "showPresence": false,
+        "showContact": true
+      },
+      "email": "mohan.yadav@seed.bovinetra.dev"
+    },
+    {
+      "username": "lakshmi.naidu",
+      "fullName": "Lakshmi Naidu",
+      "role": "farmer",
+      "avatar": "https://i.pravatar.cc/300?img=44",
+      "coverImage": "https://picsum.photos/seed/naidu-ongole/1200/400",
+      "contactPhone": "9848011105",
+      "farmerDetails": {
+        "farmName": "Naidu Ongole Ranch",
+        "location": "Guntur, Andhra Pradesh"
+      },
+      "verification": {
+        "status": "verified",
+        "phone": "9848011105",
+        "farmPhotoUrl": "https://picsum.photos/seed/naidu-farm/1200/400",
+        "note": "Documents checked"
+      },
+      "privacy": {
+        "showPresence": true,
+        "showContact": true
+      },
+      "email": "lakshmi.naidu@seed.bovinetra.dev"
+    },
+    {
+      "username": "balwant.rathore",
+      "fullName": "Balwant Singh Rathore",
+      "role": "farmer",
+      "avatar": "https://i.pravatar.cc/300?img=52",
+      "coverImage": "",
+      "contactPhone": "9414011106",
+      "farmerDetails": {
+        "farmName": "Rathore Cattle Farm",
+        "location": "Bikaner, Rajasthan"
+      },
+      "verification": {
+        "status": "none"
+      },
+      "privacy": {
+        "showPresence": true,
+        "showContact": false
+      },
+      "email": "balwant.rathore@seed.bovinetra.dev"
+    },
+    {
+      "username": "santosh.jadhav",
+      "fullName": "Santosh Jadhav",
+      "role": "farmer",
+      "avatar": "https://i.pravatar.cc/300?img=60",
+      "coverImage": "https://picsum.photos/seed/jadhav-khillar/1200/400",
+      "contactPhone": "9822011107",
+      "farmerDetails": {
+        "farmName": "Jadhav Khillar Farm",
+        "location": "Satara, Maharashtra"
+      },
+      "verification": {
+        "status": "rejected",
+        "phone": "9822011107",
+        "farmPhotoUrl": "https://picsum.photos/seed/jadhav-farm/1200/400",
+        "note": "Photo was not clear, please upload again"
+      },
+      "privacy": {
+        "showPresence": true,
+        "showContact": false
+      },
+      "email": "santosh.jadhav@seed.bovinetra.dev"
+    },
+    {
+      "username": "kavitha.murugan",
+      "fullName": "Kavitha Murugan",
+      "role": "farmer",
+      "avatar": "https://i.pravatar.cc/300?img=25",
+      "coverImage": "https://picsum.photos/seed/murugan-kangayam/1200/400",
+      "contactPhone": "9944011108",
+      "farmerDetails": {
+        "farmName": "Murugan Kangayam Farm",
+        "location": "Erode, Tamil Nadu"
+      },
+      "verification": {
+        "status": "verified",
+        "phone": "9944011108",
+        "farmPhotoUrl": "https://picsum.photos/seed/murugan-farm/1200/400",
+        "note": ""
+      },
+      "privacy": {
+        "showPresence": true,
+        "showContact": true
+      },
+      "email": "kavitha.murugan@seed.bovinetra.dev"
+    },
+    {
+      "username": "agrovet.mart",
+      "fullName": "Agrovet Mart Pune",
+      "role": "seller",
+      "avatar": "https://i.pravatar.cc/300?img=8",
+      "coverImage": "https://picsum.photos/seed/agrovet-store/1200/400",
+      "contactPhone": "9822100201",
+      "buyerDetails": {
+        "address": "Shop 4, Market Yard, Pune, Maharashtra 411037"
+      },
+      "privacy": {
+        "showPresence": true,
+        "showContact": true
+      },
+      "email": "agrovet.mart@seed.bovinetra.dev"
+    },
+    {
+      "username": "kisan.feeds",
+      "fullName": "Kisan Feeds Ludhiana",
+      "role": "seller",
+      "avatar": "https://i.pravatar.cc/300?img=14",
+      "coverImage": "https://picsum.photos/seed/kisan-feeds/1200/400",
+      "contactPhone": "9815100202",
+      "buyerDetails": {
+        "address": "Focal Point, Phase 5, Ludhiana, Punjab 141010"
+      },
+      "privacy": {
+        "showPresence": true,
+        "showContact": true
+      },
+      "email": "kisan.feeds@seed.bovinetra.dev"
+    },
+    {
+      "username": "dairy.needs",
+      "fullName": "Dairy Needs Anand",
+      "role": "seller",
+      "avatar": "https://i.pravatar.cc/300?img=18",
+      "coverImage": "https://picsum.photos/seed/dairy-needs/1200/400",
+      "contactPhone": "9825100203",
+      "buyerDetails": {
+        "address": "Amul Dairy Road, Anand, Gujarat 388001"
+      },
+      "privacy": {
+        "showPresence": true,
+        "showContact": false
+      },
+      "email": "dairy.needs@seed.bovinetra.dev"
+    },
+    {
+      "username": "pashu.care.store",
+      "fullName": "Pashu Care Store Jaipur",
+      "role": "seller",
+      "avatar": "https://i.pravatar.cc/300?img=21",
+      "coverImage": "",
+      "contactPhone": "9414100204",
+      "buyerDetails": {
+        "address": "Sanganer Bazar, Jaipur, Rajasthan 302029"
+      },
+      "privacy": {
+        "showPresence": false,
+        "showContact": true
+      },
+      "email": "pashu.care.store@seed.bovinetra.dev"
+    },
+    {
+      "username": "green.fodder.co",
+      "fullName": "Green Fodder Co Nashik",
+      "role": "seller",
+      "avatar": "https://i.pravatar.cc/300?img=30",
+      "coverImage": "https://picsum.photos/seed/green-fodder/1200/400",
+      "contactPhone": "9922100205",
+      "buyerDetails": {
+        "address": "Gangapur Road, Nashik, Maharashtra 422013"
+      },
+      "privacy": {
+        "showPresence": true,
+        "showContact": true
+      },
+      "email": "green.fodder.co@seed.bovinetra.dev"
+    },
+    {
+      "username": "dr.anita.sharma",
+      "fullName": "Dr. Anita Sharma",
+      "role": "doctor",
+      "avatar": "https://i.pravatar.cc/300?img=5",
+      "coverImage": "https://picsum.photos/seed/dr-anita/1200/400",
+      "contactPhone": "9810200301",
+      "doctorDetails": {
+        "specialization": "Cattle health and vaccination",
+        "experience": 12,
+        "consultationFee": 400,
+        "availableFrom": "10:00",
+        "availableTo": "17:00",
+        "slotMinutes": 20,
+        "workDays": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "acceptingBookings": true
+      },
+      "privacy": {
+        "showPresence": true,
+        "showContact": true
+      },
+      "email": "dr.anita.sharma@seed.bovinetra.dev"
+    },
+    {
+      "username": "dr.vikram.rao",
+      "fullName": "Dr. Vikram Rao",
+      "role": "doctor",
+      "avatar": "https://i.pravatar.cc/300?img=11",
+      "coverImage": "https://picsum.photos/seed/dr-vikram/1200/400",
+      "contactPhone": "9848200302",
+      "doctorDetails": {
+        "specialization": "Reproduction and breeding",
+        "experience": 9,
+        "consultationFee": 500,
+        "availableFrom": "09:00",
+        "availableTo": "15:00",
+        "slotMinutes": 30,
+        "workDays": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "acceptingBookings": true
+      },
+      "privacy": {
+        "showPresence": true,
+        "showContact": false
+      },
+      "email": "dr.vikram.rao@seed.bovinetra.dev"
+    },
+    {
+      "username": "dr.meera.nair",
+      "fullName": "Dr. Meera Nair",
+      "role": "doctor",
+      "avatar": "https://i.pravatar.cc/300?img=23",
+      "coverImage": "",
+      "contactPhone": "9847200303",
+      "doctorDetails": {
+        "specialization": "Nutrition and feed planning",
+        "experience": 7,
+        "consultationFee": 350,
+        "availableFrom": "11:00",
+        "availableTo": "18:00",
+        "slotMinutes": 20,
+        "workDays": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "acceptingBookings": true
+      },
+      "privacy": {
+        "showPresence": true,
+        "showContact": true
+      },
+      "email": "dr.meera.nair@seed.bovinetra.dev"
+    },
+    {
+      "username": "dr.imran.khan",
+      "fullName": "Dr. Imran Khan",
+      "role": "doctor",
+      "avatar": "https://i.pravatar.cc/300?img=57",
+      "coverImage": "https://picsum.photos/seed/dr-imran/1200/400",
+      "contactPhone": "9839200304",
+      "doctorDetails": {
+        "specialization": "Large animal surgery",
+        "experience": 15,
+        "consultationFee": 700,
+        "availableFrom": "10:00",
+        "availableTo": "16:00",
+        "slotMinutes": 40,
+        "workDays": [
+          1,
+          3,
+          5
+        ],
+        "acceptingBookings": true
+      },
+      "privacy": {
+        "showPresence": false,
+        "showContact": false
+      },
+      "email": "dr.imran.khan@seed.bovinetra.dev"
+    },
+    {
+      "username": "aarav.mehta",
+      "fullName": "Aarav Mehta",
+      "role": "user",
+      "avatar": "https://i.pravatar.cc/300?img=3",
+      "contactPhone": "9820300401",
+      "buyerDetails": {
+        "address": "12 Linking Road, Mumbai, Maharashtra 400050"
+      },
+      "privacy": {
+        "showPresence": true,
+        "showContact": false
+      },
+      "email": "aarav.mehta@seed.bovinetra.dev"
+    },
+    {
+      "username": "priya.verma",
+      "fullName": "Priya Verma",
+      "role": "user",
+      "avatar": "https://i.pravatar.cc/300?img=9",
+      "contactPhone": "9810300402",
+      "buyerDetails": {
+        "address": "B-44 Sector 15, Noida, Uttar Pradesh 201301"
+      },
+      "privacy": {
+        "showPresence": true,
+        "showContact": false
+      },
+      "email": "priya.verma@seed.bovinetra.dev"
+    },
+    {
+      "username": "rohit.kumar",
+      "fullName": "Rohit Kumar",
+      "role": "user",
+      "avatar": "https://i.pravatar.cc/300?img=13",
+      "buyerDetails": {
+        "address": "Ward 7, Hisar, Haryana 125001"
+      },
+      "privacy": {
+        "showPresence": true,
+        "showContact": false
+      },
+      "email": "rohit.kumar@seed.bovinetra.dev"
+    },
+    {
+      "username": "sneha.reddy",
+      "fullName": "Sneha Reddy",
+      "role": "user",
+      "avatar": "https://i.pravatar.cc/300?img=26",
+      "contactPhone": "9848300404",
+      "buyerDetails": {
+        "address": "Plot 21, Banjara Hills, Hyderabad, Telangana 500034"
+      },
+      "privacy": {
+        "showPresence": false,
+        "showContact": false
+      },
+      "email": "sneha.reddy@seed.bovinetra.dev"
+    },
+    {
+      "username": "imran.ansari",
+      "fullName": "Imran Ansari",
+      "role": "user",
+      "avatar": "https://i.pravatar.cc/300?img=35",
+      "contactPhone": "9935300405",
+      "buyerDetails": {
+        "address": "Civil Lines, Lucknow, Uttar Pradesh 226001"
+      },
+      "privacy": {
+        "showPresence": true,
+        "showContact": true
+      },
+      "email": "imran.ansari@seed.bovinetra.dev"
+    },
+    {
+      "username": "deepa.joshi",
+      "fullName": "Deepa Joshi",
+      "role": "user",
+      "avatar": "https://i.pravatar.cc/300?img=38",
+      "buyerDetails": {
+        "address": "Vastrapur, Ahmedabad, Gujarat 380015"
+      },
+      "privacy": {
+        "showPresence": true,
+        "showContact": false
+      },
+      "email": "deepa.joshi@seed.bovinetra.dev"
+    },
+    {
+      "username": "vijay.chauhan",
+      "fullName": "Vijay Chauhan",
+      "role": "user",
+      "avatar": "https://i.pravatar.cc/300?img=65",
+      "contactPhone": "9425300407",
+      "buyerDetails": {
+        "address": "MG Road, Indore, Madhya Pradesh 452001"
+      },
+      "privacy": {
+        "showPresence": true,
+        "showContact": false
+      },
+      "email": "vijay.chauhan@seed.bovinetra.dev"
+    }
+  ],
+  "products": [
+    {
+      "owner": "kisan.feeds",
+      "name": "Premium Dairy Cattle Feed 50 kg",
+      "category": "Feed",
+      "subCategory": "Compound feed",
+      "brand": "KisanGold",
+      "sku": "KG-DCF-50",
+      "barcode": "8901234500011",
+      "shortDescription": "20 percent protein pellet feed for milking cows and buffaloes.",
+      "description": "Balanced compound feed made from maize, de-oiled rice bran, soya and mineral mix. Fed at 1 kg for every 2.5 litres of milk, it helps keep fat percentage steady through the lactation. Packed in a moisture-proof 50 kg bag.",
+      "price": 1450,
+      "mrp": 1600,
+      "tax": 5,
+      "stock": 120,
+      "minStock": 20,
+      "unit": "bag",
+      "weight": 50,
+      "weightUnit": "kg",
+      "tags": [
+        "dairy",
+        "pellet",
+        "protein",
+        "milk yield"
+      ],
+      "shippingCharge": 150,
+      "freeShipping": false,
+      "deliveryTime": "3 to 5 working days",
+      "manufactureDate": "2026-10-02T11:32:01.339Z",
+      "expiryDate": "2027-04-02T11:32:01.339Z",
+      "image": "https://picsum.photos/seed/dairy-feed-50/900/700",
+      "images": [
+        "https://picsum.photos/seed/dairy-feed-50-1/900/700",
+        "https://picsum.photos/seed/dairy-feed-50-2/900/700",
+        "https://picsum.photos/seed/dairy-feed-50-3/900/700"
+      ],
+      "approvalStatus": "Approved",
+      "featured": true,
+      "ratings": 4.6,
+      "views": 842,
+      "soldCount": 310
+    },
+    {
+      "owner": "kisan.feeds",
+      "name": "Calf Starter Pellets 20 kg",
+      "category": "Feed",
+      "subCategory": "Calf feed",
+      "brand": "KisanGold",
+      "sku": "KG-CALF-20",
+      "shortDescription": "High energy starter for calves from week two to six months.",
+      "description": "Palatable crumble with 22 percent protein, added vitamins A, D3, E and probiotics. Helps calves switch to solid feed early and supports steady weight gain.",
+      "price": 780,
+      "mrp": 850,
+      "tax": 5,
+      "stock": 64,
+      "minStock": 10,
+      "unit": "bag",
+      "weight": 20,
+      "weightUnit": "kg",
+      "tags": [
+        "calf",
+        "starter",
+        "probiotic"
+      ],
+      "freeShipping": true,
+      "deliveryTime": "3 to 5 working days",
+      "manufactureDate": "2026-09-02T11:32:01.339Z",
+      "expiryDate": "2027-03-02T11:32:01.339Z",
+      "image": "https://picsum.photos/seed/calf-starter/900/700",
+      "images": [
+        "https://picsum.photos/seed/calf-starter-1/900/700",
+        "https://picsum.photos/seed/calf-starter-2/900/700",
+        "https://picsum.photos/seed/calf-starter-3/900/700"
+      ],
+      "approvalStatus": "Approved",
+      "ratings": 4.4,
+      "views": 410,
+      "soldCount": 96
+    },
+    {
+      "owner": "dairy.needs",
+      "name": "Bypass Fat Supplement 5 kg",
+      "category": "Supplement",
+      "subCategory": "Energy supplement",
+      "brand": "LactoMax",
+      "sku": "LM-BPF-5",
+      "shortDescription": "Rumen bypass fat for high yielding cows in early lactation.",
+      "description": "Prilled calcium salt of palm fatty acids. Supplies extra energy without upsetting rumen function, useful during the first 100 days after calving when cows lose body condition.",
+      "price": 920,
+      "mrp": 1050,
+      "tax": 12,
+      "stock": 45,
+      "minStock": 8,
+      "unit": "pack",
+      "weight": 5,
+      "weightUnit": "kg",
+      "tags": [
+        "bypass fat",
+        "energy",
+        "lactation"
+      ],
+      "shippingCharge": 90,
+      "deliveryTime": "2 to 4 working days",
+      "manufactureDate": "2026-10-02T11:32:01.339Z",
+      "expiryDate": "2027-09-02T11:32:01.339Z",
+      "image": "https://picsum.photos/seed/bypass-fat/900/700",
+      "images": [
+        "https://picsum.photos/seed/bypass-fat-1/900/700",
+        "https://picsum.photos/seed/bypass-fat-2/900/700",
+        "https://picsum.photos/seed/bypass-fat-3/900/700"
+      ],
+      "approvalStatus": "Approved",
+      "ratings": 4.2,
+      "views": 233,
+      "soldCount": 58
+    },
+    {
+      "owner": "agrovet.mart",
+      "name": "Chelated Mineral Mixture 5 kg",
+      "category": "Supplement",
+      "subCategory": "Mineral mixture",
+      "brand": "VetoPlus",
+      "sku": "VP-MIN-5",
+      "barcode": "8901234500042",
+      "shortDescription": "Area specific mineral mix with zinc, copper and selenium.",
+      "description": "Chelated minerals absorb better than inorganic salts. Improves fertility, hoof health and immunity. Mix 50 g per day per adult animal with the concentrate.",
+      "price": 640,
+      "mrp": 700,
+      "tax": 12,
+      "stock": 80,
+      "minStock": 15,
+      "unit": "pack",
+      "weight": 5,
+      "weightUnit": "kg",
+      "tags": [
+        "mineral",
+        "fertility",
+        "zinc"
+      ],
+      "flavor": "Unflavoured",
+      "deliveryTime": "2 to 4 working days",
+      "shippingCharge": 70,
+      "manufactureDate": "2026-08-02T11:32:01.339Z",
+      "expiryDate": "2028-01-02T11:32:01.339Z",
+      "image": "https://picsum.photos/seed/mineral-mix/900/700",
+      "images": [
+        "https://picsum.photos/seed/mineral-mix-1/900/700",
+        "https://picsum.photos/seed/mineral-mix-2/900/700",
+        "https://picsum.photos/seed/mineral-mix-3/900/700"
+      ],
+      "approvalStatus": "Approved",
+      "ratings": 4.7,
+      "views": 560,
+      "soldCount": 205
+    },
+    {
+      "owner": "ramesh.patel",
+      "name": "Cotton Seed Cake 50 kg",
+      "category": "Feed",
+      "brand": "Patel Farm",
+      "shortDescription": "Whole cottonseed cake from our own crushing unit.",
+      "description": "High protein, high energy cake that works well with green fodder. Kept dry and free of aflatoxin by testing every batch. Sold directly from the farm godown.",
+      "price": 1900,
+      "mrp": 2100,
+      "tax": 5,
+      "stock": 30,
+      "minStock": 5,
+      "unit": "bag",
+      "weight": 50,
+      "weightUnit": "kg",
+      "tags": [
+        "cottonseed",
+        "protein"
+      ],
+      "deliveryTime": "4 to 6 working days",
+      "shippingCharge": 200,
+      "image": "https://picsum.photos/seed/cotton-cake/900/700",
+      "images": [
+        "https://picsum.photos/seed/cotton-cake-1/900/700",
+        "https://picsum.photos/seed/cotton-cake-2/900/700",
+        "https://picsum.photos/seed/cotton-cake-3/900/700"
+      ],
+      "approvalStatus": "Approved",
+      "ratings": 4.3,
+      "views": 188,
+      "soldCount": 40
+    },
+    {
+      "owner": "harpreet.singh",
+      "name": "Wheat Straw (Bhusa) Bale 40 kg",
+      "category": "Fodder & Straw",
+      "brand": "Singh Farm",
+      "shortDescription": "Clean, dry wheat bhusa pressed into compact bales.",
+      "description": "Harvested this season and stored under cover. Free of dust and mould. Good roughage base for dry cows and heifers.",
+      "price": 320,
+      "mrp": 350,
+      "stock": 400,
+      "minStock": 50,
+      "unit": "bale",
+      "weight": 40,
+      "weightUnit": "kg",
+      "tags": [
+        "bhusa",
+        "roughage",
+        "wheat"
+      ],
+      "freeShipping": true,
+      "deliveryTime": "Within 3 days (Haryana)",
+      "image": "https://picsum.photos/seed/wheat-straw/900/700",
+      "images": [
+        "https://picsum.photos/seed/wheat-straw-1/900/700",
+        "https://picsum.photos/seed/wheat-straw-2/900/700",
+        "https://picsum.photos/seed/wheat-straw-3/900/700"
+      ],
+      "approvalStatus": "Approved",
+      "ratings": 4.5,
+      "views": 392,
+      "soldCount": 150
+    },
+    {
+      "owner": "green.fodder.co",
+      "name": "Napier Grass Cuttings 1 tonne",
+      "category": "Fodder & Straw",
+      "subCategory": "Green fodder",
+      "brand": "Green Fodder Co",
+      "shortDescription": "Fresh cut hybrid Napier, delivered within 24 hours.",
+      "description": "Cut at 45 to 60 days for best protein. Chopped on request. Delivery by tractor within 40 km of Nashik.",
+      "price": 3200,
+      "mrp": 3500,
+      "stock": 25,
+      "minStock": 2,
+      "unit": "tonne",
+      "tags": [
+        "napier",
+        "green fodder",
+        "fresh"
+      ],
+      "shippingCharge": 400,
+      "deliveryTime": "Same day or next day",
+      "image": "https://picsum.photos/seed/napier/900/700",
+      "images": [
+        "https://picsum.photos/seed/napier-1/900/700",
+        "https://picsum.photos/seed/napier-2/900/700",
+        "https://picsum.photos/seed/napier-3/900/700"
+      ],
+      "approvalStatus": "Approved",
+      "ratings": 4.1,
+      "views": 144,
+      "soldCount": 22
+    },
+    {
+      "owner": "sunita.devi",
+      "name": "Maize Silage 40 kg Bag",
+      "category": "Fodder & Straw",
+      "subCategory": "Silage",
+      "brand": "Devi Farm",
+      "shortDescription": "Fermented whole plant maize silage, sealed bags.",
+      "description": "Made from sweet corn plants chopped at dough stage and fermented for 60 days. Smells sweet, not sour. Open bag lasts about four days.",
+      "price": 410,
+      "mrp": 450,
+      "stock": 120,
+      "minStock": 20,
+      "unit": "bag",
+      "weight": 40,
+      "weightUnit": "kg",
+      "tags": [
+        "silage",
+        "maize",
+        "fermented"
+      ],
+      "manufactureDate": "2026-09-02T11:32:01.339Z",
+      "expiryDate": "2027-05-02T11:32:01.339Z",
+      "deliveryTime": "3 to 5 working days",
+      "shippingCharge": 120,
+      "image": "https://picsum.photos/seed/maize-silage/900/700",
+      "images": [
+        "https://picsum.photos/seed/maize-silage-1/900/700",
+        "https://picsum.photos/seed/maize-silage-2/900/700",
+        "https://picsum.photos/seed/maize-silage-3/900/700"
+      ],
+      "approvalStatus": "Approved",
+      "ratings": 4.8,
+      "views": 301,
+      "soldCount": 88
+    },
+    {
+      "owner": "mohan.yadav",
+      "name": "Dung Cake (Goitha) Pack of 50",
+      "category": "Dung Cake (Goitha)",
+      "brand": "Yadav Pashu Palan",
+      "shortDescription": "Sun dried cow dung cakes for havan and fuel.",
+      "description": "Hand made from desi cow dung, dried for two weeks in open sun. Each cake is about 12 cm across. Suitable for puja, havan and traditional cooking.",
+      "price": 299,
+      "mrp": 350,
+      "stock": 200,
+      "minStock": 20,
+      "unit": "pack",
+      "size": "12 cm cakes",
+      "color": "Brown",
+      "tags": [
+        "goitha",
+        "havan",
+        "desi cow"
+      ],
+      "shippingCharge": 60,
+      "deliveryTime": "4 to 7 working days",
+      "image": "https://picsum.photos/seed/goitha/900/700",
+      "images": [
+        "https://picsum.photos/seed/goitha-1/900/700",
+        "https://picsum.photos/seed/goitha-2/900/700",
+        "https://picsum.photos/seed/goitha-3/900/700"
+      ],
+      "approvalStatus": "Approved",
+      "ratings": 4,
+      "views": 205,
+      "soldCount": 130
+    },
+    {
+      "owner": "lakshmi.naidu",
+      "name": "Vermicompost 25 kg",
+      "category": "Manure & Compost",
+      "brand": "Naidu Organics",
+      "shortDescription": "Fine sieved earthworm compost for fields and gardens.",
+      "description": "Made from cattle dung and farm waste with Eisenia fetida. Moisture around 30 percent, pH near neutral. Improves soil structure and water holding.",
+      "price": 380,
+      "mrp": 420,
+      "stock": 150,
+      "minStock": 20,
+      "unit": "bag",
+      "weight": 25,
+      "weightUnit": "kg",
+      "tags": [
+        "vermicompost",
+        "organic",
+        "soil"
+      ],
+      "deliveryTime": "5 to 7 working days",
+      "shippingCharge": 110,
+      "image": "https://picsum.photos/seed/vermicompost/900/700",
+      "images": [
+        "https://picsum.photos/seed/vermicompost-1/900/700",
+        "https://picsum.photos/seed/vermicompost-2/900/700",
+        "https://picsum.photos/seed/vermicompost-3/900/700"
+      ],
+      "approvalStatus": "Approved",
+      "ratings": 4.6,
+      "views": 267,
+      "soldCount": 99
+    },
+    {
+      "owner": "balwant.rathore",
+      "name": "Well Rotted Cow Dung Manure 500 kg",
+      "category": "Manure & Compost",
+      "shortDescription": "Two year old cow dung manure, ready to apply.",
+      "description": "Stacked and turned for over two years, no smell and no weed seeds. Sold by the trolley load in Bikaner district.",
+      "price": 1500,
+      "mrp": 0,
+      "stock": 12,
+      "minStock": 1,
+      "unit": "trolley load",
+      "weight": 500,
+      "weightUnit": "kg",
+      "tags": [
+        "manure",
+        "farmyard"
+      ],
+      "deliveryTime": "Local delivery only",
+      "image": "https://picsum.photos/seed/cow-manure/900/700",
+      "images": [],
+      "approvalStatus": "Approved",
+      "ratings": 3.9,
+      "views": 77,
+      "soldCount": 9
+    },
+    {
+      "owner": "dairy.needs",
+      "name": "Stainless Steel Cattle Water Trough 100 L",
+      "category": "Trough (Naad)",
+      "subCategory": "Water trough",
+      "brand": "SteelFarm",
+      "sku": "SF-TR-100",
+      "shortDescription": "304 grade steel trough with drain plug.",
+      "description": "Rust free, easy to clean, rounded edges so animals cannot hurt themselves. Comes with a bottom drain plug and welded legs. Size 120 x 45 x 30 cm.",
+      "price": 4200,
+      "mrp": 4800,
+      "tax": 18,
+      "stock": 18,
+      "minStock": 3,
+      "unit": "piece",
+      "weight": 14,
+      "weightUnit": "kg",
+      "color": "Steel",
+      "size": "100 litre",
+      "tags": [
+        "trough",
+        "steel",
+        "water"
+      ],
+      "shippingCharge": 350,
+      "deliveryTime": "5 to 8 working days",
+      "image": "https://picsum.photos/seed/steel-trough/900/700",
+      "images": [
+        "https://picsum.photos/seed/steel-trough-1/900/700",
+        "https://picsum.photos/seed/steel-trough-2/900/700",
+        "https://picsum.photos/seed/steel-trough-3/900/700"
+      ],
+      "approvalStatus": "Approved",
+      "ratings": 4.5,
+      "views": 322,
+      "soldCount": 61
+    },
+    {
+      "owner": "dr.anita.sharma",
+      "name": "FMD Vaccine 50 Dose Vial",
+      "category": "Vaccine",
+      "subCategory": "Foot and mouth disease",
+      "brand": "BioVet",
+      "sku": "BV-FMD-50",
+      "shortDescription": "Trivalent oil adjuvant vaccine against foot and mouth disease.",
+      "description": "Protects against serotypes O, A and Asia 1. Dose is 2 ml by deep intramuscular injection. Keep refrigerated at 2 to 8 degrees. Sold to farmers with a vet prescription.",
+      "price": 1650,
+      "mrp": 1800,
+      "tax": 5,
+      "stock": 40,
+      "minStock": 5,
+      "unit": "vial",
+      "tags": [
+        "vaccine",
+        "fmd",
+        "cold chain"
+      ],
+      "shippingCharge": 180,
+      "deliveryTime": "Cold pack, 2 to 3 working days",
+      "manufactureDate": "2026-10-02T11:32:01.340Z",
+      "expiryDate": "2027-09-02T11:32:01.340Z",
+      "image": "https://picsum.photos/seed/fmd-vaccine/900/700",
+      "images": [
+        "https://picsum.photos/seed/fmd-vaccine-1/900/700",
+        "https://picsum.photos/seed/fmd-vaccine-2/900/700",
+        "https://picsum.photos/seed/fmd-vaccine-3/900/700"
+      ],
+      "approvalStatus": "Approved",
+      "featured": true,
+      "ratings": 4.9,
+      "views": 690,
+      "soldCount": 140
+    },
+    {
+      "owner": "dr.vikram.rao",
+      "name": "Brucella S19 Vaccine 10 Dose",
+      "category": "Vaccine",
+      "subCategory": "Brucellosis",
+      "brand": "BioVet",
+      "shortDescription": "Live vaccine for female calves aged 4 to 8 months.",
+      "description": "One time vaccination for calves. Handle with gloves and follow disposal instructions. Not for adult animals or pregnant cows.",
+      "price": 540,
+      "mrp": 600,
+      "tax": 5,
+      "stock": 22,
+      "minStock": 4,
+      "unit": "vial",
+      "tags": [
+        "brucella",
+        "calf",
+        "live vaccine"
+      ],
+      "shippingCharge": 180,
+      "deliveryTime": "Cold pack, 2 to 3 working days",
+      "manufactureDate": "2026-09-02T11:32:01.340Z",
+      "expiryDate": "2027-05-02T11:32:01.340Z",
+      "image": "https://picsum.photos/seed/brucella/900/700",
+      "images": [
+        "https://picsum.photos/seed/brucella-1/900/700",
+        "https://picsum.photos/seed/brucella-2/900/700",
+        "https://picsum.photos/seed/brucella-3/900/700"
+      ],
+      "approvalStatus": "Approved",
+      "ratings": 4.4,
+      "views": 190,
+      "soldCount": 35
+    },
+    {
+      "owner": "agrovet.mart",
+      "name": "Ivermectin Injection 30 ml",
+      "category": "Medicine",
+      "subCategory": "Dewormer",
+      "brand": "VetoPlus",
+      "sku": "VP-IVM-30",
+      "shortDescription": "Broad spectrum treatment for worms, lice and mange.",
+      "description": "Dose 1 ml per 50 kg body weight under the skin. Milk withdrawal period 28 days. Use only as advised by a veterinarian.",
+      "price": 210,
+      "mrp": 240,
+      "tax": 12,
+      "stock": 90,
+      "minStock": 15,
+      "unit": "bottle",
+      "tags": [
+        "dewormer",
+        "ivermectin",
+        "mange"
+      ],
+      "deliveryTime": "2 to 3 working days",
+      "shippingCharge": 50,
+      "manufactureDate": "2026-07-02T11:32:01.340Z",
+      "expiryDate": "2028-07-02T11:32:01.340Z",
+      "image": "https://picsum.photos/seed/ivermectin/900/700",
+      "images": [
+        "https://picsum.photos/seed/ivermectin-1/900/700",
+        "https://picsum.photos/seed/ivermectin-2/900/700",
+        "https://picsum.photos/seed/ivermectin-3/900/700"
+      ],
+      "approvalStatus": "Approved",
+      "ratings": 4.3,
+      "views": 410,
+      "soldCount": 170
+    },
+    {
+      "owner": "dr.meera.nair",
+      "name": "Calcium Gluconate Bolus Pack of 10",
+      "category": "Medicine",
+      "subCategory": "Milk fever",
+      "brand": "NutriVet",
+      "shortDescription": "Oral calcium boluses for the days around calving.",
+      "description": "Helps prevent milk fever in high yielding cows. Give two boluses at calving and two twelve hours later. Keep in a cool dry place.",
+      "price": 480,
+      "mrp": 520,
+      "tax": 12,
+      "stock": 70,
+      "minStock": 10,
+      "unit": "pack",
+      "tags": [
+        "calcium",
+        "milk fever",
+        "calving"
+      ],
+      "deliveryTime": "2 to 4 working days",
+      "shippingCharge": 60,
+      "manufactureDate": "2026-09-02T11:32:01.340Z",
+      "expiryDate": "2028-03-02T11:32:01.340Z",
+      "image": "https://picsum.photos/seed/calcium-bolus/900/700",
+      "images": [
+        "https://picsum.photos/seed/calcium-bolus-1/900/700",
+        "https://picsum.photos/seed/calcium-bolus-2/900/700",
+        "https://picsum.photos/seed/calcium-bolus-3/900/700"
+      ],
+      "approvalStatus": "Approved",
+      "ratings": 4.6,
+      "views": 215,
+      "soldCount": 77
+    },
+    {
+      "owner": "dairy.needs",
+      "name": "Electric Milking Machine 2 Bucket",
+      "category": "Equipment",
+      "subCategory": "Milking",
+      "brand": "MilkPro",
+      "sku": "MP-2B-2024",
+      "barcode": "8901234500196",
+      "shortDescription": "Portable twin bucket machine for up to 20 animals.",
+      "description": "Oil free vacuum pump, stainless steel buckets of 25 litres each, silicone liners and pulsator. One year warranty. Includes spare liner set and a printed Hindi manual.",
+      "price": 38500,
+      "mrp": 42000,
+      "tax": 18,
+      "stock": 6,
+      "minStock": 1,
+      "unit": "set",
+      "weight": 32,
+      "weightUnit": "kg",
+      "color": "Blue and steel",
+      "tags": [
+        "milking machine",
+        "stainless",
+        "warranty"
+      ],
+      "freeShipping": true,
+      "deliveryTime": "7 to 10 working days",
+      "image": "https://picsum.photos/seed/milking-machine/900/700",
+      "images": [
+        "https://picsum.photos/seed/milking-machine-1/900/700",
+        "https://picsum.photos/seed/milking-machine-2/900/700",
+        "https://picsum.photos/seed/milking-machine-3/900/700"
+      ],
+      "approvalStatus": "Approved",
+      "featured": true,
+      "ratings": 4.7,
+      "views": 905,
+      "soldCount": 24
+    },
+    {
+      "owner": "kisan.feeds",
+      "name": "Chaff Cutter 2 HP Motor",
+      "category": "Equipment",
+      "subCategory": "Fodder cutting",
+      "brand": "KisanTech",
+      "shortDescription": "Heavy duty chaff cutter with copper winding motor.",
+      "description": "Cuts green and dry fodder from 10 to 40 mm. Cast iron body, three blades, safety guard. Single phase 220 V.",
+      "price": 18900,
+      "mrp": 21500,
+      "tax": 18,
+      "stock": 9,
+      "minStock": 2,
+      "unit": "piece",
+      "weight": 58,
+      "weightUnit": "kg",
+      "tags": [
+        "chaff cutter",
+        "motor",
+        "fodder"
+      ],
+      "shippingCharge": 900,
+      "deliveryTime": "7 to 10 working days",
+      "image": "https://picsum.photos/seed/chaff-cutter/900/700",
+      "images": [
+        "https://picsum.photos/seed/chaff-cutter-1/900/700",
+        "https://picsum.photos/seed/chaff-cutter-2/900/700",
+        "https://picsum.photos/seed/chaff-cutter-3/900/700"
+      ],
+      "approvalStatus": "Pending",
+      "ratings": 0,
+      "views": 12,
+      "soldCount": 0
+    },
+    {
+      "owner": "pashu.care.store",
+      "name": "Aluminium Milk Can 40 Litre",
+      "category": "Equipment",
+      "subCategory": "Milk storage",
+      "brand": "DudhWala",
+      "shortDescription": "Food grade aluminium can with tight lid.",
+      "description": "Standard dairy can used for milk collection and transport. Smooth inner finish, riveted handles, flat bottom. Capacity 40 litres.",
+      "price": 2100,
+      "mrp": 2400,
+      "tax": 12,
+      "stock": 40,
+      "minStock": 5,
+      "unit": "piece",
+      "weight": 4.2,
+      "weightUnit": "kg",
+      "color": "Silver",
+      "size": "40 litre",
+      "tags": [
+        "milk can",
+        "aluminium"
+      ],
+      "shippingCharge": 250,
+      "deliveryTime": "4 to 6 working days",
+      "image": "https://picsum.photos/seed/milk-can/900/700",
+      "images": [
+        "https://picsum.photos/seed/milk-can-1/900/700",
+        "https://picsum.photos/seed/milk-can-2/900/700",
+        "https://picsum.photos/seed/milk-can-3/900/700"
+      ],
+      "approvalStatus": "Approved",
+      "ratings": 4.2,
+      "views": 150,
+      "soldCount": 52
+    },
+    {
+      "owner": "pashu.care.store",
+      "name": "Cattle Grooming Brush Set",
+      "category": "Grooming & Hygiene",
+      "brand": "FarmCare",
+      "shortDescription": "Stiff and soft brushes with a rubber curry comb.",
+      "description": "Three piece set for daily grooming. Removes dust and loose hair, improves blood circulation and keeps the coat clean before milking.",
+      "price": 349,
+      "mrp": 399,
+      "tax": 12,
+      "stock": 100,
+      "minStock": 10,
+      "unit": "set",
+      "color": "Black and yellow",
+      "tags": [
+        "brush",
+        "grooming"
+      ],
+      "freeShipping": true,
+      "deliveryTime": "3 to 5 working days",
+      "image": "https://picsum.photos/seed/grooming-set/900/700",
+      "images": [
+        "https://picsum.photos/seed/grooming-set-1/900/700",
+        "https://picsum.photos/seed/grooming-set-2/900/700",
+        "https://picsum.photos/seed/grooming-set-3/900/700"
+      ],
+      "approvalStatus": "Approved",
+      "ratings": 4.1,
+      "views": 118,
+      "soldCount": 63
+    },
+    {
+      "owner": "agrovet.mart",
+      "name": "Udder Wash and Teat Dip 5 L",
+      "category": "Grooming & Hygiene",
+      "subCategory": "Mastitis prevention",
+      "brand": "VetoPlus",
+      "shortDescription": "Iodine based post milking teat dip with skin conditioner.",
+      "description": "Dip each teat for 10 seconds after every milking. Helps lower new mastitis infections. Does not stain milk when used as directed.",
+      "price": 820,
+      "mrp": 900,
+      "tax": 18,
+      "stock": 48,
+      "minStock": 8,
+      "unit": "can",
+      "weight": 5,
+      "weightUnit": "L",
+      "tags": [
+        "teat dip",
+        "mastitis",
+        "hygiene"
+      ],
+      "deliveryTime": "2 to 4 working days",
+      "shippingCharge": 90,
+      "manufactureDate": "2026-09-02T11:32:01.340Z",
+      "expiryDate": "2027-11-02T11:32:01.340Z",
+      "image": "https://picsum.photos/seed/teat-dip/900/700",
+      "images": [
+        "https://picsum.photos/seed/teat-dip-1/900/700",
+        "https://picsum.photos/seed/teat-dip-2/900/700",
+        "https://picsum.photos/seed/teat-dip-3/900/700"
+      ],
+      "approvalStatus": "Pending",
+      "ratings": 0,
+      "views": 9,
+      "soldCount": 0
+    },
+    {
+      "owner": "pashu.care.store",
+      "name": "Rubber Cow Mat 6 x 4 ft",
+      "category": "Bedding & Shelter",
+      "brand": "ComfortHoof",
+      "shortDescription": "18 mm thick anti slip stall mat.",
+      "description": "Reduces knee and hock injuries, keeps the cow dry and warm, and is easy to wash. Weight about 36 kg.",
+      "price": 3400,
+      "mrp": 3900,
+      "tax": 18,
+      "stock": 35,
+      "minStock": 5,
+      "unit": "piece",
+      "weight": 36,
+      "weightUnit": "kg",
+      "color": "Black",
+      "size": "6 x 4 ft, 18 mm",
+      "tags": [
+        "mat",
+        "stall",
+        "rubber"
+      ],
+      "shippingCharge": 300,
+      "deliveryTime": "5 to 8 working days",
+      "image": "https://picsum.photos/seed/cow-mat/900/700",
+      "images": [
+        "https://picsum.photos/seed/cow-mat-1/900/700",
+        "https://picsum.photos/seed/cow-mat-2/900/700",
+        "https://picsum.photos/seed/cow-mat-3/900/700"
+      ],
+      "approvalStatus": "Approved",
+      "ratings": 4.5,
+      "views": 244,
+      "soldCount": 47
+    },
+    {
+      "owner": "green.fodder.co",
+      "name": "Neem Herbal Fly Repellent Spray 1 L",
+      "category": "Other",
+      "customCategory": "Herbal Care",
+      "brand": "Green Fodder Co",
+      "shortDescription": "Neem and citronella spray for cattle sheds.",
+      "description": "Plant based spray that keeps flies and mosquitoes away from animals and sheds. Spray on walls, drains and the animal's body line.",
+      "price": 260,
+      "mrp": 290,
+      "stock": 85,
+      "minStock": 10,
+      "unit": "bottle",
+      "weight": 1,
+      "weightUnit": "L",
+      "flavor": "Citronella",
+      "tags": [
+        "neem",
+        "herbal",
+        "fly control"
+      ],
+      "deliveryTime": "3 to 5 working days",
+      "manufactureDate": "2026-10-02T11:32:01.340Z",
+      "expiryDate": "2028-05-02T11:32:01.340Z",
+      "image": "https://picsum.photos/seed/fly-spray/900/700",
+      "images": [
+        "https://picsum.photos/seed/fly-spray-1/900/700",
+        "https://picsum.photos/seed/fly-spray-2/900/700",
+        "https://picsum.photos/seed/fly-spray-3/900/700"
+      ],
+      "approvalStatus": "Rejected",
+      "rejectionReason": "Please add the licence number and ingredient list to the description, then resubmit.",
+      "ratings": 0,
+      "views": 6,
+      "soldCount": 0
+    },
+    {
+      "owner": "pashu.care.store",
+      "name": "Adult Dog Food Chicken and Rice 10 kg",
+      "category": "Pet Food",
+      "brand": "PawNutri",
+      "sku": "PN-AD-10",
+      "shortDescription": "Complete dry food for adult dogs, farm dog friendly.",
+      "description": "Real chicken as the first ingredient, rice for easy digestion, with omega 3 and 6. Suitable for adult dogs of all breeds that guard the farm.",
+      "price": 2150,
+      "mrp": 2400,
+      "tax": 18,
+      "stock": 55,
+      "minStock": 6,
+      "unit": "bag",
+      "weight": 10,
+      "weightUnit": "kg",
+      "flavor": "Chicken and rice",
+      "tags": [
+        "dog food",
+        "pet"
+      ],
+      "deliveryTime": "3 to 5 working days",
+      "shippingCharge": 120,
+      "manufactureDate": "2026-09-02T11:32:01.340Z",
+      "expiryDate": "2027-08-02T11:32:01.340Z",
+      "image": "https://picsum.photos/seed/dog-food/900/700",
+      "images": [
+        "https://picsum.photos/seed/dog-food-1/900/700",
+        "https://picsum.photos/seed/dog-food-2/900/700",
+        "https://picsum.photos/seed/dog-food-3/900/700"
+      ],
+      "approvalStatus": "Approved",
+      "ratings": 4.5,
+      "views": 330,
+      "soldCount": 81
+    },
+    {
+      "owner": "pashu.care.store",
+      "name": "Adjustable Dog Collar and Leash Set",
+      "category": "Pet Accessories",
+      "brand": "PawNutri",
+      "shortDescription": "Padded nylon collar with a 1.5 m leash.",
+      "description": "Reflective stitching for night visibility, quick release buckle and a stainless steel ring. Fits neck sizes 30 to 50 cm.",
+      "price": 449,
+      "mrp": 549,
+      "tax": 12,
+      "stock": 120,
+      "minStock": 10,
+      "unit": "set",
+      "color": "Red",
+      "size": "Medium",
+      "tags": [
+        "collar",
+        "leash",
+        "dog"
+      ],
+      "freeShipping": true,
+      "deliveryTime": "3 to 5 working days",
+      "image": "https://picsum.photos/seed/dog-collar/900/700",
+      "images": [
+        "https://picsum.photos/seed/dog-collar-1/900/700",
+        "https://picsum.photos/seed/dog-collar-2/900/700",
+        "https://picsum.photos/seed/dog-collar-3/900/700"
+      ],
+      "approvalStatus": "Approved",
+      "ratings": 4.2,
+      "views": 140,
+      "soldCount": 70
+    }
+  ],
+  "cattle": [
+    {
+      "farmer": "ramesh.patel",
+      "breedName": "Gir",
+      "name": "Lakshmi",
+      "category": "Cow",
+      "gender": "Female",
+      "breedType": "Milch",
+      "age": 48,
+      "weight": 420,
+      "price": 85000,
+      "color": "Red",
+      "bodySize": "Medium",
+      "healthStatus": "Healthy, fully vaccinated",
+      "locationState": "Gujarat",
+      "locationDistrict": "Junagadh",
+      "latitude": 21.52,
+      "longitude": 70.46,
+      "scientificName": "Bos indicus",
+      "originCountry": "India",
+      "originState": "Gujarat",
+      "description": "Third lactation Gir cow, calm temperament, easy to milk by hand. Calf at foot can be included.",
+      "uniqueFeatures": "Long drooping ears, prominent forehead, curved horns",
+      "avgMilkPerDay": 12,
+      "peakLactationYield": 16,
+      "lactationPeriod": 300,
+      "fatPercentage": 4.6,
+      "snf": 8.7,
+      "milkQualityGrade": "A2",
+      "suitableClimate": "Hot",
+      "droughtResistance": "High",
+      "diseaseResistance": "Tick and heat tolerant",
+      "dailyFeedRequirement": "25 kg green fodder, 5 kg dry fodder, 3 kg concentrate",
+      "ageFirstCalving": 36,
+      "calvingInterval": 14,
+      "gestationPeriod": 285,
+      "artificialInsemination": true,
+      "commonDiseases": "Mastitis, foot and mouth disease",
+      "vaccinationSchedule": "FMD every six months, HS and BQ yearly",
+      "registeredBreedStatus": true,
+      "breedCertification": "Registered with Gir Gaushala Society",
+      "demandLevel": "High",
+      "lifespan": 20,
+      "images": [
+        "https://picsum.photos/seed/gir-lakshmi-1/1000/750",
+        "https://picsum.photos/seed/gir-lakshmi-2/1000/750",
+        "https://picsum.photos/seed/gir-lakshmi-3/1000/750",
+        "https://picsum.photos/seed/gir-lakshmi-4/1000/750"
+      ],
+      "imageUrl": "https://picsum.photos/seed/gir-lakshmi-1/1000/750",
+      "healthRecords": [
+        {
+          "kind": "vaccination",
+          "title": "FMD vaccine",
+          "date": "2026-09-03T11:32:01.340Z",
+          "notes": "Booster due in four months"
+        },
+        {
+          "kind": "checkup",
+          "title": "Routine vet checkup",
+          "date": "2026-10-03T11:32:01.340Z",
+          "notes": "All parameters normal"
+        }
+      ]
+    },
+    {
+      "farmer": "ramesh.patel",
+      "breedName": "Gir",
+      "name": "Nandi",
+      "category": "Cow",
+      "gender": "Male",
+      "breedType": "Milch",
+      "age": 30,
+      "weight": 380,
+      "price": 60000,
+      "color": "Red",
+      "bodySize": "Medium",
+      "healthStatus": "Healthy",
+      "locationState": "Gujarat",
+      "locationDistrict": "Junagadh",
+      "latitude": 21.53,
+      "longitude": 70.45,
+      "description": "Gir bull for breeding. Pedigree records available. Calm and well handled.",
+      "registeredBreedStatus": true,
+      "demandLevel": "Medium",
+      "images": [
+        "https://picsum.photos/seed/gir-nandi-1/1000/750",
+        "https://picsum.photos/seed/gir-nandi-2/1000/750",
+        "https://picsum.photos/seed/gir-nandi-3/1000/750"
+      ],
+      "imageUrl": "https://picsum.photos/seed/gir-nandi-1/1000/750"
+    },
+    {
+      "farmer": "harpreet.singh",
+      "breedName": "Sahiwal",
+      "name": "Gauri",
+      "category": "Cow",
+      "gender": "Female",
+      "breedType": "Milch",
+      "age": 54,
+      "weight": 450,
+      "price": 95000,
+      "color": "Brown",
+      "bodySize": "Large",
+      "healthStatus": "Healthy, tested for brucellosis",
+      "locationState": "Haryana",
+      "locationDistrict": "Karnal",
+      "latitude": 29.69,
+      "longitude": 76.98,
+      "scientificName": "Bos indicus",
+      "originCountry": "India",
+      "originState": "Punjab",
+      "description": "High yielding Sahiwal in second lactation. Milk record sheet available for the last 8 months.",
+      "uniqueFeatures": "Loose skin, short horns, reddish brown coat",
+      "avgMilkPerDay": 15,
+      "peakLactationYield": 20,
+      "lactationPeriod": 305,
+      "fatPercentage": 4.4,
+      "snf": 8.8,
+      "milkQualityGrade": "A",
+      "suitableClimate": "Hot",
+      "heatToleranceLevel": "Very high",
+      "diseaseResistance": "Good tick resistance",
+      "greenFodderQty": 30,
+      "dryFodderQty": 6,
+      "concentrateFeed": "3.5 kg compound feed",
+      "waterIntake": 80,
+      "ageFirstCalving": 32,
+      "calvingInterval": 13,
+      "gestationPeriod": 285,
+      "fertilityRate": "High",
+      "artificialInsemination": true,
+      "avgMarketPrice": 90000,
+      "maintenanceCost": 9000,
+      "ROI": 22,
+      "overallProductivityScore": 8.7,
+      "images": [
+        "https://picsum.photos/seed/sahiwal-gauri-1/1000/750",
+        "https://picsum.photos/seed/sahiwal-gauri-2/1000/750",
+        "https://picsum.photos/seed/sahiwal-gauri-3/1000/750",
+        "https://picsum.photos/seed/sahiwal-gauri-4/1000/750",
+        "https://picsum.photos/seed/sahiwal-gauri-5/1000/750"
+      ],
+      "imageUrl": "https://picsum.photos/seed/sahiwal-gauri-1/1000/750",
+      "healthRecords": [
+        {
+          "kind": "report",
+          "title": "Brucella test report",
+          "date": "2026-09-18T11:32:01.340Z",
+          "notes": "Negative",
+          "fileKind": ""
+        }
+      ]
+    },
+    {
+      "farmer": "harpreet.singh",
+      "breedName": "Holstein Friesian Cross",
+      "name": "Rani",
+      "category": "Cow",
+      "gender": "Female",
+      "breedType": "Milch",
+      "age": 40,
+      "weight": 520,
+      "price": 78000,
+      "color": "Mixed",
+      "bodySize": "Large",
+      "healthStatus": "Healthy",
+      "locationState": "Haryana",
+      "locationDistrict": "Karnal",
+      "latitude": 29.7,
+      "longitude": 76.99,
+      "description": "HF cross giving high volume milk, suitable for commercial dairy.",
+      "avgMilkPerDay": 22,
+      "fatPercentage": 3.6,
+      "snf": 8.3,
+      "images": [
+        "https://picsum.photos/seed/hf-rani-1/1000/750",
+        "https://picsum.photos/seed/hf-rani-2/1000/750",
+        "https://picsum.photos/seed/hf-rani-3/1000/750"
+      ],
+      "imageUrl": "https://picsum.photos/seed/hf-rani-1/1000/750"
+    },
+    {
+      "farmer": "sunita.devi",
+      "breedName": "Murrah",
+      "name": "Kali",
+      "category": "Buffalo",
+      "gender": "Female",
+      "breedType": "Milch",
+      "age": 60,
+      "weight": 560,
+      "price": 120000,
+      "color": "Black",
+      "bodySize": "Large",
+      "healthStatus": "Healthy, vaccinated",
+      "locationState": "Haryana",
+      "locationDistrict": "Rohtak",
+      "latitude": 28.89,
+      "longitude": 76.58,
+      "scientificName": "Bubalus bubalis",
+      "originCountry": "India",
+      "originState": "Haryana",
+      "description": "Pure Murrah buffalo with tightly curled horns. Third lactation, 14 litres a day at peak. Sold with calf if needed.",
+      "uniqueFeatures": "Jet black coat, short tightly curled horns, wedge shaped body",
+      "avgMilkPerDay": 14,
+      "peakLactationYield": 18,
+      "lactationPeriod": 310,
+      "fatPercentage": 7.2,
+      "snf": 9.2,
+      "milkQualityGrade": "A",
+      "lifetimeMilkProduction": 30000,
+      "suitableClimate": "Hot",
+      "humidityTolerance": "Medium",
+      "diseaseResistance": "Good",
+      "dailyFeedRequirement": "30 kg green fodder, 5 kg bhusa, 4 kg concentrate",
+      "mineralRequirement": "50 g mineral mix daily",
+      "specialDietLactation": "Add 250 g bypass fat during first 100 days",
+      "ageFirstCalving": 40,
+      "calvingInterval": 15,
+      "gestationPeriod": 310,
+      "heatCycleDuration": 21,
+      "bestBreedingSeason": "October to February",
+      "artificialInsemination": true,
+      "commonDiseases": "Mastitis, haemorrhagic septicaemia",
+      "vaccinationSchedule": "HS before monsoon, FMD every six months",
+      "preventiveCareTips": "Wallowing or shower in summer, keep udder clean",
+      "lifespan": 18,
+      "avgMarketPrice": 115000,
+      "demandLevel": "High",
+      "maintenanceCost": 11000,
+      "ROI": 25,
+      "milkEfficiencyScore": 9,
+      "overallProductivityScore": 9,
+      "statePopularity": "Haryana, Punjab, Uttar Pradesh",
+      "registeredBreedStatus": true,
+      "breedCertification": "Murrah Breeders Association",
+      "governmentSchemes": "Rashtriya Gokul Mission",
+      "NABARDSubsidyInfo": "Up to 25 percent back ended subsidy on dairy units",
+      "images": [
+        "https://picsum.photos/seed/murrah-kali-1/1000/750",
+        "https://picsum.photos/seed/murrah-kali-2/1000/750",
+        "https://picsum.photos/seed/murrah-kali-3/1000/750",
+        "https://picsum.photos/seed/murrah-kali-4/1000/750",
+        "https://picsum.photos/seed/murrah-kali-5/1000/750",
+        "https://picsum.photos/seed/murrah-kali-6/1000/750"
+      ],
+      "imageUrl": "https://picsum.photos/seed/murrah-kali-1/1000/750",
+      "healthRecords": [
+        {
+          "kind": "vaccination",
+          "title": "HS vaccine",
+          "date": "2026-08-04T11:32:01.340Z",
+          "notes": "Given before monsoon"
+        },
+        {
+          "kind": "treatment",
+          "title": "Mastitis treatment",
+          "date": "2026-06-05T11:32:01.340Z",
+          "notes": "Recovered in 5 days"
+        }
+      ]
+    },
+    {
+      "farmer": "sunita.devi",
+      "breedName": "Murrah",
+      "name": "Bholu",
+      "category": "Buffalo",
+      "gender": "Male",
+      "breedType": "Milch",
+      "age": 36,
+      "weight": 610,
+      "price": 140000,
+      "color": "Black",
+      "bodySize": "Large",
+      "healthStatus": "Healthy",
+      "locationState": "Haryana",
+      "locationDistrict": "Rohtak",
+      "latitude": 28.9,
+      "longitude": 76.6,
+      "description": "Breeding bull from a 2400 litre per lactation dam line.",
+      "registeredBreedStatus": true,
+      "demandLevel": "High",
+      "images": [
+        "https://picsum.photos/seed/murrah-bholu-1/1000/750",
+        "https://picsum.photos/seed/murrah-bholu-2/1000/750",
+        "https://picsum.photos/seed/murrah-bholu-3/1000/750"
+      ],
+      "imageUrl": "https://picsum.photos/seed/murrah-bholu-1/1000/750"
+    },
+    {
+      "farmer": "mohan.yadav",
+      "breedName": "Murrah",
+      "name": "Gulabo",
+      "category": "Buffalo",
+      "gender": "Female",
+      "breedType": "Milch",
+      "age": 52,
+      "weight": 540,
+      "price": 105000,
+      "color": "Black",
+      "healthStatus": "Healthy",
+      "locationState": "Uttar Pradesh",
+      "locationDistrict": "Mathura",
+      "latitude": 27.49,
+      "longitude": 77.67,
+      "description": "Good milker, easy to handle, sold only because we are shifting.",
+      "avgMilkPerDay": 12,
+      "fatPercentage": 7,
+      "images": [
+        "https://picsum.photos/seed/murrah-gulabo-1/1000/750",
+        "https://picsum.photos/seed/murrah-gulabo-2/1000/750"
+      ],
+      "imageUrl": "https://picsum.photos/seed/murrah-gulabo-1/1000/750"
+    },
+    {
+      "farmer": "mohan.yadav",
+      "breedName": "Hariana",
+      "name": "Shyama",
+      "category": "Cow",
+      "gender": "Female",
+      "breedType": "Dual-purpose",
+      "age": 46,
+      "weight": 380,
+      "price": 55000,
+      "color": "White",
+      "bodySize": "Medium",
+      "healthStatus": "Healthy",
+      "locationState": "Uttar Pradesh",
+      "locationDistrict": "Mathura",
+      "latitude": 27.5,
+      "longitude": 77.68,
+      "description": "Hariana cow, white coat, useful both for milk and light farm work.",
+      "avgMilkPerDay": 7,
+      "suitableClimate": "Hot",
+      "images": [
+        "https://picsum.photos/seed/hariana-shyama-1/1000/750",
+        "https://picsum.photos/seed/hariana-shyama-2/1000/750",
+        "https://picsum.photos/seed/hariana-shyama-3/1000/750"
+      ],
+      "imageUrl": "https://picsum.photos/seed/hariana-shyama-1/1000/750"
+    },
+    {
+      "farmer": "lakshmi.naidu",
+      "breedName": "Ongole",
+      "name": "Bheema",
+      "category": "Cow",
+      "gender": "Male",
+      "breedType": "Draught",
+      "age": 42,
+      "weight": 640,
+      "price": 150000,
+      "color": "White",
+      "bodySize": "Large",
+      "healthStatus": "Healthy, strong",
+      "locationState": "Andhra Pradesh",
+      "locationDistrict": "Guntur",
+      "latitude": 16.31,
+      "longitude": 80.44,
+      "scientificName": "Bos indicus",
+      "originCountry": "India",
+      "originState": "Andhra Pradesh",
+      "description": "Pure Ongole bull, muscular hump and excellent pulling power. Suitable for breeding and cart work.",
+      "uniqueFeatures": "Large hump, short horns, white coat with dark neck",
+      "avgWeightMale": 600,
+      "avgWeightFemale": 430,
+      "heightCm": 150,
+      "hornShape": "Short and stumpy",
+      "earType": "Medium drooping",
+      "skinType": "Loose",
+      "suitableClimate": "Hot",
+      "heatToleranceLevel": "Very high",
+      "droughtResistance": "High",
+      "diseaseResistance": "Good",
+      "lifespan": 22,
+      "demandLevel": "High",
+      "registeredBreedStatus": true,
+      "breedCertification": "Ongole Cattle Breeders Association",
+      "images": [
+        "https://picsum.photos/seed/ongole-bheema-1/1000/750",
+        "https://picsum.photos/seed/ongole-bheema-2/1000/750",
+        "https://picsum.photos/seed/ongole-bheema-3/1000/750",
+        "https://picsum.photos/seed/ongole-bheema-4/1000/750"
+      ],
+      "imageUrl": "https://picsum.photos/seed/ongole-bheema-1/1000/750"
+    },
+    {
+      "farmer": "lakshmi.naidu",
+      "breedName": "Ongole",
+      "name": "Seetha",
+      "category": "Cow",
+      "gender": "Female",
+      "breedType": "Dual-purpose",
+      "age": 50,
+      "weight": 430,
+      "price": 70000,
+      "color": "White",
+      "healthStatus": "Healthy",
+      "locationState": "Andhra Pradesh",
+      "locationDistrict": "Guntur",
+      "latitude": 16.32,
+      "longitude": 80.45,
+      "avgMilkPerDay": 6,
+      "description": "Calm Ongole cow with a healthy calf.",
+      "images": [
+        "https://picsum.photos/seed/ongole-seetha-1/1000/750",
+        "https://picsum.photos/seed/ongole-seetha-2/1000/750",
+        "https://picsum.photos/seed/ongole-seetha-3/1000/750"
+      ],
+      "imageUrl": "https://picsum.photos/seed/ongole-seetha-1/1000/750"
+    },
+    {
+      "farmer": "balwant.rathore",
+      "breedName": "Rathi",
+      "name": "Roopa",
+      "category": "Cow",
+      "gender": "Female",
+      "breedType": "Milch",
+      "age": 44,
+      "weight": 350,
+      "price": 62000,
+      "color": "Brown",
+      "bodySize": "Medium",
+      "healthStatus": "Healthy",
+      "locationState": "Rajasthan",
+      "locationDistrict": "Bikaner",
+      "latitude": 28.02,
+      "longitude": 73.31,
+      "originState": "Rajasthan",
+      "description": "Rathi is called the Kamdhenu of Rajasthan. Handles heat and scarce fodder well.",
+      "avgMilkPerDay": 9,
+      "suitableClimate": "Hot",
+      "droughtResistance": "Very high",
+      "images": [
+        "https://picsum.photos/seed/rathi-roopa-1/1000/750",
+        "https://picsum.photos/seed/rathi-roopa-2/1000/750",
+        "https://picsum.photos/seed/rathi-roopa-3/1000/750"
+      ],
+      "imageUrl": "https://picsum.photos/seed/rathi-roopa-1/1000/750"
+    },
+    {
+      "farmer": "balwant.rathore",
+      "breedName": "Tharparkar",
+      "name": "Dhanno",
+      "category": "Cow",
+      "gender": "Female",
+      "breedType": "Dual-purpose",
+      "age": 58,
+      "weight": 400,
+      "price": 72000,
+      "color": "White",
+      "healthStatus": "Healthy",
+      "locationState": "Rajasthan",
+      "locationDistrict": "Bikaner",
+      "latitude": 28.01,
+      "longitude": 73.3,
+      "description": "Tharparkar cow, grey white coat, good in desert conditions.",
+      "avgMilkPerDay": 8,
+      "droughtResistance": "Very high",
+      "images": [
+        "https://picsum.photos/seed/tharparkar-dhanno-1/1000/750",
+        "https://picsum.photos/seed/tharparkar-dhanno-2/1000/750"
+      ],
+      "imageUrl": "https://picsum.photos/seed/tharparkar-dhanno-1/1000/750"
+    },
+    {
+      "farmer": "santosh.jadhav",
+      "breedName": "Khillar",
+      "name": "Raja",
+      "category": "Cow",
+      "gender": "Male",
+      "breedType": "Draught",
+      "age": 48,
+      "weight": 450,
+      "price": 180000,
+      "color": "Grey",
+      "bodySize": "Medium",
+      "healthStatus": "Healthy, show quality",
+      "locationState": "Maharashtra",
+      "locationDistrict": "Satara",
+      "latitude": 17.69,
+      "longitude": 74,
+      "description": "Khillar bull known for speed and stamina, ideal for bullock cart racing and farm work.",
+      "uniqueFeatures": "Upright horns, compact body, white grey coat",
+      "demandLevel": "High",
+      "registeredBreedStatus": true,
+      "images": [
+        "https://picsum.photos/seed/khillar-raja-1/1000/750",
+        "https://picsum.photos/seed/khillar-raja-2/1000/750",
+        "https://picsum.photos/seed/khillar-raja-3/1000/750",
+        "https://picsum.photos/seed/khillar-raja-4/1000/750"
+      ],
+      "imageUrl": "https://picsum.photos/seed/khillar-raja-1/1000/750"
+    },
+    {
+      "farmer": "santosh.jadhav",
+      "breedName": "Deoni",
+      "name": "Chandni",
+      "category": "Cow",
+      "gender": "Female",
+      "breedType": "Dual-purpose",
+      "age": 45,
+      "weight": 390,
+      "price": 58000,
+      "color": "Mixed",
+      "healthStatus": "Healthy",
+      "locationState": "Maharashtra",
+      "locationDistrict": "Satara",
+      "latitude": 17.7,
+      "longitude": 74.01,
+      "avgMilkPerDay": 8,
+      "description": "Deoni cow with spotted coat, good both for milk and bullocks.",
+      "images": [
+        "https://picsum.photos/seed/deoni-chandni-1/1000/750",
+        "https://picsum.photos/seed/deoni-chandni-2/1000/750",
+        "https://picsum.photos/seed/deoni-chandni-3/1000/750"
+      ],
+      "imageUrl": "https://picsum.photos/seed/deoni-chandni-1/1000/750"
+    },
+    {
+      "farmer": "kavitha.murugan",
+      "breedName": "Kangayam",
+      "name": "Murugan",
+      "category": "Cow",
+      "gender": "Male",
+      "breedType": "Draught",
+      "age": 36,
+      "weight": 480,
+      "price": 90000,
+      "color": "Grey",
+      "bodySize": "Medium",
+      "healthStatus": "Healthy",
+      "locationState": "Tamil Nadu",
+      "locationDistrict": "Erode",
+      "latitude": 11.34,
+      "longitude": 77.72,
+      "scientificName": "Bos indicus",
+      "originCountry": "India",
+      "originState": "Tamil Nadu",
+      "description": "Kangayam bull from our own herd, used in jallikattu training and farm work.",
+      "uniqueFeatures": "Grey body with dark neck and hump, crescent horns",
+      "suitableClimate": "Hot",
+      "droughtResistance": "High",
+      "demandLevel": "Medium",
+      "images": [
+        "https://picsum.photos/seed/kangayam-murugan-1/1000/750",
+        "https://picsum.photos/seed/kangayam-murugan-2/1000/750",
+        "https://picsum.photos/seed/kangayam-murugan-3/1000/750"
+      ],
+      "imageUrl": "https://picsum.photos/seed/kangayam-murugan-1/1000/750"
+    },
+    {
+      "farmer": "kavitha.murugan",
+      "breedName": "Jersey Cross",
+      "name": "Mallika",
+      "category": "Cow",
+      "gender": "Female",
+      "breedType": "Milch",
+      "age": 38,
+      "weight": 400,
+      "price": 65000,
+      "color": "Fawn",
+      "bodySize": "Medium",
+      "healthStatus": "Healthy, vaccinated",
+      "locationState": "Tamil Nadu",
+      "locationDistrict": "Erode",
+      "latitude": 11.35,
+      "longitude": 77.73,
+      "avgMilkPerDay": 16,
+      "fatPercentage": 4.8,
+      "description": "Jersey cross, second calf, 16 litres at peak.",
+      "images": [
+        "https://picsum.photos/seed/jersey-mallika-1/1000/750",
+        "https://picsum.photos/seed/jersey-mallika-2/1000/750",
+        "https://picsum.photos/seed/jersey-mallika-3/1000/750"
+      ],
+      "imageUrl": "https://picsum.photos/seed/jersey-mallika-1/1000/750",
+      "healthRecords": [
+        {
+          "kind": "vaccination",
+          "title": "FMD vaccine",
+          "date": "2026-10-13T11:32:01.340Z",
+          "notes": "Next due in five months"
+        }
+      ]
+    },
+    {
+      "farmer": "ramesh.patel",
+      "breedName": "Kankrej",
+      "name": "Nanda",
+      "category": "Cow",
+      "gender": "Female",
+      "breedType": "Dual-purpose",
+      "age": 52,
+      "weight": 430,
+      "price": 68000,
+      "color": "Grey",
+      "bodySize": "Large",
+      "healthStatus": "Healthy",
+      "locationState": "Gujarat",
+      "locationDistrict": "Banaskantha",
+      "latitude": 24.17,
+      "longitude": 72.43,
+      "avgMilkPerDay": 9,
+      "description": "Kankrej cow with lyre shaped horns. Strong and good milker.",
+      "images": [
+        "https://picsum.photos/seed/kankrej-nanda-1/1000/750",
+        "https://picsum.photos/seed/kankrej-nanda-2/1000/750",
+        "https://picsum.photos/seed/kankrej-nanda-3/1000/750"
+      ],
+      "imageUrl": "https://picsum.photos/seed/kankrej-nanda-1/1000/750"
+    },
+    {
+      "farmer": "harpreet.singh",
+      "breedName": "Nili Ravi",
+      "name": "Neeli",
+      "category": "Buffalo",
+      "gender": "Female",
+      "breedType": "Milch",
+      "age": 56,
+      "weight": 580,
+      "price": 110000,
+      "color": "Black",
+      "bodySize": "Large",
+      "healthStatus": "Healthy",
+      "locationState": "Punjab",
+      "locationDistrict": "Amritsar",
+      "latitude": 31.63,
+      "longitude": 74.87,
+      "avgMilkPerDay": 13,
+      "fatPercentage": 6.8,
+      "description": "Nili Ravi with white markings on face and legs, good milk yield.",
+      "uniqueFeatures": "Wall eyes, white patch on forehead",
+      "images": [
+        "https://picsum.photos/seed/niliravi-neeli-1/1000/750",
+        "https://picsum.photos/seed/niliravi-neeli-2/1000/750",
+        "https://picsum.photos/seed/niliravi-neeli-3/1000/750",
+        "https://picsum.photos/seed/niliravi-neeli-4/1000/750"
+      ],
+      "imageUrl": "https://picsum.photos/seed/niliravi-neeli-1/1000/750"
+    },
+    {
+      "farmer": "sunita.devi",
+      "breedName": "Jaffarabadi",
+      "name": "Bhuri",
+      "category": "Buffalo",
+      "gender": "Female",
+      "breedType": "Milch",
+      "age": 62,
+      "weight": 650,
+      "price": 125000,
+      "color": "Black",
+      "bodySize": "Large",
+      "healthStatus": "Healthy",
+      "locationState": "Gujarat",
+      "locationDistrict": "Gir Somnath",
+      "latitude": 20.91,
+      "longitude": 70.37,
+      "avgMilkPerDay": 11,
+      "fatPercentage": 8,
+      "description": "Heavy Jaffarabadi buffalo with massive head and drooping horns.",
+      "images": [
+        "https://picsum.photos/seed/jaffar-bhuri-1/1000/750",
+        "https://picsum.photos/seed/jaffar-bhuri-2/1000/750",
+        "https://picsum.photos/seed/jaffar-bhuri-3/1000/750"
+      ],
+      "imageUrl": "https://picsum.photos/seed/jaffar-bhuri-1/1000/750"
+    },
+    {
+      "farmer": "lakshmi.naidu",
+      "breedName": "Punganur",
+      "name": "Chinni",
+      "category": "Cow",
+      "gender": "Female",
+      "breedType": "Milch",
+      "age": 30,
+      "weight": 160,
+      "price": 250000,
+      "color": "White",
+      "bodySize": "Small",
+      "healthStatus": "Healthy",
+      "locationState": "Andhra Pradesh",
+      "locationDistrict": "Chittoor",
+      "latitude": 13.2,
+      "longitude": 79.1,
+      "description": "Miniature Punganur cow, a rare breed. Only about 100 cm tall, gives 3 litres of rich milk.",
+      "uniqueFeatures": "Small hump, short crescent horns, very low maintenance",
+      "avgMilkPerDay": 3,
+      "fatPercentage": 8,
+      "demandLevel": "High",
+      "registeredBreedStatus": true,
+      "images": [
+        "https://picsum.photos/seed/punganur-chinni-1/1000/750",
+        "https://picsum.photos/seed/punganur-chinni-2/1000/750",
+        "https://picsum.photos/seed/punganur-chinni-3/1000/750",
+        "https://picsum.photos/seed/punganur-chinni-4/1000/750",
+        "https://picsum.photos/seed/punganur-chinni-5/1000/750"
+      ],
+      "imageUrl": "https://picsum.photos/seed/punganur-chinni-1/1000/750"
+    },
+    {
+      "farmer": "balwant.rathore",
+      "breedName": "Nagori",
+      "name": "Sher",
+      "category": "Cow",
+      "gender": "Male",
+      "breedType": "Draught",
+      "age": 40,
+      "weight": 430,
+      "price": 76000,
+      "color": "White",
+      "healthStatus": "Healthy",
+      "locationState": "Rajasthan",
+      "locationDistrict": "Nagaur",
+      "latitude": 27.2,
+      "longitude": 73.73,
+      "description": "Nagori bull used for ploughing and carting. Fast walker.",
+      "images": [
+        "https://picsum.photos/seed/nagori-sher-1/1000/750",
+        "https://picsum.photos/seed/nagori-sher-2/1000/750"
+      ],
+      "imageUrl": "https://picsum.photos/seed/nagori-sher-1/1000/750",
+      "sold": true
+    },
+    {
+      "farmer": "kavitha.murugan",
+      "breedName": "Umblachery",
+      "name": "Kari",
+      "category": "Cow",
+      "gender": "Female",
+      "breedType": "Draught",
+      "age": 36,
+      "weight": 280,
+      "price": 38000,
+      "color": "Grey",
+      "bodySize": "Small",
+      "healthStatus": "Healthy",
+      "locationState": "Tamil Nadu",
+      "locationDistrict": "Thanjavur",
+      "latitude": 10.79,
+      "longitude": 79.14,
+      "description": "Hardy Umblachery cow suited to marshy delta fields.",
+      "images": [
+        "https://picsum.photos/seed/umblachery-kari-1/1000/750",
+        "https://picsum.photos/seed/umblachery-kari-2/1000/750"
+      ],
+      "imageUrl": "https://picsum.photos/seed/umblachery-kari-1/1000/750"
+    }
+  ]
+}
