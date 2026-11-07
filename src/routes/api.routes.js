@@ -21,6 +21,7 @@ import productRoutes from "./product.routes.js";
 import cartRoutes from "./cart.routes.js";
 import orderRoutes from "./order.routes.js";
 import wishlistRoutes from "./wishlist.routes.js";
+import webBridge from "./web.bridge.routes.js";
 
 const router = Router();
 
@@ -73,6 +74,9 @@ router.use("/products", productRoutes);
 router.use("/cart", cartRoutes);
 router.use("/orders", orderRoutes);
 router.use("/wishlist", wishlistRoutes);
+
+router.get("/web/ping", (req, res) => res.json({ success: true, message: "bridge ok" }));
+router.use("/web", webBridge);
 
 router.use((req, res) => {
     res.status(404).json({ success: false, message: "API route not found" });
